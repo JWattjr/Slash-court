@@ -1,0 +1,16 @@
+{
+  "scenario": "INSUFFICIENT_EVIDENCE",
+  "synthetic": true,
+  "claim": "The duty appears missed, but the bounded public evidence cannot establish responsibility.",
+  "evidence": [
+    {
+      "evidence_id": "E1",
+      "evidence_type": "PUBLIC_STATUS",
+      "url": "https://status.example.org/slashcourt/ambiguous",
+      "source_domain": "status.example.org",
+      "claimed_fact": "The provider page is incomplete and does not identify the responsible party.",
+      "content_hash": "sha256:synthetic-insufficient-v1",
+      "relevant_rule_ids": ["R6"]
+    }
+  ]
+}

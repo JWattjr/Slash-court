@@ -1,0 +1,16 @@
+{
+  "scenario": "NEGLIGENT_FAILURE",
+  "synthetic": true,
+  "claim": "The primary RPC failed but the configured secondary remained available; no failover attempt is evidenced.",
+  "evidence": [
+    {
+      "evidence_id": "E1",
+      "evidence_type": "PUBLIC_STATUS",
+      "url": "https://status.example.org/slashcourt/negligent",
+      "source_domain": "status.example.org",
+      "claimed_fact": "Primary provider incident window overlaps the duty deadline.",
+      "content_hash": "sha256:synthetic-negligent-v1",
+      "relevant_rule_ids": ["R3"]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+name: SlashCourt CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  contracts-and-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install contract tooling
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+
+      - name: Lint and generate schemas
+        run: |
+          python -X utf8 -m genvm_linter.cli check contracts/slash_court.py
+          python -X utf8 -m genvm_linter.cli check contracts/operator_bond_vault.py
+          python -X utf8 -m genvm_linter.cli schema contracts/slash_court.py --json > artifacts/slash_court.schema.json
+          python -X utf8 -m genvm_linter.cli schema contracts/operator_bond_vault.py --json > artifacts/operator_bond_vault.schema.json
+
+      - name: Run direct contract tests
+        run: python -m pytest tests/direct -q
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Typecheck frontend
+        run: npm run lint
+
+      - name: Run explicit frontend typecheck script
+        run: npm run typecheck
+
+      - name: Build frontend
+        run: npm run build
+
+  local-consensus:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install integration tooling
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+
+      - name: Start five-validator GLSim
+        run: |
+          python -m tools.glsim_compat --port 4001 --validators 5 --no-browser --seed slashcourt-ci > /tmp/slashcourt-glsim.log 2>&1 &
+          for attempt in $(seq 1 30); do curl --fail --silent http://127.0.0.1:4001/api > /dev/null && break; sleep 1; done
+
+      - name: Run full-consensus integration suite
+        run: python -m pytest tests/integration -q -s

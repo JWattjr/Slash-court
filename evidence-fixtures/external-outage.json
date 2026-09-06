@@ -1,0 +1,16 @@
+{
+  "scenario": "EXTERNAL_OUTAGE",
+  "synthetic": true,
+  "claim": "Independent public records describe a widespread outage and unavailable failover infrastructure.",
+  "evidence": [
+    {
+      "evidence_id": "E1",
+      "evidence_type": "PUBLIC_STATUS",
+      "url": "https://status.example.org/slashcourt/outage",
+      "source_domain": "status.example.org",
+      "claimed_fact": "Primary and secondary providers report the same regional incident.",
+      "content_hash": "sha256:synthetic-outage-v1",
+      "relevant_rule_ids": ["R4"]
+    }
+  ]
+}
