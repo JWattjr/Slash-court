@@ -23,6 +23,26 @@ from gltest.direct.vm import VMContext
 
 
 _original_call_method = SimEngine.call_method
+_original_refresh_gl_message = VMContext._refresh_gl_message
+
+
+def _canonical_timestamp(value) -> str:
+    if isinstance(value, str) and len(value) >= 20 and value[19] == ".":
+        return value[:19] + "Z"
+    if isinstance(value, str) and len(value) == 20 and value.endswith("Z"):
+        return value
+    return "2025-01-01T00:00:00Z"
+
+
+def _refresh_with_canonical_timestamp(vm):
+    _original_refresh_gl_message(vm)
+    import genlayer.gl as gl
+
+    if getattr(gl, "message_raw", None) is not None:
+        gl.message_raw["datetime"] = _canonical_timestamp(vm._datetime)
+
+
+VMContext._refresh_gl_message = _refresh_with_canonical_timestamp
 
 
 def _latest_user_value(engine: SimEngine, contract_address: str, sender: str | None) -> int:
@@ -86,7 +106,7 @@ def _windows_safe_message_injection(vm):
         "origin_address": origin,
         "stack": [],
         "value": vm._value,
-        "datetime": vm._datetime,
+        "datetime": _canonical_timestamp(vm._datetime),
         "is_init": False,
         "chain_id": vm._chain_id,
         "entry_kind": 0,

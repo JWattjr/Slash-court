@@ -3,6 +3,7 @@
 import os
 import tempfile
 import json
+import hashlib
 
 import pytest
 
@@ -29,13 +30,22 @@ def _windows_safe_message_injection(vm):
     if isinstance(origin_address, bytes):
         origin_address = Address(origin_address)
 
+    message_datetime = vm._datetime
+    if isinstance(message_datetime, str) and len(message_datetime) >= 20 and message_datetime[19] == ".":
+        message_datetime = message_datetime[:19] + "Z"
+    if not isinstance(message_datetime, str) or len(message_datetime) != 20:
+        # The direct runner currently initializes its internal clock as an
+        # integer. Production GenVM supplies the canonical UTC timestamp; keep
+        # the test envelope deterministic and timestamp-shaped as well.
+        message_datetime = "2025-01-01T00:00:00Z"
+
     message_data = {
         "contract_address": contract_address,
         "sender_address": sender_address,
         "origin_address": origin_address,
         "stack": [],
         "value": vm._value,
-        "datetime": vm._datetime,
+        "datetime": message_datetime,
         "is_init": False,
         "chain_id": vm._chain_id,
         "entry_kind": 0,
@@ -56,7 +66,28 @@ def _windows_safe_message_injection(vm):
 
 
 _original_cleanup = VMContext._cleanup_after_deactivate
+_original_refresh = VMContext._refresh_gl_message
 loader._inject_message_to_fd0 = _windows_safe_message_injection
+
+
+def _refresh_with_timestamp(vm):
+    _original_refresh(vm)
+    try:
+        import genlayer.gl as gl
+
+        message_datetime = vm._datetime
+        if isinstance(message_datetime, str) and len(message_datetime) >= 20 and message_datetime[19] == ".":
+            message_datetime = message_datetime[:19] + "Z"
+        if not isinstance(message_datetime, str) or len(message_datetime) != 20:
+            message_datetime = "2025-01-01T00:00:00Z"
+
+        if hasattr(gl, "message_raw") and gl.message_raw is not None:
+            gl.message_raw["datetime"] = message_datetime
+    except ImportError:
+        pass
+
+
+VMContext._refresh_gl_message = _refresh_with_timestamp
 
 
 def _cleanup_with_deferred_temp_files(vm):
@@ -89,6 +120,7 @@ R4 — EXTERNAL_OUTAGE_EXEMPTION: a widespread outage with unavailable mitigatio
 R5 — EVIDENCE_INTEGRITY: fabricated or contradictory signed evidence is misconduct.
 R6 — BURDEN_OF_PROOF: material uncertainty resolves to insufficient evidence.
 R7 — PROPORTIONALITY: map classification to the fixed commitment penalty."""
+RULEBOOK_HASH = "sha256:" + hashlib.sha256(RULEBOOK_TEXT.encode("utf-8")).hexdigest()
 
 
 @pytest.fixture
@@ -107,7 +139,7 @@ def wired_protocol(direct_vm, direct_deploy, direct_owner):
     direct_vm.sender = direct_owner
     vault.configure_court(court.address)
     court.configure_bond_vault(vault.address)
-    court.create_initial_rulebook(RULEBOOK_TEXT, "sha256:slashcourt-rulebook-v1")
+    court.create_initial_rulebook(RULEBOOK_TEXT, RULEBOOK_HASH)
     court.configure_approved_evidence_domains(
         json.dumps(["evidence.example.com", "status.example.org"])
     )

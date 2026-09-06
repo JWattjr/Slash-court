@@ -23,45 +23,87 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { useWallet, formatAddress } from "@/lib/genlayer/WalletProvider";
-import { deploymentConfiguration, missingConfigurationKeys, SlashCourtClient } from "@/lib/slashcourt/client";
+import { deploymentConfiguration, formatGenAmount, missingConfigurationKeys, SlashCourtClient } from "@/lib/slashcourt/client";
 import type { CourtCase, Dashboard, TxSnapshot } from "@/lib/slashcourt/types";
 
 const EMPTY_FORM = {
   commitmentId: "",
   claim: "",
   evidenceId: "incident-source-01",
-  evidenceUrl: "https://status.example.org/incidents/sample",
-  evidenceDomain: "status.example.org",
+  evidenceUrl: "https://slash-court.vercel.app/evidence-fixtures/insufficient-evidence.txt",
+  evidenceDomain: "slash-court.vercel.app",
   evidenceFact: "The primary provider reported an incident during the duty window.",
+  contentHash: "",
 };
 
 const PRESETS = {
   misconduct: {
     commitmentId: "keeper-prod-001",
     claim: "The keeper submitted an unauthorized payload and then reported a successful execution.",
+    evidenceId: "misconduct-01",
+    evidenceUrl: "https://slash-court.vercel.app/evidence-fixtures/provable-misconduct.txt",
+    evidenceDomain: "slash-court.vercel.app",
     evidenceFact: "A signed execution receipt shows a destination and action different from the authorized payload.",
+  },
+  negligence: {
+    commitmentId: "keeper-prod-001",
+    claim: "The primary RPC failed while the configured secondary remained available, but no failover attempt was recorded.",
+    evidenceId: "negligence-01",
+    evidenceUrl: "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt",
+    evidenceDomain: "slash-court.vercel.app",
+    evidenceFact: "The primary provider incident overlaps the duty deadline and the secondary provider remained available.",
   },
   outage: {
     commitmentId: "keeper-prod-001",
     claim: "The scheduled duty was missed while the upstream RPC provider was broadly unavailable.",
+    evidenceId: "outage-01",
+    evidenceUrl: "https://slash-court.vercel.app/evidence-fixtures/external-outage.txt",
+    evidenceDomain: "slash-court.vercel.app",
     evidenceFact: "The provider status incident overlaps the scheduled duty window and records a regional outage.",
   },
   uncertainty: {
     commitmentId: "keeper-prod-001",
     claim: "The claimant cannot establish the failure with independently verifiable evidence.",
+    evidenceId: "uncertainty-01",
+    evidenceUrl: "https://slash-court.vercel.app/evidence-fixtures/insufficient-evidence.txt",
+    evidenceDomain: "slash-court.vercel.app",
     evidenceFact: "The supplied report is incomplete and does not establish a duty breach or a covered outage.",
   },
 };
 
 type ActiveView = "Overview" | "Cases" | "Operators" | "Rulebook" | "Evidence";
 
-function amount(value: number | undefined | null) {
-  if (value === undefined || value === null || Number.isNaN(value)) return "—";
-  return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(value);
+function amount(value: string | bigint | undefined | null) {
+  return formatGenAmount(value);
+}
+
+async function sha256Text(value: string) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+}
+
+async function evidenceHash(url: string, supplied: string) {
+  if (supplied.trim()) return supplied.trim();
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Evidence fetch returned HTTP ${response.status}. Provide a real SHA-256 hash or use a reachable fixture.`);
+  return sha256Text(await response.text());
+}
+
+async function makeEvidenceItem(data: { evidenceId: string; evidenceType: string; url: string; sourceDomain: string; claimedFact: string; contentHash?: string; relevantRuleIds: string[] }) {
+  const url = data.url.trim();
+  return {
+    evidence_id: data.evidenceId.trim(),
+    evidence_type: data.evidenceType,
+    url,
+    source_domain: data.sourceDomain.trim().toLowerCase(),
+    claimed_fact: data.claimedFact.trim(),
+    content_hash: await evidenceHash(url, data.contentHash || ""),
+    relevant_rule_ids: data.relevantRuleIds,
+  };
 }
 
 function shortText(value: string, length = 42) {
@@ -94,7 +136,7 @@ function outcomeTone(value: string) {
 }
 
 function caseSteps(item: CourtCase) {
-  const final = item.status === "PENALTY_APPLIED";
+  const final = item.status === "PENALTY_APPLIED" && item.network_status === "FINALIZED";
   const frozen = item.evidence_frozen;
   const adjudicating = ["ADJUDICATING", "RESOLUTION_RECORDED", "APPLICATION_QUEUED", "PENALTY_APPLIED"].includes(item.status);
   const response = item.status !== "OPEN" && item.status !== "AWAITING_RESPONSE";
@@ -129,7 +171,7 @@ function CaseRow({ item, onOpen }: { item: CourtCase; onOpen: () => void }) {
     <div className="case-top"><div><div className="case-id">{item.case_id} <span style={{ color: "#5f7183" }}>· {item.commitment_id}</span></div><div className="case-claim">{shortText(item.claim, 104)}</div></div><StatusPill value={item.network_status === "FINALIZED" ? "FINALIZED" : item.status} /></div>
     <Lifecycle item={item} />
     <div className="case-meta"><span><LockKeyhole size={10} style={{ verticalAlign: "-2px" }} /> {amount(item.commitment_exposure)} GEN at risk</span><span><FileSearch size={10} style={{ verticalAlign: "-2px" }} /> {item.claimant_evidence.length + item.operator_evidence.length} evidence items</span><span>{dateLabel(item.opened_at)}</span></div>
-    {hasVerdict ? <div className="verdict"><span className="verdict-label">Consensus result · {item.application_status.replaceAll("_", " ").toLowerCase()}</span><strong className={outcomeTone(item.outcome)}>{prettyStatus(item.outcome)}{item.penalty_amount ? ` · ${amount(item.penalty_amount)} GEN` : ""}</strong></div> : null}
+    {hasVerdict ? <div className="verdict"><span className="verdict-label">Consensus result · {item.application_status.replaceAll("_", " ").toLowerCase()}</span><strong className={outcomeTone(item.outcome)}>{prettyStatus(item.outcome)}{item.penalty_amount !== "0" ? ` · ${amount(item.penalty_amount)} GEN` : ""}</strong></div> : null}
   </button>;
 }
 
@@ -142,32 +184,52 @@ function RulebookCard({ dashboard }: { dashboard: Dashboard | null }) {
   return <section className="panel" id="rulebook"><div className="panel-header"><div className="panel-title"><BookOpen /> Rulebook</div><span className="panel-kicker">version {rulebook?.version || "—"}</span></div><div className="panel-body">{rulebook ? <><div className="rulebook-text">{rulebook.rulebook_text}</div><div className="rule-tags">{rulebook.rule_ids.map((id) => <span className="rule-tag" key={id}>{id}</span>)}</div><div className="rulebook-hash">{rulebook.rulebook_hash}</div></> : <div className="empty-state"><BookOpen /><h3>Rulebook not readable yet</h3><p>Publish v1 through the deployment script, then the immutable policy hash will render here.</p></div>}</div></section>;
 }
 
-function Intake({ configured, walletConnected, onSubmit, busy }: { configured: boolean; walletConnected: boolean; onSubmit: (data: typeof EMPTY_FORM) => Promise<void>; busy: boolean }) {
+function Intake({ configured, walletConnected, onGenLayer, onSubmit, busy }: { configured: boolean; walletConnected: boolean; onGenLayer: boolean; onSubmit: (data: typeof EMPTY_FORM) => Promise<void>; busy: boolean }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const update = (key: keyof typeof EMPTY_FORM, value: string) => setForm((current) => ({ ...current, [key]: value }));
   const preset = (key: keyof typeof PRESETS) => setForm((current) => ({ ...current, ...PRESETS[key] }));
   return <section className="panel" id="intake"><div className="panel-header"><div className="panel-title"><Gavel /> Case intake</div><span className="panel-kicker">beneficiary only</span></div><div className="panel-body"><div className="intake-grid">
-    <div className="preset-row"><button className="preset" type="button" onClick={() => preset("misconduct")}>misconduct</button><button className="preset" type="button" onClick={() => preset("outage")}>external outage</button><button className="preset" type="button" onClick={() => preset("uncertainty")}>insufficient evidence</button></div>
+    <div className="preset-row"><button className="preset" type="button" onClick={() => preset("misconduct")}>misconduct</button><button className="preset" type="button" onClick={() => preset("negligence")}>negligence</button><button className="preset" type="button" onClick={() => preset("outage")}>external outage</button><button className="preset" type="button" onClick={() => preset("uncertainty")}>insufficient evidence</button></div>
     <label className="form-label"><span>Commitment ID</span><input className="input" value={form.commitmentId} onChange={(event) => update("commitmentId", event.target.value)} placeholder="keeper-prod-001" /></label>
     <label className="form-label"><span>Incident claim</span><textarea className="textarea" value={form.claim} onChange={(event) => update("claim", event.target.value)} placeholder="Describe the missed duty or disputed action." /></label>
     <div className="form-row"><label className="form-label"><span>Evidence ID</span><input className="input" value={form.evidenceId} onChange={(event) => update("evidenceId", event.target.value)} /></label><label className="form-label"><span>Approved source domain</span><input className="input" value={form.evidenceDomain} onChange={(event) => update("evidenceDomain", event.target.value)} /></label></div>
-    <label className="form-label"><span>Evidence URL</span><input className="input" value={form.evidenceUrl} onChange={(event) => update("evidenceUrl", event.target.value)} placeholder="https://status.example.org/incident/123" /></label>
+    <label className="form-label"><span>Evidence URL</span><input className="input" value={form.evidenceUrl} onChange={(event) => update("evidenceUrl", event.target.value)} placeholder="https://slash-court.vercel.app/evidence-fixtures/incident.txt" /></label>
     <label className="form-label"><span>Claimed evidence fact</span><textarea className="textarea" value={form.evidenceFact} onChange={(event) => update("evidenceFact", event.target.value)} /></label>
-    <div className="form-help">Evidence is bounded, HTTPS-only, domain allowlisted and re-fetched independently by validators. The model cannot set a penalty amount.</div>
-    <button className="primary-button" disabled={!configured || !walletConnected || busy} onClick={() => void onSubmit(form)}>{busy ? <><LoaderCircle size={14} className="spin" /> submitting to GenLayer…</> : <><Zap size={14} /> open case on network</>}</button>
-    {!configured ? <div className="form-help">Deployment addresses are missing.</div> : !walletConnected ? <div className="form-help">Connect the beneficiary wallet to open a case.</div> : null}
+    <label className="form-label"><span>Content SHA-256 (optional)</span><input className="input" value={form.contentHash} onChange={(event) => update("contentHash", event.target.value)} placeholder="sha256:<64 hex characters>" /></label>
+    <div className="form-help">Evidence is bounded, HTTPS-only, domain allowlisted and re-fetched independently by validators. The browser hashes the fetched bytes; these presets are synthetic fixtures, not historical incidents. The model cannot set a penalty amount.</div>
+    <button className="primary-button" disabled={!configured || !walletConnected || !onGenLayer || busy} onClick={() => void onSubmit(form)}>{busy ? <><LoaderCircle size={14} className="spin" /> submitting to GenLayer…</> : <><Zap size={14} /> open case on network</>}</button>
+    {!configured ? <div className="form-help">Deployment addresses are missing.</div> : !walletConnected ? <div className="form-help">Connect the beneficiary wallet to open a case.</div> : !onGenLayer ? <div className="form-help">Switch MetaMask to GenLayer Studio Network before writing.</div> : null}
   </div></div></section>;
 }
 
-function OperatorActions({ configured, walletConnected, address, busy, onSend }: { configured: boolean; walletConnected: boolean; address: string | null; busy: boolean; onSend: (action: () => Promise<string>, label: string) => Promise<void> }) {
-  const [metadata, setMetadata] = useState("https://evidence.example.com/operators/keeper.json");
+function OperatorActions({ configured, walletConnected, onGenLayer, address, busy, onSend }: { configured: boolean; walletConnected: boolean; onGenLayer: boolean; address: string | null; busy: boolean; onSend: (action: () => Promise<string>, label: string) => Promise<void> }) {
+  const [metadata, setMetadata] = useState("https://slash-court.vercel.app/operators/keeper.json");
   const [deposit, setDeposit] = useState("100");
   const [acceptId, setAcceptId] = useState("keeper-prod-001");
+  const [offerPreview, setOfferPreview] = useState<Record<string, any> | null>(null);
+  const [offerError, setOfferError] = useState<string | null>(null);
   const [commitment, setCommitment] = useState({ id: "keeper-prod-001", beneficiary: "", service: "Hourly keeper maintenance", trigger: "scheduled-trigger-1", duty: "2099-01-01T00:00:00Z", dispute: "2099-01-02T00:00:00Z", exposure: "20", action: "maintenance-action-1" });
   const update = (key: keyof typeof commitment, value: string) => setCommitment((current) => ({ ...current, [key]: value }));
+  useEffect(() => {
+    if (!configured || !acceptId.trim()) {
+      setOfferPreview(null);
+      return;
+    }
+    let active = true;
+    setOfferError(null);
+    void new SlashCourtClient(address || undefined).getCommitment(acceptId.trim()).then((value) => {
+      if (active) setOfferPreview(value);
+    }).catch((error) => {
+      if (active) {
+        setOfferPreview(null);
+        setOfferError(error instanceof Error ? error.message : "Commitment not found.");
+      }
+    });
+    return () => { active = false; };
+  }, [acceptId, address, configured]);
   return <div className="intake-grid">
-    <div className="form-row"><label className="form-label"><span>Operator metadata URI</span><input className="input" value={metadata} onChange={(event) => setMetadata(event.target.value)} /></label><label className="form-label"><span>Bond amount · GEN</span><input className="input" inputMode="numeric" value={deposit} onChange={(event) => setDeposit(event.target.value)} /></label></div>
-    <div className="form-row"><button className="ghost-button" disabled={!configured || !walletConnected || busy} onClick={() => void onSend(() => new SlashCourtClient(address || undefined).registerOperator(metadata), "Operator registration")}>register operator</button><button className="primary-button" disabled={!configured || !walletConnected || busy} onClick={() => void onSend(() => new SlashCourtClient(address || undefined).depositBond(deposit), "Bond deposit")}>deposit bond</button></div>
+    <div className="form-row"><label className="form-label"><span>Operator metadata URI</span><input className="input" value={metadata} onChange={(event) => setMetadata(event.target.value)} /></label><label className="form-label"><span>Bond amount · GEN</span><input className="input" inputMode="decimal" value={deposit} onChange={(event) => setDeposit(event.target.value)} /></label></div>
+    <div className="form-row"><button className="ghost-button" disabled={!configured || !walletConnected || !onGenLayer || busy} onClick={() => void onSend(() => new SlashCourtClient(address || undefined).registerOperator(metadata), "Operator registration")}>register operator</button><button className="primary-button" disabled={!configured || !walletConnected || !onGenLayer || busy} onClick={() => void onSend(() => new SlashCourtClient(address || undefined).depositBond(deposit), "Bond deposit")}>deposit bond</button></div>
     <div className="section-heading" style={{ margin: "9px 0 0" }}><div><h2>Create commitment</h2><p>Exposure is locked before the beneficiary accepts the offer.</p></div></div>
     <label className="form-label"><span>Beneficiary address</span><input className="input" value={commitment.beneficiary} onChange={(event) => update("beneficiary", event.target.value)} placeholder="0x…" /></label>
     <div className="form-row"><label className="form-label"><span>Commitment ID</span><input className="input" value={commitment.id} onChange={(event) => update("id", event.target.value)} /></label><label className="form-label"><span>Locked exposure · GEN</span><input className="input" value={commitment.exposure} onChange={(event) => update("exposure", event.target.value)} /></label></div>
@@ -176,33 +238,43 @@ function OperatorActions({ configured, walletConnected, address, busy, onSend }:
     <div className="form-row"><label className="form-label"><span>Duty deadline</span><input className="input" value={commitment.duty} onChange={(event) => update("duty", event.target.value)} /></label><label className="form-label"><span>Dispute deadline</span><input className="input" value={commitment.dispute} onChange={(event) => update("dispute", event.target.value)} /></label></div>
     <label className="form-label"><span>Expected action ID</span><input className="input" value={commitment.action} onChange={(event) => update("action", event.target.value)} /></label>
     <div className="form-help">Maximum possible penalty: <strong style={{ color: "var(--red)" }}>{commitment.exposure || "0"} GEN</strong> · fixed by classification and capped to this commitment.</div>
-    <button className="primary-button" disabled={!configured || !walletConnected || busy || !commitment.beneficiary} onClick={() => void onSend(() => new SlashCourtClient(address || undefined).createCommitment({ commitmentId: commitment.id, beneficiary: commitment.beneficiary, serviceDescription: commitment.service, dutyTrigger: commitment.trigger, dutyDeadline: commitment.duty, disputeDeadline: commitment.dispute, rulebookVersion: 1, lockedExposure: commitment.exposure, expectedActionId: commitment.action }), "Commitment creation")}>create commitment</button>
-    <div className="form-row"><label className="form-label"><span>Beneficiary acceptance</span><input className="input" value={acceptId} onChange={(event) => setAcceptId(event.target.value)} /></label><button className="ghost-button" style={{ alignSelf: "end" }} disabled={!configured || !walletConnected || busy} onClick={() => void onSend(() => new SlashCourtClient(address || undefined).acceptCommitment(acceptId), "Commitment acceptance")}>accept commitment</button></div>
-    {!configured ? <div className="form-help">Configure both deployed contract addresses to enable writes.</div> : !walletConnected ? <div className="form-help">Connect the wallet for the role you want to exercise.</div> : null}
+    <button className="primary-button" disabled={!configured || !walletConnected || !onGenLayer || busy || !commitment.beneficiary} onClick={() => void onSend(() => new SlashCourtClient(address || undefined).createCommitment({ commitmentId: commitment.id, beneficiary: commitment.beneficiary, serviceDescription: commitment.service, dutyTrigger: commitment.trigger, dutyDeadline: commitment.duty, disputeDeadline: commitment.dispute, rulebookVersion: 1, lockedExposure: commitment.exposure, expectedActionId: commitment.action }), "Commitment creation")}>create commitment</button>
+    <div className="form-row"><label className="form-label"><span>Beneficiary acceptance</span><input className="input" value={acceptId} onChange={(event) => setAcceptId(event.target.value)} /></label><button className="ghost-button" style={{ alignSelf: "end" }} disabled={!configured || !walletConnected || !onGenLayer || busy || !offerPreview} onClick={() => void onSend(() => new SlashCourtClient(address || undefined).acceptCommitment(acceptId), "Commitment acceptance")}>accept commitment</button></div>
+    {offerPreview ? <div className="form-help">Offer preview: <strong>{offerPreview.service_description}</strong> · exposure {amount(offerPreview.locked_exposure)} GEN · duty deadline {offerPreview.duty_deadline} · dispute deadline {offerPreview.dispute_deadline} · rulebook v{offerPreview.rulebook_version}</div> : offerError ? <div className="form-help">{offerError}</div> : null}
+    {!configured ? <div className="form-help">Configure both deployed contract addresses to enable writes.</div> : !walletConnected ? <div className="form-help">Connect the wallet for the role you want to exercise.</div> : !onGenLayer ? <div className="form-help">Switch MetaMask to GenLayer Studio Network before writing.</div> : null}
   </div>;
 }
 
-function CaseModal({ item, tx, onClose, onAction, busy }: { item: CourtCase; tx?: TxSnapshot; onClose: () => void; onAction: (action: "respond" | "ready" | "adjudicate" | "retry" | "appeal", values?: { response?: string; exemption?: string; mitigation?: string; rules?: string[] }) => Promise<void>; busy: boolean }) {
+function CaseModal({ item, tx, onClose, onAction, busy, onGenLayer }: { item: CourtCase; tx?: TxSnapshot[]; onClose: () => void; onAction: (action: "respond" | "ready" | "adjudicate" | "retry" | "appeal", values?: { response?: string; exemption?: string; mitigation?: string; rules?: string[]; counterEvidence?: { evidenceId: string; url: string; domain: string; fact: string; contentHash: string } }) => Promise<void>; busy: boolean; onGenLayer: boolean }) {
   const [response, setResponse] = useState("The operator response is recorded on the network and will be evaluated against the frozen rulebook.");
   const [exemption, setExemption] = useState("No exemption claimed.");
   const [mitigation, setMitigation] = useState("Secondary provider checked; retry policy followed.");
   const [rules, setRules] = useState("R1,R2");
+  const [counterEvidenceId, setCounterEvidenceId] = useState("operator-counter-01");
+  const [counterEvidenceUrl, setCounterEvidenceUrl] = useState("https://slash-court.vercel.app/evidence-fixtures/operator-response.txt");
+  const [counterEvidenceDomain, setCounterEvidenceDomain] = useState("slash-court.vercel.app");
+  const [counterEvidenceFact, setCounterEvidenceFact] = useState("The operator supplied a bounded counterevidence record.");
+  const [counterEvidenceHash, setCounterEvidenceHash] = useState("");
   const [showResponse, setShowResponse] = useState(false);
-  const canRespond = item.status === "AWAITING_RESPONSE";
-  const canReady = item.status === "AWAITING_RESPONSE" && item.operator_response.length > 0;
+  const deadlinePassed = Boolean(item.response_deadline && new Date(item.response_deadline).getTime() <= Date.now());
+  const canRespond = item.status === "AWAITING_RESPONSE" && !deadlinePassed;
+  const canReady = item.status === "AWAITING_RESPONSE" && (item.operator_response.trim().length > 0 || deadlinePassed);
   const canAdjudicate = item.status === "READY_FOR_ADJUDICATION";
-  const canRetry = ["RESOLUTION_RECORDED", "APPLICATION_QUEUED"].includes(item.status);
+  const canRetry = Boolean(item.adjudication_finalized) && ["RESOLUTION_RECORDED", "APPLICATION_QUEUED"].includes(item.status);
+  const latestTx = tx?.[tx.length - 1];
+  const adjudicationTx = tx?.find((entry) => entry.kind === "adjudication");
   return <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><div className="modal" role="dialog" aria-modal="true"><div className="modal-header"><div><h2>{item.case_id} · case file</h2><p>{item.commitment_id} · {item.network_status}</p></div><button className="modal-close" onClick={onClose} aria-label="Close"><X size={18} /></button></div><div className="modal-body">
     <div className="case-top"><div><div className="case-id">Claim</div><div className="case-claim">{item.claim}</div></div><StatusPill value={item.status} /></div><Lifecycle item={item} />
     <div className="form-help" style={{ margin: "15px 0" }}>Claimant <code>{formatAddress(item.claimant, 18)}</code> · respondent <code>{formatAddress(item.respondent, 18)}</code> · exposure <code>{amount(item.commitment_exposure)} GEN</code></div>
     {item.explanation ? <div className="banner" style={{ borderColor: "rgba(116,237,221,.2)", background: "rgba(116,237,221,.04)", color: "var(--cyan)" }}><ShieldCheck size={15} /><div><strong>{prettyStatus(item.classification)} · {prettyStatus(item.outcome)}</strong><span>{item.explanation}</span></div></div> : null}
-    {item.findings.length ? <div className="rule-tags" style={{ marginBottom: 14 }}>{item.findings.map((finding) => <span className="rule-tag" key={finding}>{finding}</span>)}</div> : null}
+    {item.findings.length ? <div className="rule-tags" style={{ marginBottom: 14 }}>{item.findings.map((finding) => <span className="rule-tag" key={`${finding.evidence_id}-${finding.rule_id}`}>{finding.rule_id}: {finding.finding}</span>)}</div> : null}
     <div className="section-heading" style={{ marginTop: 17 }}><div><h2>Evidence ledger</h2><p>{item.claimant_evidence.length + item.operator_evidence.length} records · frozen: {item.evidence_frozen ? "yes" : "no"}</p></div></div>
     <div className="activity">{[...item.claimant_evidence, ...item.operator_evidence].map((evidence) => <div className="activity-row" key={evidence.evidence_id}><div className="activity-track"><div className="activity-dot" /></div><div className="activity-copy"><strong>{evidence.evidence_id} · {evidence.submission_party || "party"}</strong><span>{evidence.claimed_fact || evidence.fact} · <a href={evidence.url} target="_blank" rel="noreferrer" style={{ color: "var(--cyan)" }}>source <ArrowUpRight size={10} style={{ verticalAlign: "-1px" }} /></a></span></div><span className="activity-time">{evidence.source_domain}</span></div>)}</div>
     {canRespond && !showResponse ? <button className="ghost-button" style={{ marginTop: 13 }} onClick={() => setShowResponse(true)}>Add operator response</button> : null}
-    {showResponse ? <div className="intake-grid" style={{ marginTop: 13 }}><label className="form-label"><span>Response</span><textarea className="textarea" value={response} onChange={(event) => setResponse(event.target.value)} /></label><label className="form-label"><span>Claimed exemption</span><input className="input" value={exemption} onChange={(event) => setExemption(event.target.value)} /></label><label className="form-label"><span>Mitigation attempts</span><input className="input" value={mitigation} onChange={(event) => setMitigation(event.target.value)} /></label><button className="primary-button" disabled={busy} onClick={() => void onAction("respond", { response, exemption, mitigation })}>Submit response</button></div> : null}
-    <div className="modal-actions" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 18 }}><button className="ghost-button" disabled={busy || !canReady} onClick={() => void onAction("ready", { rules: rules.split(",").map((rule) => rule.trim()).filter(Boolean) })}>Freeze evidence · rules</button>{canReady ? <input className="input" style={{ width: 110 }} value={rules} onChange={(event) => setRules(event.target.value)} aria-label="Rule IDs" /> : null}<button className="ghost-button" disabled={busy || !canAdjudicate} onClick={() => void onAction("adjudicate")}>Run consensus</button><button className="ghost-button" disabled={busy || !canRetry} onClick={() => void onAction("retry")}>Retry finality message</button>{tx?.appealable ? <button className="primary-button" disabled={busy} onClick={() => void onAction("appeal")}>Appeal this transaction</button> : null}</div>
-    {tx ? <div className="footer-note">Latest transaction <code>{tx.hash}</code> · {tx.status} · {tx.execution} {tx.appealable ? "· appeal window open" : ""}</div> : null}
+    {showResponse ? <div className="intake-grid" style={{ marginTop: 13 }}><label className="form-label"><span>Response</span><textarea className="textarea" value={response} onChange={(event) => setResponse(event.target.value)} /></label><label className="form-label"><span>Claimed exemption</span><input className="input" value={exemption} onChange={(event) => setExemption(event.target.value)} /></label><label className="form-label"><span>Mitigation attempts</span><input className="input" value={mitigation} onChange={(event) => setMitigation(event.target.value)} /></label><label className="form-label"><span>Counterevidence URL</span><input className="input" value={counterEvidenceUrl} onChange={(event) => setCounterEvidenceUrl(event.target.value)} /></label><div className="form-row"><label className="form-label"><span>Evidence ID</span><input className="input" value={counterEvidenceId} onChange={(event) => setCounterEvidenceId(event.target.value)} /></label><label className="form-label"><span>Approved domain</span><input className="input" value={counterEvidenceDomain} onChange={(event) => setCounterEvidenceDomain(event.target.value)} /></label></div><label className="form-label"><span>Counterevidence fact</span><textarea className="textarea" value={counterEvidenceFact} onChange={(event) => setCounterEvidenceFact(event.target.value)} /></label><label className="form-label"><span>Content SHA-256 (optional)</span><input className="input" value={counterEvidenceHash} onChange={(event) => setCounterEvidenceHash(event.target.value)} placeholder="sha256:<64 hex characters>" /></label><button className="primary-button" disabled={busy || !onGenLayer} onClick={() => void onAction("respond", { response, exemption, mitigation, counterEvidence: counterEvidenceUrl.trim() ? { evidenceId: counterEvidenceId, url: counterEvidenceUrl, domain: counterEvidenceDomain, fact: counterEvidenceFact, contentHash: counterEvidenceHash } : undefined })}>Submit response</button></div> : null}
+    <div className="form-help" style={{ marginTop: 14 }}>{!onGenLayer ? "Switch MetaMask to GenLayer Studio Network before writing." : deadlinePassed ? "The response deadline has passed; a claimant may mark this case ready even if the operator stayed silent." : `Response deadline: ${dateLabel(item.response_deadline)}. Evidence becomes frozen when consensus starts.`}</div>
+    <div className="modal-actions" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 18 }}><button className="ghost-button" disabled={busy || !onGenLayer || !canReady} onClick={() => void onAction("ready", { rules: rules.split(",").map((rule) => rule.trim()).filter(Boolean) })}>Mark ready · rules</button>{canReady ? <input className="input" style={{ width: 110 }} value={rules} onChange={(event) => setRules(event.target.value)} aria-label="Rule IDs" /> : null}<button className="ghost-button" disabled={busy || !onGenLayer || !canAdjudicate} onClick={() => void onAction("adjudicate")}>Run consensus</button><button className="ghost-button" disabled={busy || !onGenLayer || !canRetry} onClick={() => void onAction("retry")}>Retry finalized message</button>{adjudicationTx?.appealable ? <button className="primary-button" disabled={busy || !onGenLayer} onClick={() => void onAction("appeal")}>Appeal adjudication</button> : null}</div>
+    {latestTx ? <div className="footer-note">Latest transaction <code>{latestTx.hash}</code> · {latestTx.status} · {latestTx.execution}{latestTx.success ? " · execution succeeded" : latestTx.error ? ` · ${latestTx.error}` : " · outcome unknown"}{latestTx.appealable ? " · appeal window open" : ""}</div> : null}
   </div></div></div>;
 }
 
@@ -213,57 +285,121 @@ export default function SlashCourtConsole() {
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
   const [activeView, setActiveView] = useState<ActiveView>("Overview");
-  const [selectedCase, setSelectedCase] = useState<CourtCase | null>(null);
-  const [transactions, setTransactions] = useState<Record<string, TxSnapshot>>({});
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [transactions, setTransactions] = useState<Record<string, TxSnapshot[]>>({});
+  const [transactionsReady, setTransactionsReady] = useState(false);
+  const refreshInFlight = useRef<Promise<void> | null>(null);
   const configured = missingConfigurationKeys().length === 0;
+  const transactionStorageKey = useMemo(() => {
+    const configuration = deploymentConfiguration();
+    return `slashcourt:transactions:${configuration.network}:${configuration.courtAddress}:${configuration.vaultAddress}`;
+  }, []);
+  const selectedCase = useMemo(() => dashboard?.cases.find((item) => item.case_id === selectedCaseId) || null, [dashboard?.cases, selectedCaseId]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(transactionStorageKey);
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (parsed && typeof parsed === "object") setTransactions(parsed as Record<string, TxSnapshot[]>);
+    } catch {
+      // A malformed local transaction cache must never prevent the contract dashboard from loading.
+    } finally {
+      setTransactionsReady(true);
+    }
+  }, [transactionStorageKey]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && transactionsReady) window.localStorage.setItem(transactionStorageKey, JSON.stringify(transactions));
+  }, [transactionStorageKey, transactions, transactionsReady]);
 
   const refresh = useCallback(async () => {
     if (!configured) return;
-    setLoading(true);
+    if (refreshInFlight.current) return refreshInFlight.current;
+    const request = (async () => {
+      setLoading(true);
+      try {
+        const next = await new SlashCourtClient(wallet.address || undefined).dashboard(wallet.address || undefined);
+        setDashboard(next);
+        setReadError(null);
+      } catch (error) {
+        setReadError(error instanceof Error ? error.message : "Unable to read SlashCourt state.");
+      } finally {
+        setLoading(false);
+      }
+    })();
+    refreshInFlight.current = request;
     try {
-      const next = await new SlashCourtClient(wallet.address || undefined).dashboard(wallet.address || undefined);
-      setDashboard(next);
-      setReadError(null);
-      if (selectedCase) setSelectedCase(next.cases.find((item) => item.case_id === selectedCase.case_id) || null);
-    } catch (error) {
-      setReadError(error instanceof Error ? error.message : "Unable to read SlashCourt state.");
+      await request;
     } finally {
-      setLoading(false);
+      if (refreshInFlight.current === request) refreshInFlight.current = null;
     }
-  }, [configured, wallet.address, selectedCase]);
+  }, [configured, wallet.address]);
 
   useEffect(() => { void refresh(); const interval = window.setInterval(() => void refresh(), 12_000); return () => window.clearInterval(interval); }, [refresh]);
 
-  const runTransaction = useCallback(async (caseId: string | null, action: () => Promise<string>, label: string) => {
+  const rememberTransaction = useCallback((caseId: string | null, snapshot: TxSnapshot) => {
+    const key = caseId || "__operator__";
+    setTransactions((current) => ({
+      ...current,
+      [key]: [...(current[key] || []).filter((entry) => entry.hash !== snapshot.hash), snapshot].slice(-20),
+    }));
+  }, []);
+
+  const runTransaction = useCallback(async (caseId: string | null, kind: TxSnapshot["kind"], action: () => Promise<string>, label: string) => {
     setBusy(true);
     try {
       const client = new SlashCourtClient(wallet.address || undefined);
       const hash = await action();
       toast.success(`${label} submitted`, { description: hash, className: "toast-copy" });
-      const snapshot = await client.wait(hash).catch(() => ({ hash, status: "SUBMITTED", execution: "PENDING", appealable: false }));
-      if (caseId) setTransactions((current) => ({ ...current, [caseId]: snapshot }));
+      rememberTransaction(caseId, { hash, status: "SUBMITTED", execution: "PENDING", appealable: false, success: false, kind, updatedAt: Date.now() });
+      const provisional = await client.snapshot(hash, kind).catch(() => null);
+      if (provisional) rememberTransaction(caseId, provisional);
+      const snapshot = await client.wait(hash, kind);
+      rememberTransaction(caseId, snapshot);
+      if (snapshot.success) toast.success(`${label} finalized`, { description: `${snapshot.status} · ${snapshot.execution}`, className: "toast-copy" });
+      else toast.error(`${label} did not finalize successfully`, { description: snapshot.error || `${snapshot.status} · ${snapshot.execution}`, className: "toast-copy" });
       await refresh();
     } catch (error) {
       toast.error(`${label} failed`, { description: error instanceof Error ? error.message : "The network rejected the transaction.", className: "toast-copy" });
     } finally {
       setBusy(false);
     }
-  }, [wallet.address, refresh]);
+  }, [wallet.address, refresh, rememberTransaction]);
 
   const submitCase = async (form: typeof EMPTY_FORM) => {
-    const evidence = [{ evidence_id: form.evidenceId, evidence_type: "PUBLIC_STATUS_REPORT", url: form.evidenceUrl, source_domain: form.evidenceDomain, claimed_fact: form.evidenceFact, content_hash: "sha256:ui-submitted", relevant_rule_ids: ["R1", "R4"] }];
-    await runTransaction(null, () => new SlashCourtClient(wallet.address || undefined).submitCase(form.commitmentId, form.claim, evidence), "Case intake");
+    try {
+      const evidence = [await makeEvidenceItem({ evidenceId: form.evidenceId, evidenceType: "PUBLIC_STATUS_REPORT", url: form.evidenceUrl, sourceDomain: form.evidenceDomain, claimedFact: form.evidenceFact, contentHash: form.contentHash, relevantRuleIds: ["R1", "R4"] })];
+      await runTransaction(null, "intake", () => new SlashCourtClient(wallet.address || undefined).submitCase(form.commitmentId, form.claim, evidence), "Case intake");
+    } catch (error) {
+      toast.error("Evidence preparation failed", { description: error instanceof Error ? error.message : "Unable to hash the evidence body." });
+    }
   };
 
-  const caseAction = async (action: "respond" | "ready" | "adjudicate" | "retry" | "appeal", values?: { response?: string; exemption?: string; mitigation?: string; rules?: string[] }) => {
+  const caseAction = async (action: "respond" | "ready" | "adjudicate" | "retry" | "appeal", values?: { response?: string; exemption?: string; mitigation?: string; rules?: string[]; counterEvidence?: { evidenceId: string; url: string; domain: string; fact: string; contentHash: string } }) => {
     if (!selectedCase) return;
     const client = new SlashCourtClient(wallet.address || undefined);
     const id = selectedCase.case_id;
-    if (action === "respond") await runTransaction(id, () => client.respondToCase(id, values?.response || "", values?.exemption || "", values?.mitigation || "", []), "Operator response");
-    if (action === "ready") await runTransaction(id, () => client.markCaseReady(id, values?.rules || []), "Evidence freeze");
-    if (action === "adjudicate") await runTransaction(id, () => client.adjudicateCase(id), "Consensus evaluation");
-    if (action === "retry") await runTransaction(id, () => client.retryApplication(id), "Finality message retry");
-    if (action === "appeal") { setBusy(true); try { const tx = transactions[id]; if (!tx) throw new Error("No appealable transaction is attached to this case."); await client.appeal(tx.hash); toast.success("Appeal submitted", { description: "The original consensus transaction is now under appeal." }); await refresh(); } catch (error) { toast.error("Appeal failed", { description: error instanceof Error ? error.message : "The appeal was rejected." }); } finally { setBusy(false); } }
+    if (action === "respond") {
+      try {
+        const counterEvidence = values?.counterEvidence;
+        const evidence = counterEvidence?.url.trim() ? [await makeEvidenceItem({ evidenceId: counterEvidence.evidenceId, evidenceType: "OPERATOR_COUNTEREVIDENCE", url: counterEvidence.url, sourceDomain: counterEvidence.domain, claimedFact: counterEvidence.fact, contentHash: counterEvidence.contentHash, relevantRuleIds: ["R3", "R4"] })] : [];
+        await runTransaction(id, "response", () => client.respondToCase(id, values?.response || "", values?.exemption || "", values?.mitigation || "", evidence), "Operator response");
+      } catch (error) {
+        toast.error("Counterevidence preparation failed", { description: error instanceof Error ? error.message : "Unable to hash the counterevidence body." });
+      }
+    }
+    if (action === "ready") await runTransaction(id, "ready", () => client.markCaseReady(id, values?.rules || []), "Evidence freeze");
+    if (action === "adjudicate") await runTransaction(id, "adjudication", () => client.adjudicateCase(id), "Consensus evaluation");
+    if (action === "retry") await runTransaction(id, "retry", () => client.retryApplication(id), "Finality message retry");
+    if (action === "appeal") {
+      const adjudication = (transactions[id] || []).find((entry) => entry.kind === "adjudication" && entry.success);
+      if (!adjudication) {
+        toast.error("Appeal unavailable", { description: "Wait for the finalized adjudication transaction before appealing." });
+        return;
+      }
+      await runTransaction(id, "appeal", () => client.appeal(adjudication.hash), "Appeal");
+    }
   };
 
   const navigate = (view: ActiveView) => { setActiveView(view); const id = view === "Overview" ? "overview" : view.toLowerCase(); window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }), 0); };
@@ -279,11 +415,11 @@ export default function SlashCourtConsole() {
         <section className="hero"><div><div className="eyebrow"><span className="line" /> live settlement console</div><h1>Make automated work <em>accountable.</em></h1><p>SlashCourt is the evidence-to-settlement layer for bonded keepers. Independent validators evaluate a versioned rulebook, while a separate vault enforces only the fixed penalty that the commitment allowed.</p></div><div className="hero-rail"><div className="hero-rail-title"><span>Decision boundary</span><span style={{ color: "var(--cyan)" }}>R1—R7</span></div><strong>Facts first. Money last.</strong><small>Accepted resolutions are provisional. The vault receives its settlement message only at finality, and appeals remain a real network operation.</small></div></section>
         <section className="stats-grid"><Metric label="Bonded operators" value={dashboard?.vaultStatistics ? String(dashboard.vaultStatistics.total_operators) : "—"} foot="application registry" tone="cyan" /><Metric label="Total bond" value={amount(dashboard?.vaultStatistics?.total_bond)} foot="application-layer GEN" tone="cyan" /><Metric label="Locked exposure" value={amount(dashboard?.vaultStatistics?.locked_exposure)} foot="commitment-level cap" tone="purple" /><Metric label="Open cases" value={stats ? String(stats.open_cases) : "—"} foot={stats ? `${stats.ready_cases} ready for adjudication` : "awaiting network"} tone="amber" /><Metric label="Finalized" value={stats ? String(stats.applied_cases) : "—"} foot={stats ? `${stats.cancelled_cases} cancelled` : "no cached data"} tone="green" /><Metric label="Penalties applied" value={amount(dashboard?.vaultStatistics?.total_penalties_applied)} foot={stats?.current_rulebook_version ? `rulebook v${stats.current_rulebook_version}` : "hash-pinned policy"} tone="red" /></section>
         <div className="section-heading"><div><h2>Recent case activity</h2><p>Every row is read from SlashCourt state, never inferred from a UI fixture.</p></div><div style={{ display: "flex", gap: 8, alignItems: "center" }}><span className="mono">{loading ? "syncing…" : `${cases.length} loaded`}</span><button className="ghost-button" onClick={() => void refresh()} disabled={loading}><RefreshCw size={13} className={loading ? "spin" : ""} /></button></div></div>
-        <div className="dashboard-grid"><section className="panel" id="cases"><div className="panel-header"><div className="panel-title"><Activity /> Case ledger</div><span className="panel-kicker">provisional → final</span></div><div className="panel-body">{cases.length ? <div className="cases-list">{cases.map((item) => <CaseRow item={item} key={item.case_id} onOpen={() => setSelectedCase(item)} />)}</div> : <EmptyState configured={configured} onConnect={() => void wallet.connect()} />}</div></section><div style={{ display: "grid", gap: 14 }}><RulebookCard dashboard={dashboard} /><section className="panel" id="evidence"><div className="panel-header"><div className="panel-title"><Database /> Evidence perimeter</div><span className="panel-kicker">allowlist</span></div><div className="panel-body">{dashboard?.domains.length ? <><div className="form-help" style={{ marginBottom: 10 }}>Validators may fetch only approved HTTPS sources. Raw IPs, localhost and unapproved domains are rejected by the contract.</div><div className="rule-tags">{dashboard.domains.map((domain) => <span className="rule-tag" key={domain}><Link2 size={10} style={{ verticalAlign: "-1px" }} /> {domain}</span>)}</div></> : <div className="form-help">Approved domains will appear after the deployment configuration is readable.</div>}</div></section></div></div>
-        <div className="section-heading" id="operators"><div><h2>Operator rail</h2><p>Bond is committed before a beneficiary can open a case; only available funds can be withdrawn.</p></div></div><div className="dashboard-grid"><section className="panel"><div className="panel-header"><div className="panel-title"><Users /> Connected operator</div><span className="panel-kicker">vault state + actions</span></div><div className="panel-body">{dashboard?.operator?.registered ? <div className="cases-list"><div className="case-row"><div className="case-id">{formatAddress(dashboard.operator.address, 22)}</div><div className="case-meta"><span>total {amount(dashboard.operator.total_bond)} GEN</span><span>available {amount(dashboard.operator.available_bond)} GEN</span><span>awards {amount(dashboard.operator.claimable_awards)} GEN</span></div><div className="verdict"><span className="verdict-label">active commitments</span><strong className="amber">{dashboard.operator.active_commitments}</strong></div></div></div> : <div className="empty-state"><CircleDollarSign /><h3>Connect a registered operator</h3><p>Wallet-scoped bond and exposure readouts appear here. The vault keeps the accounting, not the browser.</p></div>}<div style={{ marginTop: 18, paddingTop: 17, borderTop: "1px solid var(--line)" }}><OperatorActions configured={configured} walletConnected={wallet.connected} address={wallet.address} busy={busy} onSend={(action, label) => runTransaction(null, action, label)} /></div></div></section><Intake configured={configured} walletConnected={wallet.connected} onSubmit={submitCase} busy={busy} /></div>
+        <div className="dashboard-grid"><section className="panel" id="cases"><div className="panel-header"><div className="panel-title"><Activity /> Case ledger</div><span className="panel-kicker">provisional → final</span></div><div className="panel-body">{cases.length ? <div className="cases-list">{cases.map((item) => <CaseRow item={item} key={item.case_id} onOpen={() => setSelectedCaseId(item.case_id)} />)}</div> : <EmptyState configured={configured} onConnect={() => void wallet.connect()} />}</div></section><div style={{ display: "grid", gap: 14 }}><RulebookCard dashboard={dashboard} /><section className="panel" id="evidence"><div className="panel-header"><div className="panel-title"><Database /> Evidence perimeter</div><span className="panel-kicker">allowlist</span></div><div className="panel-body">{dashboard?.domains.length ? <><div className="form-help" style={{ marginBottom: 10 }}>Validators may fetch only approved HTTPS sources. Raw IPs, localhost and unapproved domains are rejected by the contract.</div><div className="rule-tags">{dashboard.domains.map((domain) => <span className="rule-tag" key={domain}><Link2 size={10} style={{ verticalAlign: "-1px" }} /> {domain}</span>)}</div></> : <div className="form-help">Approved domains will appear after the deployment configuration is readable.</div>}</div></section></div></div>
+        <div className="section-heading" id="operators"><div><h2>Operator rail</h2><p>Bond is committed before a beneficiary can open a case; only available funds can be withdrawn.</p></div></div><div className="dashboard-grid"><section className="panel"><div className="panel-header"><div className="panel-title"><Users /> Connected operator</div><span className="panel-kicker">vault state + actions</span></div><div className="panel-body">{dashboard?.operator?.registered ? <div className="cases-list"><div className="case-row"><div className="case-id">{formatAddress(dashboard.operator.address, 22)}</div><div className="case-meta"><span>total {amount(dashboard.operator.total_bond)} GEN</span><span>available {amount(dashboard.operator.available_bond)} GEN</span><span>awards {amount(dashboard.operator.claimable_awards)} GEN</span></div><div className="verdict"><span className="verdict-label">active commitments</span><strong className="amber">{dashboard.operator.active_commitments}</strong></div></div></div> : <div className="empty-state"><CircleDollarSign /><h3>Connect a registered operator</h3><p>Wallet-scoped bond and exposure readouts appear here. The vault keeps the accounting, not the browser.</p></div>}<div style={{ marginTop: 18, paddingTop: 17, borderTop: "1px solid var(--line)" }}><OperatorActions configured={configured} walletConnected={wallet.connected} onGenLayer={wallet.onGenLayer} address={wallet.address} busy={busy} onSend={(action, label) => runTransaction(null, "operator", action, label)} /></div></div></section><Intake configured={configured} walletConnected={wallet.connected} onGenLayer={wallet.onGenLayer} onSubmit={submitCase} busy={busy} /></div>
         <p className="footer-note">SlashCourt is an application-layer settlement protocol, separate from GenLayer’s native validator staking and slashing. Financial state changes are finality-safe child messages. <a href="https://docs.genlayer.com" target="_blank" rel="noreferrer" style={{ color: "var(--cyan)" }}>Read the GenLayer docs <ArrowUpRight size={10} style={{ verticalAlign: "-1px" }} /></a></p>
       </div></main></div>
-    {selectedCase ? <CaseModal item={selectedCase} tx={transactions[selectedCase.case_id]} onClose={() => setSelectedCase(null)} onAction={caseAction} busy={busy} /> : null}
+    {selectedCase ? <CaseModal item={selectedCase} tx={transactions[selectedCase.case_id]} onClose={() => setSelectedCaseId(null)} onAction={caseAction} busy={busy} onGenLayer={wallet.onGenLayer} /> : null}
     <style jsx global>{`.spin { animation: slashcourt-spin 1s linear infinite; } @keyframes slashcourt-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } code { font-family: "DM Mono", monospace; color: var(--soft); }`}</style>
   </div>;
 }

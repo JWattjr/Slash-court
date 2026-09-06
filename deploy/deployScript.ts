@@ -11,6 +11,7 @@
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 
 import {
@@ -31,7 +32,7 @@ const VAULT_SOURCE = "contracts/operator_bond_vault.py";
 const COURT_SOURCE = "contracts/slash_court.py";
 const ADDRESS_PATTERN = /^0x[a-fA-F0-9]{40}$/;
 const DEFAULT_RULEBOOK_FILE = "config/rulebook_v1.txt";
-const DEFAULT_DOMAINS = "status.example.org,evidence.example.com";
+const DEFAULT_DOMAINS = "slash-court.vercel.app";
 
 type Loose = Record<string, unknown>;
 
@@ -45,6 +46,10 @@ function address(value: string, label: string): string {
     throw new Error(`${label} is not a valid 0x address: ${value}`);
   }
   return value.toLowerCase();
+}
+
+function sha256Text(value: string): string {
+  return `sha256:${createHash("sha256").update(value, "utf-8").digest("hex")}`;
 }
 
 function receiptStatus(receipt: GenLayerTransaction): string {
@@ -157,7 +162,7 @@ export default async function main(client: GenLayerClient<GenLayerChain>) {
   ]);
   await deployer.write("5/7 Publish immutable rulebook v1", courtAddress, "create_initial_rulebook", [
     rulebookText,
-    "sha256:slashcourt-rulebook-v1",
+    sha256Text(rulebookText),
   ]);
   await deployer.write("6/7 Configure evidence domains", courtAddress, "configure_approved_evidence_domains", [
     JSON.stringify(domains),

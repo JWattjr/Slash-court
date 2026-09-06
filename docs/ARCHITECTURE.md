@@ -11,6 +11,7 @@ EOA operator --register/deposit/offer--> OperatorBondVault
 EOA beneficiary --accept/open/respond--> SlashCourt
 SlashCourt --accepted bind_case--> OperatorBondVault
 SlashCourt --finalized apply_resolution--> OperatorBondVault
+SlashCourt --finalized cancel_case_binding--> OperatorBondVault
 OperatorBondVault --finalized callback--> SlashCourt
 ```
 
@@ -20,7 +21,7 @@ For every registered operator:
 
 1. `total_bond = available_bond + locked_exposure`.
 2. A commitment can lock no more than the operator's available bond.
-3. A resolution can consume only that commitment's locked exposure.
+3. A resolution can consume only that commitment's locked exposure and exact case binding.
 4. `beneficiary_award + safety_pool_amount = penalty_amount`.
 5. `penalty_amount <= locked_exposure`.
 6. A case ID can create only one settlement record.
@@ -38,6 +39,7 @@ not need to be registered operators.
 6. Validator comparison covers substantive settlement fields.
 7. A model/web failure returns a no-slash insufficient-evidence result.
 8. The court emits the financial application only with `on="finalized"`.
+9. Application retry requires a balance-free finalized vault acknowledgement emitted by the original adjudication; a retry cannot establish its own authorization.
 
 ## Consensus boundary
 

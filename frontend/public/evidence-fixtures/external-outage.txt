@@ -1,0 +1,1 @@
+Synthetic SlashCourt fixture: primary and secondary providers report the same regional incident and failover was unavailable.

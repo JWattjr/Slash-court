@@ -1,0 +1,1 @@
+Synthetic SlashCourt fixture: the operator supplied a bounded counterevidence record.

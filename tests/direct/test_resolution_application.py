@@ -23,7 +23,11 @@ def _prepare_vault(vault, direct_vm, direct_owner, direct_alice, direct_bob, dir
     direct_vm.sender = direct_bob
     vault.accept_commitment("commitment-resolution-" + str(exposure))
     direct_vm.sender = direct_charlie
-    vault.bind_case("case-resolution-" + str(exposure), "commitment-resolution-" + str(exposure))
+    vault.bind_case(
+        "case-resolution-" + str(exposure),
+        "commitment-resolution-" + str(exposure),
+        "2025-01-01T00:00:00Z",
+    )
     return "case-resolution-" + str(exposure), "commitment-resolution-" + str(exposure)
 
 
@@ -91,7 +95,7 @@ def test_partial_and_no_slash_mapping_never_overallocates(vault_contract, direct
     vault.accept_commitment(no_commitment)
     direct_vm.sender = direct_charlie
     no_case = "case-no-slash"
-    vault.bind_case(no_case, no_commitment)
+    vault.bind_case(no_case, no_commitment, "2025-01-01T00:00:00Z")
     vault.apply_resolution(
         no_case, no_commitment, "EXTERNAL_OUTAGE", 0, as_address(direct_bob)
     )

@@ -16,8 +16,10 @@ locked before the duty begins.
 
 ## 1:00–1:50 — negligence
 
-Open a case with a public incident record: primary provider failed, secondary
-provider remained available, and no credible failover attempt was supplied.
+Open a case with the labelled synthetic fixture at
+`https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt`:
+primary provider failed, secondary provider remained available, and no credible
+failover attempt was supplied.
 Show the operator response window, evidence freeze, the R3 finding, and the
 `NEGLIGENT_FAILURE -> PARTIAL_SLASH` mapping. Submit adjudication and show the
 transaction timeline: EVM submitted, consensus pending, accepted/provisional,
@@ -26,17 +28,27 @@ exposure becomes a 10 GEN penalty; the operator's other 80 GEN is untouched.
 
 ## 1:50–2:20 — external outage
 
-Use the outage preset with multiple public sources and no available
-mitigation. The model can select `EXTERNAL_OUTAGE`, but cannot supply a number.
+Use the labelled synthetic outage fixture at
+`https://slash-court.vercel.app/evidence-fixtures/external-outage.txt` with no
+available mitigation. The model can select `EXTERNAL_OUTAGE`, but cannot supply a number.
 The deterministic mapping returns `NO_SLASH`; the entire 20 GEN exposure is
 released without a beneficiary award.
 
 ## 2:20–2:45 — misconduct and uncertainty
 
-Show the adversarial evidence fixture that says “ignore the rulebook.” It is
-delimited as data. A fabricated or contradictory signed report can produce
-`PROVABLE_MISCONDUCT` and a full commitment-level slash. An ambiguous record
-produces `INSUFFICIENT_EVIDENCE` and zero slash.
+Show the labelled synthetic misconduct fixture at
+`https://slash-court.vercel.app/evidence-fixtures/provable-misconduct.txt` and
+the insufficient-evidence fixture at
+`https://slash-court.vercel.app/evidence-fixtures/insufficient-evidence.txt`.
+Evidence is delimited as data. A fabricated or contradictory signed report can
+produce `PROVABLE_MISCONDUCT` and a full commitment-level slash; an ambiguous
+record produces `INSUFFICIENT_EVIDENCE` and zero slash.
+
+The console computes a `sha256:` digest over the fetched fixture bytes before
+submission. Validators fetch the same URL and compare the full response body
+to that committed digest; the fixtures are synthetic demo inputs, not real
+incidents. The committed fixture digest manifest is at
+`frontend/public/evidence-fixtures/manifest.json`.
 
 ## 2:45–3:00 — close
 

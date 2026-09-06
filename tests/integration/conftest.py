@@ -1,6 +1,7 @@
 """Full-consensus helpers for the local GLSim integration suite."""
 
 import json
+import hashlib
 from pprint import pformat
 
 from gltest import create_account, get_contract_factory, get_default_account, get_validator_factory
@@ -15,6 +16,7 @@ R4 — EXTERNAL_OUTAGE_EXEMPTION: a missed duty is excused only when credible ev
 R5 — EVIDENCE_INTEGRITY: contradictory signed reports, fabricated evidence, or a knowingly unauthorized payload is provable misconduct.
 R6 — BURDEN_OF_PROOF: financial penalties require sufficient independently verifiable evidence; material uncertainty resolves to insufficient evidence.
 R7 — PROPORTIONALITY: provable misconduct receives the full commitment penalty, preventable negligence receives the partial penalty, and covered outages receive no penalty."""
+RULEBOOK_V1_HASH = "sha256:" + hashlib.sha256(RULEBOOK_V1.encode("utf-8")).hexdigest()
 
 
 def finalized(function, *, context=None, triggered=False, value=0):
@@ -55,7 +57,7 @@ def build_protocol():
     )
     finalized(vault.connect(owner).configure_court(args=[court.address]))
     finalized(court.connect(owner).configure_bond_vault(args=[vault.address]))
-    finalized(court.connect(owner).create_initial_rulebook(args=[RULEBOOK_V1, "sha256:slashcourt-v1"]))
+    finalized(court.connect(owner).create_initial_rulebook(args=[RULEBOOK_V1, RULEBOOK_V1_HASH]))
     finalized(
         court.connect(owner).configure_approved_evidence_domains(
             args=[json.dumps(["status.example.org", "evidence.example.com"])]
@@ -108,7 +110,7 @@ def evidence_manifest(evidence_id="E1", path="incident-1"):
                 "url": f"https://status.example.org/{path}",
                 "source_domain": "status.example.org",
                 "claimed_fact": "A public provider status record describes the incident.",
-                "content_hash": f"sha256:{evidence_id.lower()}-fixture",
+                "content_hash": "sha256:1831a9ed89110e78457036e481161472d0d6fdf9367c11f8e8552722deed0f6c",
                 "relevant_rule_ids": ["R3"],
             }
         ]

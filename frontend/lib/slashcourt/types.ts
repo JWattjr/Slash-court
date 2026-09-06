@@ -22,7 +22,7 @@ export type CourtCase = {
   claimed_exemption: string;
   mitigation_attempts: string;
   rulebook_version: number;
-  commitment_exposure: number;
+  commitment_exposure: string;
   response_deadline: string;
   status: CaseStatus;
   network_status: string;
@@ -33,13 +33,20 @@ export type CourtCase = {
   outcome: string;
   violated_rule_ids: string[];
   supported_exemptions: string[];
-  findings: string[];
+  findings: Finding[];
   explanation: string;
   penalty_bps: number;
-  penalty_amount: number;
+  penalty_amount: string;
   application_status: string;
+  adjudication_finalized?: boolean;
   appeal_guidance: string;
   opened_at: string;
+};
+
+export type Finding = {
+  evidence_id: string;
+  rule_id: string;
+  finding: string;
 };
 
 export type EvidenceItem = {
@@ -87,10 +94,10 @@ export type OperatorState = {
   address: string;
   registered: boolean;
   metadata_uri: string;
-  total_bond: number;
-  available_bond: number;
-  locked_exposure: number;
-  claimable_awards: number;
+  total_bond: string;
+  available_bond: string;
+  locked_exposure: string;
+  claimable_awards: string;
   active_commitments: number;
   resolved_commitments: number;
 };
@@ -107,11 +114,11 @@ export type VaultConfiguration = {
 
 export type VaultStatistics = {
   total_operators: number;
-  total_bond: number;
-  available_bond: number;
-  locked_exposure: number;
-  total_penalties_applied: number;
-  safety_pool_balance: number;
+  total_bond: string;
+  available_bond: string;
+  locked_exposure: string;
+  total_penalties_applied: string;
+  safety_pool_balance: string;
 };
 
 export type Dashboard = {
@@ -130,4 +137,8 @@ export type TxSnapshot = {
   status: string;
   execution: string;
   appealable: boolean;
+  success: boolean;
+  kind: "operator" | "intake" | "response" | "ready" | "adjudication" | "retry" | "appeal";
+  error?: string;
+  updatedAt: number;
 };

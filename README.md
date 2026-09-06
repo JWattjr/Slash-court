@@ -138,7 +138,12 @@ transaction fees and require a funded account. No StudioNet or Bradbury
 address is claimed by the source code; the current StudioNet deployment is
 listed below and can be replaced by a later deployment record.
 
-Current StudioNet deployment (2026-09-06):
+The checked-in deadline, cancellation, evidence-hash, and finality-gate fixes
+require a fresh paired vault/court deployment. The addresses below are the
+previous deployment and must not be presented as proof that the revised
+contracts are live.
+
+Previous StudioNet deployment (pre-fix, 2026-09-06):
 
 - `OperatorBondVault`: `0xAe26BE38b58CaFf8d9297E124C0Bd7d5F0d8B92D`
 - `SlashCourt`: `0x8F842611d83C760675bfBA4eBA50e736bf64ae90`

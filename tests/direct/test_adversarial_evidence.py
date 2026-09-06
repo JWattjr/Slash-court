@@ -1,4 +1,5 @@
 import json
+import hashlib
 from types import SimpleNamespace
 
 
@@ -9,7 +10,7 @@ def _evidence(evidence_id="E1", url="https://status.example.org/incidents/42"):
         "url": url,
         "source_domain": "status.example.org",
         "claimed_fact": "The provider published an incident window.",
-        "content_hash": "sha256:fixture-42",
+        "content_hash": "sha256:8c805709ff5b56a58cc6d0b3a8a83e7e12b35660782a2d3184fad4a3997b8dbf",
         "relevant_rule_ids": ["R3"],
     }
 
@@ -31,7 +32,8 @@ def test_hostile_evidence_is_delimited_and_valid_result_is_rechecked(
 ):
     court = court_contract
     direct_vm.sender = direct_owner
-    court.create_initial_rulebook("R3 — FAILOVER_DUTY\nR4 — OUTAGE", "sha256:rulebook")
+    rulebook = "R3 — FAILOVER_DUTY\nR4 — OUTAGE"
+    court.create_initial_rulebook(rulebook, "sha256:" + hashlib.sha256(rulebook.encode("utf-8")).hexdigest())
     court.configure_approved_evidence_domains(json.dumps(["status.example.org"]))
     direct_vm.mock_web(
         r"status\.example\.org/incidents/42",
@@ -52,6 +54,17 @@ def test_hostile_evidence_is_delimited_and_valid_result_is_rechecked(
     result = court._evaluate_with_consensus(case, court._rulebook(1))
     assert result["classification"] == "NEGLIGENT_FAILURE"
     assert direct_vm.run_validator() is True
+
+
+def test_evidence_body_hash_mismatch_fails_closed(court_contract, direct_vm):
+    court = court_contract
+    direct_vm.mock_web(
+        r"status\.example\.org/incidents/42",
+        {"status": 200, "body": "The bytes changed after submission."},
+    )
+    ok, records = court._fetch_public_evidence(_case())
+    assert ok is False
+    assert records == [{"evidence_id": "E1", "status": "HASH_MISMATCH"}]
 
 
 def test_model_cannot_invent_money_rules_or_evidence(court_contract, direct_vm):

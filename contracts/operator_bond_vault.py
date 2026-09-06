@@ -80,6 +80,9 @@ class Commitment:
     duty_result_reference: str
     case_id: str
     created_at: str
+    # Appended for the v2 layout: cancellation restores the exact pre-dispute
+    # lifecycle state instead of guessing ACTIVE.
+    pre_dispute_status: str
 
 
 @allow_storage
@@ -100,6 +103,10 @@ class ResolutionApplication:
 class SlashCourtCallback:
     class Write:
         def record_resolution_applied(self, case_id: str, commitment_id: str) -> None: ...
+
+        def record_adjudication_finalized(self, case_id: str, commitment_id: str) -> None: ...
+
+        def record_case_unbound(self, case_id: str, commitment_id: str) -> None: ...
 
 
 class OperatorBondVault(gl.Contract):
@@ -174,37 +181,53 @@ class OperatorBondVault(gl.Contract):
             ):
                 raise gl.vm.UserError(f"{ERROR_EXPECTED} invalid {label} characters")
 
+    def _is_timestamp(self, value: str) -> bool:
+        if not isinstance(value, str) or len(value) != 20:
+            return False
+        if value[4] != "-" or value[7] != "-" or value[10] != "T":
+            return False
+        if value[13] != ":" or value[16] != ":" or value[19] != "Z":
+            return False
+        for index in (0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18):
+            if value[index] < "0" or value[index] > "9":
+                return False
+        year = int(value[0:4])
+        month = int(value[5:7])
+        day = int(value[8:10])
+        hour = int(value[11:13])
+        minute = int(value[14:16])
+        second = int(value[17:19])
+        if year < 1970 or month < 1 or month > 12 or hour > 23 or minute > 59 or second > 59:
+            return False
+        month_days = (31, 29 if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+        return day >= 1 and day <= month_days[month - 1]
+
     def _validate_deadline(self, value: str, label: str) -> None:
         self._validate_text(value, label, 64)
-        if len(value) < 10:
-            return
-        if value[4] != "-" or value[7] != "-":
-            raise gl.vm.UserError(f"{ERROR_EXPECTED} {label} must be ISO-8601")
-
-    def _date_like(self, value: str) -> bool:
-        return len(value) >= 10 and value[4] == "-" and value[7] == "-"
+        if not self._is_timestamp(value):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} {label} must be UTC ISO-8601 YYYY-MM-DDTHH:MM:SSZ")
 
     def _transaction_time(self) -> str:
         # v0.2 runners expose the raw transaction context as message_raw;
         # current runners expose the same field as message.datetime. Both are
         # transaction data and neither uses host wall-clock time.
-        raw = getattr(gl, "message_raw", None)
-        if raw is not None:
-            return str(raw.get("datetime", "1970-01-01T00:00:00Z"))
         message = getattr(gl, "message", None)
         value = getattr(message, "datetime", None)
-        if value is not None:
+        if value is not None and self._is_timestamp(str(value)):
             return str(value)
-        return "1970-01-01T00:00:00Z"
+        raw = getattr(gl, "message_raw", None)
+        if raw is not None:
+            value = raw.get("datetime")
+            if value is not None:
+                value = str(value)
+                if self._is_timestamp(value):
+                    return value
+        raise gl.vm.UserError(f"{ERROR_EXPECTED} transaction timestamp unavailable")
 
     def _expired(self, deadline: str) -> bool:
-        # gl.message.datetime is transaction context, not host wall-clock
-        # time. Date-only comparison keeps the storage representation bounded
-        # and works with both the direct VM and full GenVM.
-        if not self._date_like(deadline):
-            return False
-        now = self._transaction_time()
-        return now[:10] > deadline[:10]
+        # Both values are canonical UTC timestamps, so lexicographic ordering
+        # is a deterministic full-resolution comparison.
+        return self._transaction_time() > deadline
 
     def _classification_bps(self, classification: str) -> u256:
         if classification == "PROVABLE_MISCONDUCT":
@@ -341,9 +364,8 @@ class OperatorBondVault(gl.Contract):
         self._validate_text(duty_trigger, "duty trigger", MAX_TRIGGER_LENGTH)
         self._validate_deadline(duty_deadline, "duty deadline")
         self._validate_deadline(dispute_deadline, "dispute deadline")
-        if self._date_like(duty_deadline) and self._date_like(dispute_deadline):
-            if duty_deadline[:10] > dispute_deadline[:10]:
-                raise gl.vm.UserError(f"{ERROR_EXPECTED} dispute deadline precedes duty deadline")
+        if duty_deadline > dispute_deadline:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} dispute deadline precedes duty deadline")
         self._validate_identifier(expected_action_id, "expected action id", MAX_ACTION_LENGTH)
         if rulebook_version == 0:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} rulebook version is required")
@@ -373,6 +395,7 @@ class OperatorBondVault(gl.Contract):
             duty_result_reference="",
             case_id="",
             created_at=self._transaction_time(),
+            pre_dispute_status="",
         )
         self.commitment_ids.append(commitment_id)
 
@@ -427,9 +450,10 @@ class OperatorBondVault(gl.Contract):
         self.commitments[commitment_id] = commitment
 
     @gl.public.write
-    def bind_case(self, case_id: str, commitment_id: str) -> None:
+    def bind_case(self, case_id: str, commitment_id: str, opened_at: str) -> None:
         self._require_court()
         self._validate_identifier(case_id, "case id", MAX_CASE_ID_LENGTH)
+        self._validate_deadline(opened_at, "case opened timestamp")
         if commitment_id not in self.commitments:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment does not exist")
         commitment = self.commitments[commitment_id]
@@ -437,9 +461,60 @@ class OperatorBondVault(gl.Contract):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment cannot be disputed")
         if commitment.case_id not in ("", case_id):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment already has a case")
+        if opened_at > commitment.dispute_deadline:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} case was opened after the dispute deadline")
+        if commitment.case_id == "":
+            commitment.pre_dispute_status = commitment.status
         commitment.case_id = case_id
         commitment.status = STATUS_DISPUTED
         self.commitments[commitment_id] = commitment
+
+    @gl.public.write
+    def cancel_case_binding(self, case_id: str, commitment_id: str) -> None:
+        """Restore a disputed commitment after a finalized court cancellation.
+
+        The transition is authenticated by the court and idempotent so a
+        retried finalized child cannot release exposure twice.
+        """
+        self._require_court()
+        if commitment_id not in self.commitments:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment does not exist")
+        commitment = self.commitments[commitment_id]
+        if commitment.case_id == "" and commitment.status in (STATUS_ACTIVE, STATUS_DUTY_REPORTED):
+            SlashCourtCallback(self.slash_court).emit(on="finalized").record_case_unbound(
+                case_id, commitment_id
+            )
+            return
+        if commitment.status != STATUS_DISPUTED or commitment.case_id != case_id:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment cancellation binding mismatch")
+        restored = commitment.pre_dispute_status
+        if restored not in (STATUS_ACTIVE, STATUS_DUTY_REPORTED):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} invalid pre-dispute commitment state")
+        commitment.case_id = ""
+        commitment.status = restored
+        commitment.pre_dispute_status = ""
+        self.commitments[commitment_id] = commitment
+        SlashCourtCallback(self.slash_court).emit(on="finalized").record_case_unbound(
+            case_id, commitment_id
+        )
+
+    @gl.public.write
+    def acknowledge_adjudication_finalized(self, case_id: str, commitment_id: str) -> None:
+        """Forward the original court transaction's finalized boundary.
+
+        This child does not touch balances. It exists so application retry is
+        unlocked only by a finalized child emitted from the original
+        adjudication, never by the retry transaction itself.
+        """
+        self._require_court()
+        if commitment_id not in self.commitments:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment does not exist")
+        commitment = self.commitments[commitment_id]
+        if commitment.status != STATUS_DISPUTED or commitment.case_id != case_id:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} adjudication binding mismatch")
+        SlashCourtCallback(self.slash_court).emit(on="finalized").record_adjudication_finalized(
+            case_id, commitment_id
+        )
 
     @gl.public.write
     def release_undisputed_commitment(self, commitment_id: str) -> None:
@@ -450,9 +525,7 @@ class OperatorBondVault(gl.Contract):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment is not releasable")
         if commitment.case_id != "":
             raise gl.vm.UserError(f"{ERROR_EXPECTED} disputed commitment cannot release")
-        if self._date_like(commitment.dispute_deadline) and not self._expired(
-            commitment.dispute_deadline
-        ):
+        if not self._expired(commitment.dispute_deadline):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} dispute window is still open")
         if gl.message.sender_address not in (commitment.operator, commitment.beneficiary):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment party authorization required")
@@ -508,7 +581,7 @@ class OperatorBondVault(gl.Contract):
             )
             return
 
-        if commitment.status not in (STATUS_DISPUTED, STATUS_ACTIVE, STATUS_DUTY_REPORTED):
+        if commitment.status != STATUS_DISPUTED or commitment.case_id != case_id:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment already resolved")
 
         exposure = commitment.locked_exposure
@@ -557,6 +630,11 @@ class OperatorBondVault(gl.Contract):
         )
         self.resolution_case_ids.append(case_id)
         SlashCourtCallback(self.slash_court).emit(on="finalized").record_resolution_applied(
+            case_id, commitment_id
+        )
+        # This callback is also emitted after a successful application so the
+        # acknowledgement remains monotonic if the balance child is retried.
+        SlashCourtCallback(self.slash_court).emit(on="finalized").record_adjudication_finalized(
             case_id, commitment_id
         )
 

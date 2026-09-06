@@ -1,0 +1,10 @@
+{
+  "note": "Synthetic demo fixtures. Hashes cover the UTF-8 response bytes, including the final newline.",
+  "fixtures": {
+    "external-outage.txt": "sha256:fbec80b52824fa1f69220403343462e0db60a4defe1d475105dcdaec1f82a97b",
+    "insufficient-evidence.txt": "sha256:582b1b139702b6f3c883e29b84f1da288a571b348a2404276d9d81d06c902d02",
+    "negligent-failure.txt": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
+    "operator-response.txt": "sha256:aee98f3e0abb46219d950b6fbacd2c02dfe7a13594ecda6ce1bd490b7dcb555d",
+    "provable-misconduct.txt": "sha256:32ab39dfa4f3085aebfd4139001a6d7541380945823b6e0a4dc6aebe29984f64"
+  }
+}

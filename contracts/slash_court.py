@@ -8,6 +8,7 @@ validator stake. Its only financial authority is a finality-stage message to
 the configured OperatorBondVault, scoped to one pre-locked service commitment.
 """
 
+import hashlib
 import json
 from dataclasses import dataclass
 
@@ -53,6 +54,7 @@ MAX_FINDINGS = 5
 MAX_FINDING_LENGTH = 280
 MAX_EXPLANATION_LENGTH = 900
 MAX_ALLOWED_DOMAINS = 25
+RESPONSE_WINDOW_SECONDS = 86_400
 
 FULL_SLASH_BPS = 10_000
 PARTIAL_SLASH_BPS = 5_000
@@ -115,6 +117,9 @@ class CourtCase:
     penalty_amount: u256
     application_status: str
     opened_at: str
+    # Appended for the v2 layout: set by the finalized vault acknowledgement
+    # emitted from the original adjudication transaction.
+    adjudication_finalized: bool
 
 
 @gl.contract_interface
@@ -123,7 +128,11 @@ class OperatorBondVaultInterface:
         def get_commitment(self, commitment_id: str) -> dict: ...
 
     class Write:
-        def bind_case(self, case_id: str, commitment_id: str) -> None: ...
+        def bind_case(self, case_id: str, commitment_id: str, opened_at: str) -> None: ...
+
+        def cancel_case_binding(self, case_id: str, commitment_id: str) -> None: ...
+
+        def acknowledge_adjudication_finalized(self, case_id: str, commitment_id: str) -> None: ...
 
         def apply_resolution(
             self,
@@ -205,18 +214,77 @@ class SlashCourt(gl.Contract):
     def _increment_statistic(self, key: str) -> None:
         self.statistics[key] = self.statistics.get(key, 0) + 1
 
+    def _decrement_statistic(self, key: str) -> None:
+        current = self.statistics.get(key, 0)
+        if current > 0:
+            self.statistics[key] = current - 1
+
+    def _is_timestamp(self, value: str) -> bool:
+        if not isinstance(value, str) or len(value) != 20:
+            return False
+        if value[4] != "-" or value[7] != "-" or value[10] != "T":
+            return False
+        if value[13] != ":" or value[16] != ":" or value[19] != "Z":
+            return False
+        for index in (0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18):
+            if value[index] < "0" or value[index] > "9":
+                return False
+        year = int(value[0:4])
+        month = int(value[5:7])
+        day = int(value[8:10])
+        hour = int(value[11:13])
+        minute = int(value[14:16])
+        second = int(value[17:19])
+        if year < 1970 or month < 1 or month > 12 or hour > 23 or minute > 59 or second > 59:
+            return False
+        month_days = (31, 29 if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+        return day >= 1 and day <= month_days[month - 1]
+
+    def _add_seconds(self, value: str, seconds: int) -> str:
+        year = int(value[0:4])
+        month = int(value[5:7])
+        day = int(value[8:10])
+        remaining = int(value[11:13]) * 3_600 + int(value[14:16]) * 60 + int(value[17:19]) + seconds
+        while remaining >= 86_400:
+            remaining -= 86_400
+            day += 1
+            month_days = 29 if month == 2 and (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)) else (28 if month == 2 else (30 if month in (4, 6, 9, 11) else 31))
+            if day > month_days:
+                day = 1
+                month += 1
+                if month > 12:
+                    month = 1
+                    year += 1
+        if year > 9_999:
+            return "9999-12-31T23:59:59Z"
+        hour = remaining // 3_600
+        remaining %= 3_600
+        minute = remaining // 60
+        second = remaining % 60
+        return f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:{second:02d}Z"
+
+    def _validate_timestamp(self, value: str, label: str) -> None:
+        self._validate_text(value, label, 20)
+        if not self._is_timestamp(value):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} {label} must be UTC ISO-8601 YYYY-MM-DDTHH:MM:SSZ")
+
     def _transaction_time(self) -> str:
         # v0.2 runners expose the raw transaction context as message_raw;
         # current runners expose the same field as message.datetime. Both are
         # transaction data and neither uses host wall-clock time.
-        raw = getattr(gl, "message_raw", None)
-        if raw is not None:
-            return str(raw.get("datetime", "1970-01-01T00:00:00Z"))
         message = getattr(gl, "message", None)
         value = getattr(message, "datetime", None)
-        if value is not None:
+        if value is not None and self._is_timestamp(str(value)):
             return str(value)
-        return "1970-01-01T00:00:00Z"
+        raw = getattr(gl, "message_raw", None)
+        if raw is not None:
+            value = raw.get("datetime")
+            if value is not None and self._is_timestamp(str(value)):
+                return str(value)
+        raise gl.vm.UserError(f"{ERROR_EXPECTED} transaction timestamp unavailable")
+
+    def _expired(self, deadline: str) -> bool:
+        return self._transaction_time() > deadline
 
     def _outcome_for(self, classification: str) -> str:
         if classification == "PROVABLE_MISCONDUCT":
@@ -284,6 +352,13 @@ class SlashCourt(gl.Contract):
                 raise gl.vm.UserError(f"{ERROR_EXPECTED} private evidence host is not allowed")
         return host
 
+    def _validate_sha256_hash(self, value: str, label: str) -> None:
+        if not isinstance(value, str) or len(value) != 71 or not value.startswith("sha256:"):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} {label} must be sha256:<64 hex characters>")
+        for character in value[7:]:
+            if not (("0" <= character <= "9") or ("a" <= character <= "f") or ("A" <= character <= "F")):
+                raise gl.vm.UserError(f"{ERROR_EXPECTED} {label} must be sha256:<64 hex characters>")
+
     def _domain_allowed(self, host: str) -> bool:
         index = 0
         while index < len(self.domain_ids):
@@ -316,8 +391,7 @@ class SlashCourt(gl.Contract):
         if source_domain.lower() != host or not self._domain_allowed(host):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} evidence domain is not approved")
         self._validate_text(claimed_fact, "claimed evidence fact", MAX_EVIDENCE_FACT_LENGTH)
-        if not isinstance(content_hash, str) or len(content_hash) > MAX_CONTENT_HASH_LENGTH:
-            raise gl.vm.UserError(f"{ERROR_EXPECTED} invalid content hash")
+        self._validate_sha256_hash(content_hash, "content hash")
         rules = self._validate_rule_ids(relevant_rule_ids, "evidence rule ids", 3)
         return {
             "evidence_id": evidence_id,
@@ -407,6 +481,9 @@ class SlashCourt(gl.Contract):
             if isinstance(body, bytes):
                 body = body.decode("utf-8")
             text = str(body)
+            digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+            if digest.lower() != item["content_hash"][7:].lower():
+                return False, [{"evidence_id": item["evidence_id"], "status": "HASH_MISMATCH"}]
             if len(text) > 6_000:
                 text = text[:6_000]
             records.append(
@@ -621,7 +698,10 @@ address fields; deterministic code computes the outcome and penalty:
 
     def _publish_rulebook(self, rulebook_text: str, rulebook_hash: str, version: u256) -> None:
         self._validate_text(rulebook_text, "rulebook text", MAX_RULEBOOK_LENGTH)
-        self._validate_text(rulebook_hash, "rulebook hash", MAX_RULEBOOK_HASH_LENGTH)
+        self._validate_sha256_hash(rulebook_hash, "rulebook hash")
+        expected_hash = "sha256:" + hashlib.sha256(rulebook_text.encode("utf-8")).hexdigest()
+        if rulebook_hash.lower() != expected_hash:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} rulebook hash does not match rulebook text")
         self.rulebooks[str(version)] = RulebookVersion(
             version=version,
             rulebook_text=rulebook_text,
@@ -666,7 +746,7 @@ address fields; deterministic code computes the outcome and penalty:
     def open_case(self, commitment_id: str, claim: str, evidence_manifest_json: str) -> str:
         if not self.vault_configured:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} bond vault is not configured")
-        if commitment_id in self.case_by_commitment:
+        if self.case_by_commitment.get(commitment_id, "") != "":
             raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment already has a case")
         self._validate_text(commitment_id, "commitment id", 72)
         self._validate_text(claim, "incident claim", MAX_CLAIM_LENGTH)
@@ -681,8 +761,16 @@ address fields; deterministic code computes the outcome and penalty:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} only the beneficiary can open a case")
         if commitment["status"] not in ("ACTIVE", "DUTY_REPORTED"):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment is not disputable")
+        opened_at = self._transaction_time()
+        self._validate_timestamp(commitment["dispute_deadline"], "dispute deadline")
+        if opened_at > commitment["dispute_deadline"]:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} dispute window has expired")
         rulebook = self._rulebook(commitment["rulebook_version"])
         claimant_evidence_json = self._validate_evidence_manifest(evidence_manifest_json, "CLAIMANT")
+        response_deadline = commitment["dispute_deadline"]
+        minimum_response_deadline = self._add_seconds(opened_at, RESPONSE_WINDOW_SECONDS)
+        if response_deadline < minimum_response_deadline:
+            response_deadline = minimum_response_deadline
         self.case_sequence += 1
         case_id = "case-" + str(self.case_sequence)
         facts = {
@@ -706,7 +794,7 @@ address fields; deterministic code computes the outcome and penalty:
             mitigation_attempts="",
             rulebook_version=commitment["rulebook_version"],
             commitment_exposure=commitment["locked_exposure"],
-            response_deadline=commitment["dispute_deadline"],
+            response_deadline=response_deadline,
             status=STATUS_AWAITING_RESPONSE,
             network_status="NOT_SUBMITTED",
             evidence_frozen=False,
@@ -721,14 +809,15 @@ address fields; deterministic code computes the outcome and penalty:
             penalty_bps=0,
             penalty_amount=0,
             application_status="NOT_QUEUED",
-            opened_at=self._transaction_time(),
+            opened_at=opened_at,
+            adjudication_finalized=False,
         )
         self.cases[case_id] = case
         self.case_ids.append(case_id)
         self.case_by_commitment[commitment_id] = case_id
         self._increment_statistic("open")
         OperatorBondVaultInterface(self.bond_vault).emit(on="accepted").bind_case(
-            case_id, commitment_id
+            case_id, commitment_id, opened_at
         )
         return case_id
 
@@ -741,6 +830,8 @@ address fields; deterministic code computes the outcome and penalty:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} claimant authorization required")
         if case.evidence_frozen or case.status not in (STATUS_OPEN, STATUS_AWAITING_RESPONSE):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} evidence is frozen")
+        if self._expired(case.response_deadline):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} evidence window has expired")
         item_json = self._validate_single_evidence(
             evidence_item_json, "CLAIMANT", case.claimant_evidence_json, case.operator_evidence_json
         )
@@ -763,6 +854,8 @@ address fields; deterministic code computes the outcome and penalty:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} respondent authorization required")
         if case.status != STATUS_AWAITING_RESPONSE or case.evidence_frozen:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} case is not awaiting response")
+        if self._expired(case.response_deadline):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} response window has expired")
         self._validate_text(response, "operator response", MAX_RESPONSE_LENGTH)
         self._validate_text(claimed_exemption, "claimed exemption", MAX_EXEMPTION_LENGTH)
         self._validate_text(mitigation_attempts, "mitigation attempts", MAX_EXEMPTION_LENGTH)
@@ -795,6 +888,8 @@ address fields; deterministic code computes the outcome and penalty:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} respondent authorization required")
         if case.evidence_frozen or case.status not in (STATUS_OPEN, STATUS_AWAITING_RESPONSE):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} evidence is frozen")
+        if self._expired(case.response_deadline):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} response window has expired")
         item_json = self._validate_single_evidence(
             evidence_item_json, "OPERATOR", case.claimant_evidence_json, case.operator_evidence_json
         )
@@ -808,8 +903,10 @@ address fields; deterministic code computes the outcome and penalty:
         case = self.cases[case_id]
         if gl.message.sender_address not in (case.claimant, case.respondent):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} case-party authorization required")
-        if case.status != STATUS_AWAITING_RESPONSE or len(case.operator_response) == 0:
-            raise gl.vm.UserError(f"{ERROR_EXPECTED} operator response is required")
+        if case.status != STATUS_AWAITING_RESPONSE:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} case is not awaiting response")
+        if len(case.operator_response.strip()) == 0 and not self._expired(case.response_deadline):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} operator response is required before the deadline")
         alleged = self._validate_rule_ids(
             self._parse_json_list(alleged_rule_ids_json, "alleged rule ids", 500), "alleged rule ids"
         )
@@ -819,6 +916,7 @@ address fields; deterministic code computes the outcome and penalty:
             self._deterministic_facts(case), sort_keys=True, separators=(",", ":")
         )
         self.cases[case_id] = case
+        self._decrement_statistic("open")
         self._increment_statistic("ready")
 
     @gl.public.write
@@ -836,6 +934,7 @@ address fields; deterministic code computes the outcome and penalty:
         case.status = STATUS_ADJUDICATING
         case.network_status = "CONSENSUS_PENDING"
         self.cases[case_id] = case
+        self._decrement_statistic("ready")
 
         result = self._evaluate_with_consensus(case, rulebook)
         case.classification = result["classification"]
@@ -856,6 +955,13 @@ address fields; deterministic code computes the outcome and penalty:
         )
         self.cases[case_id] = case
         self._increment_statistic(case.classification)
+        # Both child messages are emitted only after this adjudication
+        # transaction reaches finality. The acknowledgement is deliberately a
+        # separate, balance-free gate so a failed application can be retried
+        # without allowing a retry transaction to establish its own authority.
+        OperatorBondVaultInterface(self.bond_vault).emit(on="finalized").acknowledge_adjudication_finalized(
+            case.case_id, case.commitment_id
+        )
         OperatorBondVaultInterface(self.bond_vault).emit(on="finalized").apply_resolution(
             case.case_id,
             case.commitment_id,
@@ -873,6 +979,10 @@ address fields; deterministic code computes the outcome and penalty:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} resolution is not retryable")
         if case.status == STATUS_PENALTY_APPLIED:
             return
+        if not case.adjudication_finalized:
+            raise gl.vm.UserError(
+                f"{ERROR_EXPECTED} original adjudication is not finalized; retry is locked"
+            )
         case.status = STATUS_APPLICATION_QUEUED
         case.application_status = "QUEUED_FINALITY_RETRY"
         case.network_status = "FINALIZED_MESSAGE_RETRY_PENDING"
@@ -904,10 +1014,35 @@ address fields; deterministic code computes the outcome and penalty:
         self._increment_statistic("applied")
 
     @gl.public.write
+    def record_adjudication_finalized(self, case_id: str, commitment_id: str) -> None:
+        """Record the original finality boundary before any retry is allowed."""
+        self._require_vault()
+        if case_id not in self.cases:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} case does not exist")
+        case = self.cases[case_id]
+        if case.commitment_id != commitment_id:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment mismatch")
+        if case.adjudication_finalized:
+            return
+        if case.status not in (STATUS_RESOLUTION_RECORDED, STATUS_APPLICATION_QUEUED, STATUS_PENALTY_APPLIED):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} adjudication finality callback is invalid")
+        case.adjudication_finalized = True
+        if case.status != STATUS_PENALTY_APPLIED:
+            case.network_status = "FINALIZED_MESSAGE_PENDING"
+        self.cases[case_id] = case
+
+    @gl.public.write
     def cancel_case(self, case_id: str) -> None:
         if case_id not in self.cases:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} case does not exist")
         case = self.cases[case_id]
+        if case.status == STATUS_CANCELLED:
+            if case.application_status != "CANCEL_QUEUED":
+                return
+            OperatorBondVaultInterface(self.bond_vault).emit(on="finalized").cancel_case_binding(
+                case_id, case.commitment_id
+            )
+            return
         if case.status not in (STATUS_OPEN, STATUS_AWAITING_RESPONSE, STATUS_READY):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} case cannot be cancelled")
         if gl.message.sender_address == self.governor:
@@ -916,11 +1051,32 @@ address fields; deterministic code computes the outcome and penalty:
             pass
         else:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} cancellation authorization required")
+        was_open = case.status in (STATUS_OPEN, STATUS_AWAITING_RESPONSE)
         case.status = STATUS_CANCELLED
+        case.application_status = "CANCEL_QUEUED"
+        case.network_status = "CANCEL_PENDING"
+        self.cases[case_id] = case
+        self._decrement_statistic("open" if was_open else "ready")
+        self._increment_statistic("cancelled")
+        OperatorBondVaultInterface(self.bond_vault).emit(on="finalized").cancel_case_binding(
+            case_id, case.commitment_id
+        )
+
+    @gl.public.write
+    def record_case_unbound(self, case_id: str, commitment_id: str) -> None:
+        self._require_vault()
+        if case_id not in self.cases:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} case does not exist")
+        case = self.cases[case_id]
+        if case.commitment_id != commitment_id:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment mismatch")
+        if case.status != STATUS_CANCELLED:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} cancellation callback is invalid")
         case.application_status = "CANCELLED"
         case.network_status = "CANCELLED"
+        if self.case_by_commitment.get(commitment_id, "") == case_id:
+            self.case_by_commitment[commitment_id] = ""
         self.cases[case_id] = case
-        self._increment_statistic("cancelled")
 
     # ------------------------------------------------------------------
     # Views
@@ -971,6 +1127,7 @@ address fields; deterministic code computes the outcome and penalty:
             "penalty_bps": case.penalty_bps,
             "penalty_amount": case.penalty_amount,
             "application_status": case.application_status,
+            "adjudication_finalized": case.adjudication_finalized,
             "appeal_guidance": "Use GenLayer's actual appeal operation for the adjudication transaction before finalization; this UI does not fake appeals.",
             "opened_at": case.opened_at,
         }
