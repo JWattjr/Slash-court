@@ -32,7 +32,7 @@ Add these five steps in order after preparing and verifying the demo. The bracke
 
 ### 1. Open the live console
 
-Visit [VERIFIED SLASHCOURT WEBSITE URL]. Wait for the StudioNet snapshot to load. Confirm the court and bond-vault addresses match the current deployment record and the published versioned rulebook is visible.
+Visit https://slash-court.vercel.app. Wait for the StudioNet snapshot to load. Confirm the court and bond-vault addresses match the current deployment record and the published versioned rulebook is visible.
 
 ### 2. Inspect a bonded commitment
 
@@ -48,7 +48,7 @@ For the finalized misconduct and negligence cases, compare the fixed penalty wit
 
 ### 5. Inspect the proof
 
-Open [VERIFIED PUBLIC REPOSITORY URL]. Review docs/DEMO_SCRIPT.md, docs/THREAT_MODEL.md, docs/ECONOMICS.md, deploy/last-deployment.json, and tests/. Distinguish mocked local tests from transactions executed with real StudioNet evaluation.
+Open https://github.com/JWattjr/Slash-court. Review docs/DEMO_SCRIPT.md, docs/THREAT_MODEL.md, docs/ECONOMICS.md, deploy/last-deployment.json, and tests/. Distinguish mocked local tests from transactions executed with real StudioNet evaluation.
 
 ## Expected verification outcome
 
@@ -65,20 +65,18 @@ These addresses are copied from the existing local deployment record, not freshl
 
 ## Project links
 
-- **Website:** [VERIFIED PUBLIC SLASHCOURT URL]
-- **GitHub:** [VERIFIED PUBLIC SLASHCOURT REPOSITORY URL]
-
-Neither public URL was established by this source review. Do not invent a likely Vercel hostname or GitHub repository path.
+- **Website:** https://slash-court.vercel.app
+- **GitHub:** https://github.com/JWattjr/Slash-court
 
 ## Evidence and supporting information
 
 The required repository evidence is:
 
-[VERIFIED PUBLIC SLASHCOURT REPOSITORY URL]
+https://github.com/JWattjr/Slash-court
 
 If the form accepts more links, add these in order:
 
-1. [VERIFIED LIVE CONSOLE URL]
+1. https://slash-court.vercel.app
 2. [VERIFIED CURRENT COURT EXPLORER URL]
 3. [VERIFIED FINALIZED ADJUDICATION OR VAULT-APPLICATION TRANSACTION URL]
 
