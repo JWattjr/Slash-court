@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-07T12:00:00+01:00",
+  "title": "Design System: SlashCourt",
+  "extensions": {
+    "colorMeta": {
+      "signal-cobalt": { "role": "primary", "displayName": "Signal Cobalt", "canonical": "#315fe8", "tonalRamp": ["#07163f", "#102769", "#193993", "#244bbd", "#315fe8", "#718ef0", "#b0bef8", "#eef1ff"] },
+      "warm-paper": { "role": "neutral", "displayName": "Warm Paper", "canonical": "#f4f4f1", "tonalRamp": ["#252522", "#494945", "#6e6e68", "#92928c", "#b7b7b1", "#d1d1cc", "#e5e5e1", "#f4f4f1"] },
+      "evidence-white": { "role": "neutral", "displayName": "Evidence White", "canonical": "#ffffff", "tonalRamp": ["#262626", "#4b4b4b", "#707070", "#969696", "#bbbbbb", "#d6d6d6", "#ebebeb", "#ffffff"] },
+      "evidence-blue": { "role": "secondary", "displayName": "Evidence Blue", "canonical": "#e3e9ff", "tonalRamp": ["#172040", "#2c3d70", "#435ba0", "#6279c1", "#8799da", "#aebbf0", "#d1d9fb", "#f0f3ff"] },
+      "operator-green": { "role": "secondary", "displayName": "Operator Green", "canonical": "#dcf1da", "tonalRamp": ["#183519", "#2d5a2f", "#467f49", "#66a468", "#8dc58e", "#b3dfb2", "#d5edd3", "#f0faef"] },
+      "warm-sheet": { "role": "neutral", "displayName": "Warm Sheet", "canonical": "#f1eee6", "tonalRamp": ["#302d25", "#554f42", "#7a7161", "#9f9582", "#c0b8a7", "#d8d1c4", "#e8e3d9", "#f7f4ed"] },
+      "carbon-ink": { "role": "neutral", "displayName": "Carbon Ink", "canonical": "#151515", "tonalRamp": ["#151515", "#343434", "#555555", "#777777", "#999999", "#bbbbbb", "#dddddd", "#f5f5f5"] },
+      "body-soft": { "role": "neutral", "displayName": "Body Soft", "canonical": "#40413d", "tonalRamp": ["#171815", "#292a27", "#40413d", "#60615c", "#82837d", "#a7a8a1", "#cdcec7", "#f1f2ed"] },
+      "metadata-muted": { "role": "neutral", "displayName": "Metadata Muted", "canonical": "#64645f", "tonalRamp": ["#1c1c1a", "#393936", "#565652", "#73736d", "#91918a", "#b0b0a9", "#d0d0ca", "#f1f1ed"] },
+      "rule-line": { "role": "neutral", "displayName": "Rule Line", "canonical": "#d8d8d2", "tonalRamp": ["#242421", "#474743", "#6a6a65", "#8e8e88", "#b2b2ac", "#ccccC6", "#e2e2dd", "#f5f5f2"] },
+      "rule-line-strong": { "role": "neutral", "displayName": "Strong Rule Line", "canonical": "#bcbdb6", "tonalRamp": ["#22231f", "#42433e", "#63645e", "#858680", "#a7a8a1", "#c3c4bd", "#dedfd9", "#f4f5f1"] },
+      "warning-amber": { "role": "tertiary", "displayName": "Warning Amber", "canonical": "#9a5b00", "tonalRamp": ["#321a00", "#573000", "#7b4600", "#9a5b00", "#bd7b22", "#dca35d", "#efcc9d", "#fff1dd"] },
+      "settlement-red": { "role": "tertiary", "displayName": "Settlement Red", "canonical": "#bf3131", "tonalRamp": ["#3b090b", "#641317", "#8e2023", "#bf3131", "#da6663", "#eb9d99", "#f6cfcc", "#fff0ef"] },
+      "settlement-green": { "role": "tertiary", "displayName": "Settlement Green", "canonical": "#207a3f", "tonalRamp": ["#082913", "#104622", "#17632f", "#207a3f", "#4a9c64", "#7cbd8c", "#b5dcbf", "#ebf7ee"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Editorial Display", "purpose": "Opening product promise only." },
+      "headline": { "displayName": "Section Headline", "purpose": "Major content and workflow divisions." },
+      "body": { "displayName": "Public Explanation", "purpose": "Claims, guidance, and readable product copy." },
+      "label": { "displayName": "Provenance Label", "purpose": "States, hashes, field labels, and evidence metadata." }
+    },
+    "shadows": [
+      { "name": "dossier-ambient", "value": "0 28px 70px rgba(39, 42, 34, .13), 0 3px 10px rgba(39, 42, 34, .06)", "purpose": "The single lifted public decision artifact." },
+      { "name": "modal-focus", "value": "0 30px 90px rgba(0, 0, 0, .25)", "purpose": "Case-file dialog isolation." }
+    ],
+    "motion": [
+      { "name": "control-transition", "value": "180ms ease", "purpose": "Hover movement and color response." },
+      { "name": "dossier-reveal", "value": "720ms cubic-bezier(.16, 1, .3, 1)", "purpose": "Center-out evidence-folder reveal; disabled for reduced motion." }
+    ],
+    "breakpoints": [
+      { "name": "stack", "value": "1120px" },
+      { "name": "tablet", "value": "820px" },
+      { "name": "phone", "value": "560px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The next consequential action.",
+      "html": "<button class=\"ds-btn-primary\">EXPLORE DECISIONS <span aria-hidden=\"true\">›</span></button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border:1px solid #315fe8;border-radius:999px;background:#315fe8;color:#fff;font:650 13px 'Bricolage Grotesque',sans-serif;transition:transform .18s ease,background .18s ease}.ds-btn-primary:hover{transform:translateY(-1px);background:#244fcf}.ds-btn-primary:focus-visible{outline:3px solid rgba(49,95,232,.32);outline-offset:3px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "A secondary operational control.",
+      "html": "<button class=\"ds-btn-ghost\">REFRESH RECORD</button>",
+      "css": ".ds-btn-ghost{padding:9px 13px;border:1px solid #bcbdb6;border-radius:999px;background:transparent;color:#151515;font:650 12px 'Bricolage Grotesque',sans-serif;transition:border-color .18s ease,color .18s ease,background .18s ease}.ds-btn-ghost:hover{border-color:#315fe8;color:#315fe8;background:#fff}.ds-btn-ghost:focus-visible{outline:3px solid rgba(49,95,232,.32);outline-offset:3px}"
+    },
+    {
+      "name": "Evidence Field",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "A compact evidence or commitment input.",
+      "html": "<label class=\"ds-field\"><span>EVIDENCE URL</span><input placeholder=\"https://evidence.example/record\"></label>",
+      "css": ".ds-field{display:grid;gap:7px;color:#40413d;font:11px 'Bricolage Grotesque',sans-serif}.ds-field span{color:#64645f;font:500 10px 'Azeret Mono',monospace;letter-spacing:.05em}.ds-field input{padding:11px 12px;border:1px solid #bcbdb6;border-radius:10px;background:#fff;color:#151515;font:12px 'Bricolage Grotesque',sans-serif;outline:0}.ds-field input::placeholder{color:#62645f}.ds-field input:focus-visible{border-color:#315fe8;box-shadow:0 0 0 3px rgba(49,95,232,.12)}"
+    },
+    {
+      "name": "Section Navigation",
+      "kind": "nav",
+      "description": "Public-first destinations with a restrained active rule.",
+      "html": "<nav class=\"ds-nav\"><button aria-current=\"page\">Home</button><button>Explorer</button><button>Submit</button><button>Operate</button></nav>",
+      "css": ".ds-nav{display:flex;gap:26px;border-bottom:1px solid #d8d8d2;background:#f4f4f1}.ds-nav button{position:relative;padding:20px 0;border:0;background:transparent;color:#64645f;font:600 13px 'Bricolage Grotesque',sans-serif}.ds-nav button[aria-current=page]{color:#151515}.ds-nav button[aria-current=page]::after{content:'';position:absolute;right:0;bottom:-1px;left:0;height:2px;background:#315fe8}.ds-nav button:focus-visible{outline:3px solid rgba(49,95,232,.32);outline-offset:3px}"
+    },
+    {
+      "name": "State Chip",
+      "kind": "chip",
+      "description": "A state label whose dot and copy always agree.",
+      "html": "<span class=\"ds-chip\"><i aria-hidden=\"true\"></i>Snapshot unavailable</span>",
+      "css": ".ds-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;background:#ecece8;color:#545b55;font:600 10px 'Azeret Mono',monospace}.ds-chip i{width:6px;height:6px;border-radius:50%;background:currentColor}"
+    },
+    {
+      "name": "Evidence Panel",
+      "kind": "card",
+      "refersTo": "evidence-panel",
+      "description": "A ruled white record surface, flat by default.",
+      "html": "<article class=\"ds-panel\"><header>CASE LEDGER <span>PROVISIONAL → FINAL</span></header><div>Public evidence and state belong here.</div></article>",
+      "css": ".ds-panel{overflow:hidden;border:1px solid #d8d8d2;border-radius:14px;background:#fff;color:#151515;font:13px 'Bricolage Grotesque',sans-serif}.ds-panel header{display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #d8d8d2;font-weight:650}.ds-panel header span{color:#64645f;font:500 10px 'Azeret Mono',monospace}.ds-panel div{padding:18px;color:#40413d}"
+    },
+    {
+      "name": "Decision Dossier",
+      "kind": "custom",
+      "description": "The signature public chain-of-custody artifact.",
+      "html": "<article class=\"ds-dossier\"><header><strong>Decision chain of custody</strong><span>STRUCTURAL PREVIEW · LIVE VALUES WITHHELD</span></header><h2>What happens when a bonded operator fails its canonical duty?</h2><footer>EVIDENCE → CONSENSUS → APPEAL → FINALITY</footer></article>",
+      "css": ".ds-dossier{overflow:hidden;border-radius:16px;background:#fff;color:#151515;box-shadow:0 28px 70px rgba(39,42,34,.13),0 3px 10px rgba(39,42,34,.06);font-family:'Bricolage Grotesque',sans-serif}.ds-dossier header{padding:24px 26px;border-bottom:1px solid #d8d8d2;background:#e3e9ff}.ds-dossier strong{display:block;font-size:24px}.ds-dossier span,.ds-dossier footer{display:block;margin-top:7px;color:#40413d;font:500 10px 'Azeret Mono',monospace;letter-spacing:.05em}.ds-dossier h2{margin:0;padding:28px 26px;font-size:30px;line-height:1.08}.ds-dossier footer{margin:0;padding:16px 22px;border-top:1px solid #d8d8d2;word-spacing:20px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Public Decision Dossier",
+    "overview": "SlashCourt should feel like an institutional case file made legible to the public: composed, inspectable, and exact without becoming bureaucratic. Warm paper and ruled evidence sheets create trust through material restraint; cobalt is reserved for actions, links, and chain-of-custody signals. The interface is editorial trust-tech, not a crypto trading terminal. Public understanding leads, while contract metadata remains available in a disciplined mono layer. Every state must distinguish observed network truth from preview structure, especially when StudioNet reads are unavailable.",
+    "keyCharacteristics": [
+      "Warm institutional paper with crisp evidence sheets.",
+      "Strong editorial headlines paired with compact mono provenance.",
+      "Role-specific pale blue Submit and pale green Operate workspaces.",
+      "Plain-language state labels backed by visible contract details.",
+      "Restrained motion and depth centered on the decision dossier."
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Cobalt is the only general-purpose accent; semantic colors stay bound to their states and roles.", "section": "colors" },
+      { "name": "The Truthful State Rule", "body": "Unavailable network reads use neutral or amber language and never coexist with a green live indicator or fabricated values.", "section": "colors" },
+      { "name": "The Two-Voice Rule", "body": "Sans-serif explains and persuades; mono identifies and proves. Never set long explanatory paragraphs in mono.", "section": "typography" },
+      { "name": "The One Lifted Artifact Rule", "body": "Do not turn routine panels into floating cards; preserve depth for the dossier and active modal.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do lead with the public promise and a concrete inspection action.",
+      "Do show provenance beside plain-language decisions.",
+      "Do separate beneficiary and operator work with their established tonal fields.",
+      "Do preserve keyboard focus, reduced motion, readable metadata, and field-local recovery.",
+      "Do use ruled evidence structure before adding shadows or decoration."
+    ],
+    "donts": [
+      "Don't imitate a dark crypto admin dashboard, terminal, or trading screen.",
+      "Don't display synthetic fixtures, stale snapshots, or structural previews as live network truth.",
+      "Don't use gradients, decorative glow, excessive cards, or interchangeable rounded-dashboard styling.",
+      "Don't bury the primary public action beneath a tall artifact on mobile.",
+      "Don't let technical metadata overpower the claim, evidence, or decision."
+    ]
+  }
+}
