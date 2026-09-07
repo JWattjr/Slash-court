@@ -127,7 +127,7 @@ stored here.
 
 ```powershell
 genlayer network set studionet
-genlayer deploy
+npm run deploy
 ```
 
 The script deploys the vault first, deploys the court, binds both addresses,
@@ -136,22 +136,28 @@ GenVM execution success for every step, and writes
 `deploy/last-deployment.json`. Application bond deposits are separate from
 transaction fees and require a funded account. No StudioNet or Bradbury
 address is claimed by the source code; the current StudioNet deployment is
-listed below and can be replaced by a later deployment record.
+recorded in `deploy/last-deployment.json` and listed below.
 
-The checked-in deadline, cancellation, evidence-hash, and finality-gate fixes
-require a fresh paired vault/court deployment. The addresses below are the
-previous deployment and must not be presented as proof that the revised
-contracts are live.
+Current revised StudioNet deployment (2026-09-06):
 
-Previous StudioNet deployment (pre-fix, 2026-09-06):
+- `OperatorBondVault`: [`0x95E438A856c70a138824c37F937e0f436461625B`](https://explorer-studio.genlayer.com/address/0x95E438A856c70a138824c37F937e0f436461625B)
+- `SlashCourt`: [`0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e`](https://explorer-studio.genlayer.com/address/0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e)
+- Rulebook publication: [`0x4001a1acc767d3eba88896649799c18d3cee89f06d45961fce229f1d13139a24`](https://explorer-studio.genlayer.com/tx/0x4001a1acc767d3eba88896649799c18d3cee89f06d45961fce229f1d13139a24)
 
-- `OperatorBondVault`: `0xAe26BE38b58CaFf8d9297E124C0Bd7d5F0d8B92D`
-- `SlashCourt`: `0x8F842611d83C760675bfBA4eBA50e736bf64ae90`
-- Explorer: [GenLayer Explorer](https://genlayer-explorer.vercel.app/)
-- Deployment transactions: `0x810cc4e13334c6c004b97420bdbce4595ed9bec4730c8f85bc6accd1bb770177`, `0xcb5bef15db9bf70e00dd1b2a99d8fb05c94a38e9f7ab6a44dabaf67d5ce693`, `0x5c9f2c9e91850d57e80ac1c5016599ea2fdf8cdca0e59abf2664da0c7b23db30`, `0x18d173d56c7249d0bdd05a802cf02c0b8d5b22e0f5e7e7ccb58cc014ea562420`, `0x59b7aeadf754d84487fb2aaded5d25f1d51030e790f928db541b515191f03495`, `0x46aad10c1665f32920a8ff3c80ce41f6f0a117dfb46ea1c8f62a028b0d6519a8`
+StudioNet reads verified the bidirectional binding, rulebook v1 digest, fixed
+penalty schedule, and `slash-court.vercel.app` evidence allowlist. Four real
+StudioNet consensus cases are finalized and applied:
 
-The checked-in frontend example remains network-neutral; the local
-`frontend/.env.local` contains the public StudioNet addresses above.
+- `case-1`: `PROVABLE_MISCONDUCT -> FULL_SLASH` (1 GEN)
+- `case-2`: `NEGLIGENT_FAILURE -> PARTIAL_SLASH` (0.5 GEN)
+- `case-3`: `EXTERNAL_OUTAGE -> NO_SLASH`
+- `case-4`: `INSUFFICIENT_EVIDENCE -> NO_SLASH`
+
+The operator deposited 4 GEN across four 1 GEN commitments. Final accounting
+is 2.5 GEN remaining bond, 1.5 GEN total penalties, 1.2 GEN beneficiary
+awards, 0.3 GEN safety pool, and zero locked exposure. The incident fixtures
+are explicitly synthetic; adjudication, finality, and settlement are live.
+Exact receipts are recorded in `deploy/live-demo.json`.
 
 ## Security posture and known limitations
 

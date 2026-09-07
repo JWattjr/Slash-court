@@ -207,21 +207,43 @@ class OperatorBondVault(gl.Contract):
         if not self._is_timestamp(value):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} {label} must be UTC ISO-8601 YYYY-MM-DDTHH:MM:SSZ")
 
+    def _canonical_transaction_timestamp(self, value: str) -> str:
+        """Normalize GenVM's trusted ISO-8601 UTC context to second precision."""
+        if not isinstance(value, str):
+            return ""
+        if value.endswith("Z"):
+            body = value[:-1]
+        elif value.endswith("+00:00"):
+            body = value[:-6]
+        else:
+            return ""
+        if len(body) > 19:
+            fraction = body[19:]
+            if len(fraction) < 2 or fraction[0] != ".":
+                return ""
+            for character in fraction[1:]:
+                if character < "0" or character > "9":
+                    return ""
+            body = body[:19]
+        candidate = body + "Z"
+        return candidate if self._is_timestamp(candidate) else ""
+
     def _transaction_time(self) -> str:
-        # v0.2 runners expose the raw transaction context as message_raw;
-        # current runners expose the same field as message.datetime. Both are
-        # transaction data and neither uses host wall-clock time.
+        # GenVM may expose UTC as ...SSZ or ...SS.ffffff+00:00. Normalize the
+        # trusted transaction context instead of weakening user deadline input.
         message = getattr(gl, "message", None)
         value = getattr(message, "datetime", None)
-        if value is not None and self._is_timestamp(str(value)):
-            return str(value)
+        if value is not None:
+            normalized = self._canonical_transaction_timestamp(str(value))
+            if normalized:
+                return normalized
         raw = getattr(gl, "message_raw", None)
         if raw is not None:
             value = raw.get("datetime")
             if value is not None:
-                value = str(value)
-                if self._is_timestamp(value):
-                    return value
+                normalized = self._canonical_transaction_timestamp(str(value))
+                if normalized:
+                    return normalized
         raise gl.vm.UserError(f"{ERROR_EXPECTED} transaction timestamp unavailable")
 
     def _expired(self, deadline: str) -> bool:

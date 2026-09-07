@@ -1,0 +1,57 @@
+{
+  "network": "Genlayer Studio Network",
+  "verifiedAt": "2026-09-07T07:53:02Z",
+  "slashCourtAddress": "0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e",
+  "operatorBondVaultAddress": "0x95E438A856c70a138824c37F937e0f436461625B",
+  "evidenceNote": "All incident evidence is clearly labelled synthetic; evaluation and settlement used real StudioNet consensus.",
+  "cases": [
+    {
+      "caseId": "case-1",
+      "commitmentId": "demo-misconduct-20260906",
+      "classification": "PROVABLE_MISCONDUCT",
+      "outcome": "FULL_SLASH",
+      "penaltyWei": "1000000000000000000",
+      "status": "PENALTY_APPLIED",
+      "applicationStatus": "APPLIED_FINALIZED",
+      "adjudicationTransaction": "0x690df6e61ba56a7aed60cfb5290969810d01bcac482b91c9928daedeff3f45e7"
+    },
+    {
+      "caseId": "case-2",
+      "commitmentId": "demo-negligence-20260906",
+      "classification": "NEGLIGENT_FAILURE",
+      "outcome": "PARTIAL_SLASH",
+      "penaltyWei": "500000000000000000",
+      "status": "PENALTY_APPLIED",
+      "applicationStatus": "APPLIED_FINALIZED",
+      "adjudicationTransaction": "0x2fca7b681784f8281612b077dc2e2eb3c1dbdf8adc552d7f5014a1648480f19f"
+    },
+    {
+      "caseId": "case-3",
+      "commitmentId": "demo-outage-20260906",
+      "classification": "EXTERNAL_OUTAGE",
+      "outcome": "NO_SLASH",
+      "penaltyWei": "0",
+      "status": "PENALTY_APPLIED",
+      "applicationStatus": "APPLIED_FINALIZED",
+      "adjudicationTransaction": "0xcc9b9eb38a760491f401d16f66f2e8cda2986505e10d88d8827768062957b589"
+    },
+    {
+      "caseId": "case-4",
+      "commitmentId": "demo-insufficient-20260906",
+      "classification": "INSUFFICIENT_EVIDENCE",
+      "outcome": "NO_SLASH",
+      "penaltyWei": "0",
+      "status": "PENALTY_APPLIED",
+      "applicationStatus": "APPLIED_FINALIZED",
+      "adjudicationTransaction": "0x52f11c2cbe1fef269be0e22d7892891395754e967066bed1453edc35002d4eb2"
+    }
+  ],
+  "vault": {
+    "initialBondWei": "4000000000000000000",
+    "remainingOperatorBondWei": "2500000000000000000",
+    "lockedExposureWei": "0",
+    "totalPenaltiesWei": "1500000000000000000",
+    "beneficiaryAwardsWei": "1200000000000000000",
+    "safetyPoolWei": "300000000000000000"
+  }
+}

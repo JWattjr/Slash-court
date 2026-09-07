@@ -1,0 +1,36 @@
+{
+  "network": "Genlayer Studio Network",
+  "deployedAt": "2026-09-06T22:17:07.197Z",
+  "operatorBondVaultAddress": "0x95E438A856c70a138824c37F937e0f436461625B",
+  "slashCourtAddress": "0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e",
+  "rulebookVersion": 1,
+  "approvedEvidenceDomains": [
+    "slash-court.vercel.app"
+  ],
+  "deploymentTransactions": [
+    {
+      "label": "1/7 Operator Bond Vault",
+      "hash": "0x2de2c35f4c0accaa3867bb4099820c864d456283b911bf7fd3ec4ebed9404544"
+    },
+    {
+      "label": "2/7 SlashCourt",
+      "hash": "0x3bda4ccfd37e20698215cec09faed184855d580049937a694dbe276e16a48a75"
+    },
+    {
+      "label": "3/7 Bind vault → court",
+      "hash": "0x6e712ec3c468c9a407d4f022f3f1f8e6cfe6c857eeff2ac80de023927f40fcd8"
+    },
+    {
+      "label": "4/7 Bind court → vault",
+      "hash": "0xaa1cfe156bf7c28f58e7c043c631f56887b4d0f57ebaf514b2f99555d122470d"
+    },
+    {
+      "label": "5/7 Publish immutable rulebook v1",
+      "hash": "0x4001a1acc767d3eba88896649799c18d3cee89f06d45961fce229f1d13139a24"
+    },
+    {
+      "label": "6/7 Configure evidence domains",
+      "hash": "0xc455e42d1000896b555489fb6669a8ee818f0d45ae5a60fa83fd2a67870849ad"
+    }
+  ]
+}

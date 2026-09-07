@@ -43,3 +43,20 @@ def test_evidence_domain_policy_is_canonicalized(court_contract, direct_vm, dire
     domains = court.get_approved_evidence_domains()
     assert domains["domains"] == ["status.example.org", "evidence.example.com"]
     assert domains["total"] == 2
+
+
+def _assert_transaction_timestamp_normalization(contract):
+    expected = "2026-09-06T22:06:38Z"
+    assert contract._canonical_transaction_timestamp(expected) == expected
+    assert contract._canonical_transaction_timestamp("2026-09-06T22:06:38.046639+00:00") == expected
+    assert contract._canonical_transaction_timestamp("2026-09-06T22:06:38.9Z") == expected
+    assert contract._canonical_transaction_timestamp("2026-09-06T23:06:38+01:00") == ""
+    assert contract._canonical_transaction_timestamp("2026-02-30T22:06:38Z") == ""
+
+
+def test_court_transaction_context_timestamp_is_normalized(court_contract):
+    _assert_transaction_timestamp_normalization(court_contract)
+
+
+def test_vault_transaction_context_timestamp_is_normalized(vault_contract):
+    _assert_transaction_timestamp_normalization(vault_contract)

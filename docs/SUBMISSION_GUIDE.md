@@ -1,14 +1,15 @@
-# GenLayer project submission — SlashCourt
+# GenLayer project submission
 
-Draft in the requested portal format. Replace every bracketed placeholder before submitting. Public hosting, repository availability, explorer links, and live verdicts have not been verified for this guide. Do not copy Covenant Sentinel's links or results into this submission.
+Paste the following copy into the project portal. The demo video is optional and
+should be left blank unless a polished recording is available before the deadline.
 
 ## Identity
 
-- **Logo:** [Upload a SlashCourt 512 × 512 PNG under 2 MB. Only a favicon.svg was found in frontend/public; a submission PNG is still needed.]
+- **Logo:** `frontend/public/slashcourt-logo.png` (512 × 512 PNG, 17,981 bytes)
 - **Project name:** SlashCourt
-- **Primary tag:** Infrastructure (or the closest Infrastructure & Tooling option)
+- **Primary tag:** Infrastructure (or the closest `Infrastructure & Tooling` option)
 - **Tag 1:** Security
-- **Tag 2:** Governance (or the closest applicable option actually offered)
+- **Tag 2:** Governance (use the closest exact option offered by the portal)
 
 ## One-liner
 
@@ -18,80 +19,80 @@ Draft in the requested portal format. Replace every bracketed placeholder before
 
 ## Description
 
-871 of 1,000 characters:
-
-> SlashCourt is an application-layer dispute-resolution prototype for bonded automation operators. Operators commit bounded exposure to a duty; beneficiaries can raise a claim and operators can respond with evidence. GenLayer validators evaluate responsibility under a versioned rulebook, distinguishing provable misconduct, negligence, legitimate outages, and insufficient evidence. Deterministic contract logic maps classifications to capped penalties instead of letting the model choose an amount. A separate bond vault is designed to apply resolutions through finalized messages. The project includes intelligent contracts, a Next.js operator console, direct and simulated integration tests, and architecture, economics, and threat-model documentation. It is a StudioNet prototype, not GenLayer's native validator-slashing system or a production-ready security service.
+> SlashCourt settles disputes for bonded automation operators. Operators lock bounded exposure behind a service duty; beneficiaries can raise a claim and both sides can submit evidence. GenLayer validators independently fetch that evidence and evaluate responsibility under an immutable versioned rulebook, distinguishing provable misconduct, negligence, legitimate outages, and insufficient evidence. Deterministic contracts map each classification to a fixed, capped penalty instead of letting a model choose money. A separate vault applies resolutions only after finality, with exact case binding and replay protection. The live StudioNet deployment includes four finalized consensus cases covering every verdict and settlement path. The repo provides 28 direct tests, evidence cases, threat and economic models, deployment provenance, and a Next.js console. Evidence fixtures are clearly labelled synthetic; bonds are simulated application funds, not native validator stake or real TVL.
 
 ## Demo video
 
-Leave the optional YouTube URL blank unless a polished recording is available before the deadline.
+Leave the optional YouTube URL blank unless a polished recording is available.
 
 ## How-to
 
-Add these five steps in order after preparing and verifying the demo. The bracketed URLs and case IDs are required replacements, not existing live artifacts.
+Add these five steps in order.
 
 ### 1. Open the live console
 
-Visit https://slash-court.vercel.app. Wait for the StudioNet snapshot to load. Confirm the court and bond-vault addresses match the current deployment record and the published versioned rulebook is visible.
+Visit [https://slash-court.vercel.app](https://slash-court.vercel.app). Wait for
+the StudioNet snapshot to load. Confirm Court `0x576B…bf8e`, Vault
+`0x95E4…625B`, rulebook v1, and the fixed 100% / 50% / 0% penalty schedule.
 
 ### 2. Inspect a bonded commitment
 
-Open [VERIFIED DEMO COMMITMENT ID]. Review the operator, beneficiary, duty, accepted terms, locked exposure, and rulebook version. This is application-level operator accountability, not native protocol validator slashing.
+Open `demo-negligence-20260906`. Review its operator, beneficiary, accepted
+terms, 1 GEN locked exposure, and rulebook version. This is application-level
+operator accountability, not native protocol validator slashing.
 
 ### 3. Compare all verdicts
 
-Open [MISCONDUCT CASE ID], [NEGLIGENCE CASE ID], [OUTAGE CASE ID], and [INSUFFICIENT-EVIDENCE CASE ID]. Compare each recorded classification, reasoning, rule references, and submitted evidence. Demo evidence must be explicitly labelled synthetic.
+Open `case-1`, `case-2`, `case-3`, and `case-4`. Confirm
+PROVABLE_MISCONDUCT, NEGLIGENT_FAILURE, EXTERNAL_OUTAGE, and
+INSUFFICIENT_EVIDENCE. Compare the reasoning, rule references, and clearly
+labelled synthetic evidence.
 
-### 4. Trace the settlement
+### 4. Trace finalized settlement
 
-For the finalized misconduct and negligence cases, compare the fixed penalty with the commitment's exposure and inspect the vault application record. Confirm the outage and insufficient-evidence cases produce no penalty. Distinguish provisional adjudication from finalized vault application.
+Confirm `case-1` applies FULL_SLASH (1 GEN), `case-2` applies PARTIAL_SLASH
+(0.5 GEN), and `case-3` and `case-4` apply NO_SLASH. Every case must show
+PENALTY_APPLIED, FINALIZED, and APPLIED_FINALIZED. The vault should show 2.5 GEN
+remaining bond, 1.2 GEN beneficiary awards, 0.3 GEN safety pool, and zero
+locked exposure.
 
 ### 5. Inspect the proof
 
-Open https://github.com/JWattjr/Slash-court. Review docs/DEMO_SCRIPT.md, docs/THREAT_MODEL.md, docs/ECONOMICS.md, deploy/last-deployment.json, and tests/. Distinguish mocked local tests from transactions executed with real StudioNet evaluation.
+Open the repository and review `docs/DEMO_SCRIPT.md`, `docs/THREAT_MODEL.md`,
+`docs/ECONOMICS.md`, `deploy/last-deployment.json`, `deploy/live-demo.json`,
+and `tests/`. The README distinguishes mocked local tests from live StudioNet
+consensus and records the deployed-source provenance.
 
 ## Expected verification outcome
 
-Under 500 characters; use only after the four live cases are verified:
-
-> The steward should see the current court and vault addresses, a versioned rulebook, and four finalized demo cases. Misconduct and negligence should apply their fixed penalties within committed exposure; legitimate outage and insufficient evidence should apply zero penalty. Vault records and operator balances should agree, and retrying an applied resolution should not deduct funds twice. Synthetic evidence must be clearly labelled.
+> The steward should see rulebook v1, the current Court and Vault addresses, and four finalized cases. case-1 applies a 1 GEN full slash; case-2 applies a 0.5 GEN partial slash; case-3 and case-4 apply zero. All show PENALTY_APPLIED, FINALIZED, and APPLIED_FINALIZED. The vault ends with 2.5 GEN operator bond, 1.2 GEN beneficiary awards, 0.3 GEN safety pool, and zero locked exposure. Evidence is clearly labelled synthetic.
 
 ## Contract links
 
-These addresses are copied from the existing local deployment record, not freshly verified on the explorer. Replace them if contract fixes require redeployment; confirm the full addresses against deployment receipts before submission.
-
-1. SlashCourt: https://explorer-studio.genlayer.com/address/0x8F842611d83C760675bfBA4eBA50e736bf64ae90
-2. OperatorBondVault: https://explorer-studio.genlayer.com/address/0xAe26BE38b58CaFf8d9297E124C0Bd7d5F0d8B92D
+1. SlashCourt: [https://explorer-studio.genlayer.com/address/0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e](https://explorer-studio.genlayer.com/address/0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e)
+2. OperatorBondVault: [https://explorer-studio.genlayer.com/address/0x95E438A856c70a138824c37F937e0f436461625B](https://explorer-studio.genlayer.com/address/0x95E438A856c70a138824c37F937e0f436461625B)
 
 ## Project links
 
-- **Website:** https://slash-court.vercel.app
-- **GitHub:** https://github.com/JWattjr/Slash-court
+- **Website:** [https://slash-court.vercel.app](https://slash-court.vercel.app)
+- **GitHub:** [https://github.com/JWattjr/Slash-court](https://github.com/JWattjr/Slash-court)
 
 ## Evidence and supporting information
 
 The required repository evidence is:
 
-https://github.com/JWattjr/Slash-court
+[https://github.com/JWattjr/Slash-court](https://github.com/JWattjr/Slash-court)
 
 If the form accepts more links, add these in order:
 
-1. https://slash-court.vercel.app
-2. [VERIFIED CURRENT COURT EXPLORER URL]
-3. [VERIFIED FINALIZED ADJUDICATION OR VAULT-APPLICATION TRANSACTION URL]
-
-Prefer a transaction demonstrating the claimed settlement behavior over a deployment-only transaction. Do not use a synthetic or guessed hash.
+1. [https://slash-court.vercel.app](https://slash-court.vercel.app)
+2. [https://explorer-studio.genlayer.com/address/0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e](https://explorer-studio.genlayer.com/address/0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e)
+3. [https://explorer-studio.genlayer.com/tx/0x2fca7b681784f8281612b077dc2e2eb3c1dbdf8adc552d7f5014a1648480f19f](https://explorer-studio.genlayer.com/tx/0x2fca7b681784f8281612b077dc2e2eb3c1dbdf8adc552d7f5014a1648480f19f)
 
 ## Final check
 
-- Resolve the critical findings in docs/SOL_FIX_GUIDE.md before presenting settlement safety as established.
-- Create the required logo PNG and verify its dimensions and file size.
-- Publish and open the website and repository; confirm no secrets are included.
-- Replace placeholder evidence domains with reachable, labelled fixtures and verify all four live outcomes. Do not claim they already exist.
-- Populate every case ID and URL above from actual verified results.
-- Verify both deployed addresses and source provenance; use new addresses after any redeployment.
 - Keep the YouTube field blank unless a polished recording exists.
-- Confirm tags against the portal's actual taxonomy.
-- Open the website, repository, and both contract links before submitting.
-- Review the portal preview for truncation, broken links, and leftover placeholders.
-- If live verification is incomplete at the deadline, describe the submission as a prototype and remove unsupported live-demo instructions or claims instead of implying completion.
+- Confirm the selected tags match the portal's exact taxonomy.
+- Open the website, repository, both contracts, and adjudication transaction.
+- Confirm the four case IDs and final vault totals still load.
+- Review the portal preview for truncation or broken links before submitting.

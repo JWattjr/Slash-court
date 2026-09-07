@@ -9,7 +9,7 @@ frontend/.vercel/
 dist/
 artifacts/*
 !artifacts/.gitkeep
-deploy/last-deployment.json
+deploy/*.compiled.js
 __pycache__/
 *.py[cod]
 .pytest_cache/

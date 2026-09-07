@@ -1,0 +1,40 @@
+{
+  "network": "Genlayer Studio Network",
+  "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
+  "beneficiary": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
+  "vault": "0x95E438A856c70a138824c37F937e0f436461625B",
+  "dutyDeadline": "2026-09-06T22:39:19Z",
+  "disputeDeadline": "2026-09-08T22:29:19Z",
+  "commitments": [
+    "demo-misconduct-20260906",
+    "demo-negligence-20260906",
+    "demo-outage-20260906",
+    "demo-insufficient-20260906"
+  ],
+  "transactions": [
+    {
+      "label": "Register demo operator",
+      "hash": "0xe75a49ebe1b78138e39945f0d86c63725766885cd94516937d96a92de82a8bbd"
+    },
+    {
+      "label": "Deposit 4 GEN demo bond",
+      "hash": "0xcbfbcf49f74f87247e7080eea2db3249adec686d9400be50e14e517ca9abd0fc"
+    },
+    {
+      "label": "Create demo-misconduct-20260906",
+      "hash": "0xa700180a9fcafc681d6b035153c2d0a03673819019533ce7393d3f69cc7faf68"
+    },
+    {
+      "label": "Create demo-negligence-20260906",
+      "hash": "0x45438c1e7813ce68aa225b04bbb2f16f1c8a921f64ba80959d46480778e33bf7"
+    },
+    {
+      "label": "Create demo-outage-20260906",
+      "hash": "0x72ff08c97e75bc074ec54a7f419b52e783c413d318743d7452e55646a1adf391"
+    },
+    {
+      "label": "Create demo-insufficient-20260906",
+      "hash": "0x4b7630f11fd99e19ead40703ab411a92c8f833ac5a678e80393ea023422d4a1d"
+    }
+  ]
+}

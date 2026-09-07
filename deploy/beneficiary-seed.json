@@ -1,0 +1,71 @@
+{
+  "court": "0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e",
+  "vault": "0x95E438A856c70a138824c37F937e0f436461625B",
+  "cases": [
+    {
+      "commitmentId": "demo-misconduct-20260906",
+      "caseId": "case-1",
+      "allegedRules": [
+        "R2",
+        "R5"
+      ]
+    },
+    {
+      "commitmentId": "demo-negligence-20260906",
+      "caseId": "case-2",
+      "allegedRules": [
+        "R1",
+        "R3"
+      ]
+    },
+    {
+      "commitmentId": "demo-outage-20260906",
+      "caseId": "case-3",
+      "allegedRules": [
+        "R1",
+        "R4"
+      ]
+    },
+    {
+      "commitmentId": "demo-insufficient-20260906",
+      "caseId": "case-4",
+      "allegedRules": [
+        "R1"
+      ]
+    }
+  ],
+  "transactions": [
+    {
+      "label": "Record duty result for demo-misconduct-20260906",
+      "hash": "0x96a869e233f1459664d0562be3a9ad88e6ff7aa35e75ffc77d568680fc8c4576"
+    },
+    {
+      "label": "Open case for demo-misconduct-20260906",
+      "hash": "0xc4f9455fddd86a97ce727bf0d09edb9a92d779af829fa15e0ea65f3bf888b093"
+    },
+    {
+      "label": "Record duty result for demo-negligence-20260906",
+      "hash": "0xc5ae779997542e022c972ae38423c28cb1b1f5ffc8facd9ea5ef9f0661426e5f"
+    },
+    {
+      "label": "Open case for demo-negligence-20260906",
+      "hash": "0x234e9aea89abf154824107815a6cefa092d113797748c8c083f342c5aeef6d7a"
+    },
+    {
+      "label": "Record duty result for demo-outage-20260906",
+      "hash": "0xe30dc4f7dab9fecd5cb73d3cb29361fcdd8a93b0fe61b0b1d0351aefd1bf23ba"
+    },
+    {
+      "label": "Open case for demo-outage-20260906",
+      "hash": "0xae6bcef2a70e03d9d63b584853181fc8106261b712057262f0ca1dc1f9293323"
+    },
+    {
+      "label": "Record duty result for demo-insufficient-20260906",
+      "hash": "0x6dd85c91fc978c16853f9f5c8e647b5aa0b8c19fd20caf4f3d08dbf1a3c44049"
+    },
+    {
+      "label": "Open case for demo-insufficient-20260906",
+      "hash": "0x72eacc8388bfdbf6d41846a690582a70d144027e70b1b90704751f3a796f1e1a"
+    }
+  ]
+}
