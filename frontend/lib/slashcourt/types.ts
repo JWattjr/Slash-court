@@ -34,6 +34,8 @@ export type CourtCase = {
   violated_rule_ids: string[];
   supported_exemptions: string[];
   findings: Finding[];
+  adjudication_evidence?: EvidenceCitation[];
+  canonical_commitment?: CanonicalCommitment;
   explanation: string;
   penalty_bps: number;
   penalty_amount: string;
@@ -47,6 +49,34 @@ export type Finding = {
   evidence_id: string;
   rule_id: string;
   finding: string;
+  submission_party?: "CLAIMANT" | "OPERATOR";
+  evidence_type?: string;
+  source_domain?: string;
+  content_hash?: string;
+  relevant_rule_ids?: string[];
+};
+
+export type EvidenceCitation = {
+  evidence_id: string;
+  evidence_type: string;
+  submission_party: "CLAIMANT" | "OPERATOR";
+  source_domain: string;
+  content_hash: string;
+  relevant_rule_ids: string[];
+};
+
+export type CanonicalCommitment = {
+  commitment_id: string;
+  operator: string;
+  beneficiary: string;
+  service_description: string;
+  duty_trigger: string;
+  duty_deadline: string;
+  dispute_deadline: string;
+  expected_action_id: string;
+  rulebook_version: number;
+  locked_exposure: string;
+  commitment_digest: string;
 };
 
 export type EvidenceItem = {
@@ -61,6 +91,7 @@ export type EvidenceItem = {
   fact: string;
   claimed_fact?: string;
   content_hash: string;
+  relevant_rule_ids?: string[];
 };
 
 export type Rulebook = {

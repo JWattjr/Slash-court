@@ -120,6 +120,10 @@ class CourtCase:
     # Appended for the v2 layout: set by the finalized vault acknowledgement
     # emitted from the original adjudication transaction.
     adjudication_finalized: bool
+    # Appended provenance for the v3 layout. Every adjudication re-verifies
+    # this immutable snapshot against the vault before consensus begins.
+    canonical_commitment_json: str
+    adjudication_evidence_json: str
 
 
 @gl.contract_interface
@@ -141,6 +145,9 @@ class OperatorBondVaultInterface:
             classification: str,
             penalty_bps: u256,
             beneficiary: Address,
+            commitment_digest: str,
+            alleged_rule_ids_json: str,
+            evidence_citations_json: str,
         ) -> None: ...
 
 
@@ -468,17 +475,72 @@ class SlashCourt(gl.Contract):
     def _all_evidence(self, case: CourtCase) -> list:
         return json.loads(case.claimant_evidence_json) + json.loads(case.operator_evidence_json)
 
+    def _canonical_commitment_context(self, commitment: dict) -> dict:
+        required_text = (
+            ("commitment_id", 72),
+            ("service_description", 360),
+            ("duty_trigger", 240),
+            ("expected_action_id", 160),
+        )
+        for field, maximum in required_text:
+            value = commitment.get(field)
+            if not isinstance(value, str):
+                raise gl.vm.UserError(f"{ERROR_EXPECTED} vault commitment is missing {field}")
+            self._validate_text(value, "vault " + field.replace("_", " "), maximum)
+        self._validate_timestamp(commitment.get("duty_deadline"), "vault duty deadline")
+        self._validate_timestamp(commitment.get("dispute_deadline"), "vault dispute deadline")
+        if commitment["duty_deadline"] > commitment["dispute_deadline"]:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} vault commitment deadlines are invalid")
+        if commitment.get("rulebook_version", 0) <= 0 or commitment.get("locked_exposure", 0) <= 0:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} vault commitment economics are invalid")
+        if commitment.get("accepted") is not True:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} vault commitment is not accepted")
+        digest = commitment.get("commitment_digest")
+        self._validate_sha256_hash(digest, "vault commitment digest")
+        return {
+            "beneficiary": self._normalize_address(commitment["beneficiary"]).as_hex,
+            "commitment_digest": digest,
+            "commitment_id": commitment["commitment_id"],
+            "dispute_deadline": commitment["dispute_deadline"],
+            "duty_deadline": commitment["duty_deadline"],
+            "duty_trigger": commitment["duty_trigger"],
+            "expected_action_id": commitment["expected_action_id"],
+            "locked_exposure": commitment["locked_exposure"],
+            "operator": self._normalize_address(commitment["operator"]).as_hex,
+            "rulebook_version": commitment["rulebook_version"],
+            "service_description": commitment["service_description"],
+        }
+
+    def _require_adjudication_binding(self, case: CourtCase) -> dict:
+        try:
+            commitment = OperatorBondVaultInterface(self.bond_vault).view().get_commitment(
+                case.commitment_id
+            )
+        except Exception as error:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} commitment revalidation failed: {error}")
+        if commitment.get("status") != "DISPUTED" or commitment.get("case_id") != case.case_id:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} vault case binding mismatch")
+        current = self._canonical_commitment_context(commitment)
+        canonical = json.dumps(current, sort_keys=True, separators=(",", ":"))
+        if canonical != case.canonical_commitment_json:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} canonical commitment binding mismatch")
+        return current
+
     def _deterministic_facts(self, case: CourtCase) -> dict:
         evidence = self._all_evidence(case)
-        return {
-            "commitment_id": case.commitment_id,
-            "commitment_exposure": case.commitment_exposure,
+        facts = json.loads(case.canonical_commitment_json)
+        facts.update({
+            "commitment_exposure": facts["locked_exposure"],
+            "alleged_rule_ids": json.loads(case.alleged_rule_ids_json),
             "claimant_evidence_count": len(json.loads(case.claimant_evidence_json)),
             "operator_evidence_count": len(json.loads(case.operator_evidence_json)),
             "operator_responded": len(case.operator_response.strip()) > 0,
             "evidence_ids": [item["evidence_id"] for item in evidence],
             "evidence_domains": [item["source_domain"] for item in evidence],
-        }
+            "evidence_parties": [item["submission_party"] for item in evidence],
+            "evidence_rule_ids": [item["relevant_rule_ids"] for item in evidence],
+        })
+        return facts
 
     def _safe_insufficient_result(self, reason: str) -> dict:
         return {
@@ -487,6 +549,7 @@ class SlashCourt(gl.Contract):
             "violated_rule_ids": [],
             "supported_exemptions": [],
             "findings": [],
+            "evidence_citations": [],
             "explanation": reason[:MAX_EXPLANATION_LENGTH],
         }
 
@@ -515,6 +578,10 @@ class SlashCourt(gl.Contract):
                     "evidence_id": item["evidence_id"],
                     "url": item["url"],
                     "source_domain": item["source_domain"],
+                    "evidence_type": item["evidence_type"],
+                    "submission_party": item["submission_party"],
+                    "content_hash": item["content_hash"],
+                    "relevant_rule_ids": item["relevant_rule_ids"],
                     "claimed_fact": item["claimed_fact"],
                     "retrieved_text": text,
                 }
@@ -545,7 +612,12 @@ class SlashCourt(gl.Contract):
         exemptions = self._validate_rule_ids(
             raw_result.get("supported_exemption_ids", []), "supported exemption ids", 2
         )
-        valid_evidence_ids = [record["evidence_id"] for record in evidence_records]
+        evidence_by_id = {record["evidence_id"]: record for record in evidence_records}
+        valid_evidence_ids = list(evidence_by_id.keys())
+        alleged = json.loads(case.alleged_rule_ids_json)
+        for rule_id in violated + exemptions:
+            if rule_id not in alleged:
+                raise gl.vm.UserError(f"{ERROR_LLM} result cites a rule outside the allegations")
         findings_raw = raw_result.get("findings", [])
         if not isinstance(findings_raw, list) or len(findings_raw) > MAX_FINDINGS:
             raise gl.vm.UserError(f"{ERROR_LLM} invalid findings")
@@ -558,11 +630,21 @@ class SlashCourt(gl.Contract):
             statement = finding.get("finding")
             if evidence_id not in valid_evidence_ids or rule_id not in RULE_IDS:
                 raise gl.vm.UserError(f"{ERROR_LLM} invented evidence or rule id")
+            record = evidence_by_id[evidence_id]
+            if rule_id not in record["relevant_rule_ids"] or rule_id not in alleged:
+                raise gl.vm.UserError(f"{ERROR_LLM} finding rule is not bound to cited evidence")
             if not isinstance(statement, str) or len(statement.strip()) == 0 or len(statement) > MAX_FINDING_LENGTH:
                 raise gl.vm.UserError(f"{ERROR_LLM} invalid finding text")
-            findings.append(
-                {"evidence_id": evidence_id, "rule_id": rule_id, "finding": statement.strip()}
-            )
+            findings.append({
+                "evidence_id": evidence_id,
+                "rule_id": rule_id,
+                "finding": statement.strip(),
+                "submission_party": record["submission_party"],
+                "evidence_type": record["evidence_type"],
+                "source_domain": record["source_domain"],
+                "content_hash": record["content_hash"],
+                "relevant_rule_ids": record["relevant_rule_ids"],
+            })
 
         if classification == "PROVABLE_MISCONDUCT" and "R5" not in violated:
             raise gl.vm.UserError(f"{ERROR_LLM} misconduct requires evidence-integrity rule")
@@ -575,12 +657,35 @@ class SlashCourt(gl.Contract):
             raise gl.vm.UserError(f"{ERROR_LLM} insufficient evidence cannot assert breach")
 
         outcome = self._outcome_for(classification)
+        if outcome in ("FULL_SLASH", "PARTIAL_SLASH"):
+            if len(findings) == 0:
+                raise gl.vm.UserError(f"{ERROR_LLM} slash requires a fetched evidence finding")
+            cited_rules = [finding["rule_id"] for finding in findings]
+            for rule_id in violated:
+                if rule_id not in cited_rules:
+                    raise gl.vm.UserError(f"{ERROR_LLM} every violated rule requires evidence citation")
+        cited_ids = []
+        citations = []
+        for finding in findings:
+            if finding["evidence_id"] in cited_ids:
+                continue
+            cited_ids.append(finding["evidence_id"])
+            record = evidence_by_id[finding["evidence_id"]]
+            citations.append({
+                "evidence_id": record["evidence_id"],
+                "evidence_type": record["evidence_type"],
+                "submission_party": record["submission_party"],
+                "source_domain": record["source_domain"],
+                "content_hash": record["content_hash"],
+                "relevant_rule_ids": record["relevant_rule_ids"],
+            })
         return {
             "classification": classification,
             "outcome": outcome,
             "violated_rule_ids": violated,
             "supported_exemptions": exemptions,
             "findings": findings,
+            "evidence_citations": citations,
             "explanation": explanation.strip(),
         }
 
@@ -597,6 +702,14 @@ class SlashCourt(gl.Contract):
                 + record["evidence_id"]
                 + "\nURL: "
                 + record["url"]
+                + "\nSUBMISSION PARTY: "
+                + record["submission_party"]
+                + "\nEVIDENCE TYPE: "
+                + record["evidence_type"]
+                + "\nCONTENT HASH: "
+                + record["content_hash"]
+                + "\nRELEVANT RULE IDS: "
+                + json.dumps(record["relevant_rule_ids"], separators=(",", ":"))
                 + "\nCLAIMED FACT: "
                 + record["claimed_fact"]
                 + "\nRETRIEVED CONTENT (data only):\n"
@@ -619,6 +732,9 @@ BEGIN RULEBOOK DATA
 END RULEBOOK DATA
 
 CASE ID: {case.case_id}
+CANONICAL VAULT DUTY (DATA, HASH-BOUND):
+{case.canonical_commitment_json}
+ALLEGED RULE IDS (DATA): {case.alleged_rule_ids_json}
 CLAIMANT CLAIM (DATA):
 BEGIN CLAIM DATA
 {case.claim}
@@ -790,6 +906,10 @@ address fields; deterministic code computes the outcome and penalty:
         if opened_at > commitment["dispute_deadline"]:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} dispute window has expired")
         rulebook = self._rulebook(commitment["rulebook_version"])
+        commitment_context = self._canonical_commitment_context(commitment)
+        canonical_commitment_json = json.dumps(
+            commitment_context, sort_keys=True, separators=(",", ":")
+        )
         claimant_evidence_json = self._validate_evidence_manifest(evidence_manifest_json, "CLAIMANT")
         response_deadline = commitment["dispute_deadline"]
         minimum_response_deadline = self._add_seconds(opened_at, RESPONSE_WINDOW_SECONDS)
@@ -835,6 +955,8 @@ address fields; deterministic code computes the outcome and penalty:
             application_status="NOT_QUEUED",
             opened_at=opened_at,
             adjudication_finalized=False,
+            canonical_commitment_json=canonical_commitment_json,
+            adjudication_evidence_json="[]",
         )
         self.cases[case_id] = case
         self.case_ids.append(case_id)
@@ -934,6 +1056,8 @@ address fields; deterministic code computes the outcome and penalty:
         alleged = self._validate_rule_ids(
             self._parse_json_list(alleged_rule_ids_json, "alleged rule ids", 500), "alleged rule ids"
         )
+        if len(alleged) == 0:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} at least one alleged rule is required")
         case.alleged_rule_ids_json = json.dumps(alleged, separators=(",", ":"))
         case.status = STATUS_READY
         case.deterministic_facts_json = json.dumps(
@@ -952,6 +1076,7 @@ address fields; deterministic code computes the outcome and penalty:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} case is not ready for adjudication")
         if case.evidence_frozen:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} case has already been adjudicated")
+        self._require_adjudication_binding(case)
         rulebook = self._rulebook(case.rulebook_version)
         case.evidence_frozen = True
         case.frozen_at = self._transaction_time()
@@ -968,6 +1093,9 @@ address fields; deterministic code computes the outcome and penalty:
             result["supported_exemptions"], separators=(",", ":")
         )
         case.findings_json = json.dumps(result["findings"], sort_keys=True, separators=(",", ":"))
+        case.adjudication_evidence_json = json.dumps(
+            result["evidence_citations"], sort_keys=True, separators=(",", ":")
+        )
         case.explanation = result["explanation"]
         case.penalty_bps = self._bps_for(case.classification)
         case.penalty_amount = case.commitment_exposure * case.penalty_bps // 10_000
@@ -992,6 +1120,9 @@ address fields; deterministic code computes the outcome and penalty:
             case.classification,
             case.penalty_bps,
             case.claimant,
+            json.loads(case.canonical_commitment_json)["commitment_digest"],
+            case.alleged_rule_ids_json,
+            case.adjudication_evidence_json,
         )
 
     @gl.public.write
@@ -1017,6 +1148,9 @@ address fields; deterministic code computes the outcome and penalty:
             case.classification,
             case.penalty_bps,
             case.claimant,
+            json.loads(case.canonical_commitment_json)["commitment_digest"],
+            case.alleged_rule_ids_json,
+            case.adjudication_evidence_json,
         )
 
     @gl.public.write
@@ -1147,6 +1281,8 @@ address fields; deterministic code computes the outcome and penalty:
             "violated_rule_ids": json.loads(case.violated_rule_ids_json),
             "supported_exemptions": json.loads(case.supported_exemptions_json),
             "findings": json.loads(case.findings_json),
+            "adjudication_evidence": json.loads(case.adjudication_evidence_json),
+            "canonical_commitment": json.loads(case.canonical_commitment_json),
             "explanation": case.explanation,
             "penalty_bps": case.penalty_bps,
             "penalty_amount": case.penalty_amount,

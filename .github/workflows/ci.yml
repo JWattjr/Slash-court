@@ -47,6 +47,9 @@ jobs:
       - name: Run explicit frontend typecheck script
         run: npm run typecheck
 
+      - name: Test appeal transaction retention
+        run: npm run test:frontend
+
       - name: Build frontend
         run: npm run build
 

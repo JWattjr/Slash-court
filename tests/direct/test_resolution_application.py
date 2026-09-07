@@ -1,4 +1,25 @@
+import json
+
 from tests.direct.conftest import as_address
+
+
+def _resolution_provenance(vault, commitment_id, classification):
+    rule_id = "R5" if classification == "PROVABLE_MISCONDUCT" else "R3"
+    citations = []
+    if classification in ("PROVABLE_MISCONDUCT", "NEGLIGENT_FAILURE"):
+        citations = [{
+            "evidence_id": "E-SETTLEMENT-1",
+            "evidence_type": "PUBLIC_STATUS",
+            "submission_party": "CLAIMANT",
+            "source_domain": "status.example.org",
+            "content_hash": "sha256:" + "a" * 64,
+            "relevant_rule_ids": [rule_id],
+        }]
+    return (
+        vault.get_commitment(commitment_id)["commitment_digest"],
+        json.dumps([rule_id]),
+        json.dumps(citations),
+    )
 
 
 def _prepare_vault(vault, direct_vm, direct_owner, direct_alice, direct_bob, direct_charlie, exposure):
@@ -37,7 +58,8 @@ def test_full_resolution_is_capped_and_allocated(vault_contract, direct_vm, dire
         vault, direct_vm, direct_owner, direct_alice, direct_bob, direct_charlie, 20
     )
     vault.apply_resolution(
-        case_id, commitment_id, "PROVABLE_MISCONDUCT", 10_000, as_address(direct_bob)
+        case_id, commitment_id, "PROVABLE_MISCONDUCT", 10_000, as_address(direct_bob),
+        *_resolution_provenance(vault, commitment_id, "PROVABLE_MISCONDUCT")
     )
     operator = vault.get_balance_breakdown(as_address(direct_alice))
     beneficiary = vault.get_operator(as_address(direct_bob))
@@ -57,7 +79,8 @@ def test_full_resolution_is_capped_and_allocated(vault_contract, direct_vm, dire
 
     # Exact replay is a no-op for balances and remains safe to retry.
     vault.apply_resolution(
-        case_id, commitment_id, "PROVABLE_MISCONDUCT", 10_000, as_address(direct_bob)
+        case_id, commitment_id, "PROVABLE_MISCONDUCT", 10_000, as_address(direct_bob),
+        *_resolution_provenance(vault, commitment_id, "PROVABLE_MISCONDUCT")
     )
     assert vault.get_balance_breakdown(as_address(direct_alice))["total_bond"] == 80
 
@@ -68,7 +91,8 @@ def test_partial_and_no_slash_mapping_never_overallocates(vault_contract, direct
         vault, direct_vm, direct_owner, direct_alice, direct_bob, direct_charlie, 3
     )
     vault.apply_resolution(
-        case_id, commitment_id, "NEGLIGENT_FAILURE", 5_000, as_address(direct_bob)
+        case_id, commitment_id, "NEGLIGENT_FAILURE", 5_000, as_address(direct_bob),
+        *_resolution_provenance(vault, commitment_id, "NEGLIGENT_FAILURE")
     )
     application = vault.get_case_application(case_id)
     assert application["penalty_amount"] == 1
@@ -97,7 +121,8 @@ def test_partial_and_no_slash_mapping_never_overallocates(vault_contract, direct
     no_case = "case-no-slash"
     vault.bind_case(no_case, no_commitment, "2025-01-01T00:00:00Z")
     vault.apply_resolution(
-        no_case, no_commitment, "EXTERNAL_OUTAGE", 0, as_address(direct_bob)
+        no_case, no_commitment, "EXTERNAL_OUTAGE", 0, as_address(direct_bob),
+        *_resolution_provenance(vault, no_commitment, "EXTERNAL_OUTAGE")
     )
     assert vault.get_balance_breakdown(as_address(direct_alice))["total_bond"] == 99
     assert vault.get_balance_breakdown(as_address(direct_alice))["available_bond"] == 99
@@ -111,12 +136,14 @@ def test_unauthorized_or_arbitrary_penalty_is_rejected(vault_contract, direct_vm
     direct_vm.sender = direct_alice
     with direct_vm.expect_revert("SlashCourt authorization required"):
         vault.apply_resolution(
-            case_id, commitment_id, "PROVABLE_MISCONDUCT", 10_000, as_address(direct_bob)
+            case_id, commitment_id, "PROVABLE_MISCONDUCT", 10_000, as_address(direct_bob),
+            *_resolution_provenance(vault, commitment_id, "PROVABLE_MISCONDUCT")
         )
     direct_vm.sender = direct_charlie
     with direct_vm.expect_revert("penalty mapping mismatch"):
         vault.apply_resolution(
-            case_id, commitment_id, "PROVABLE_MISCONDUCT", 1, as_address(direct_bob)
+            case_id, commitment_id, "PROVABLE_MISCONDUCT", 1, as_address(direct_bob),
+            *_resolution_provenance(vault, commitment_id, "PROVABLE_MISCONDUCT")
         )
 
 
@@ -126,7 +153,8 @@ def test_only_beneficiary_can_withdraw_award(vault_contract, direct_vm, direct_o
         vault, direct_vm, direct_owner, direct_alice, direct_bob, direct_charlie, 20
     )
     vault.apply_resolution(
-        case_id, commitment_id, "PROVABLE_MISCONDUCT", 10_000, as_address(direct_bob)
+        case_id, commitment_id, "PROVABLE_MISCONDUCT", 10_000, as_address(direct_bob),
+        *_resolution_provenance(vault, commitment_id, "PROVABLE_MISCONDUCT")
     )
     direct_vm.sender = direct_alice
     with direct_vm.expect_revert("award withdrawal exceeds balance"):
@@ -136,3 +164,34 @@ def test_only_beneficiary_can_withdraw_award(vault_contract, direct_vm, direct_o
         vault.withdraw_award(17)
     vault.withdraw_award(16)
     assert vault.get_operator(as_address(direct_bob))["claimable_awards"] == 0
+
+
+def test_resolution_requires_canonical_duty_digest_and_fetched_citation(
+    vault_contract, direct_vm, direct_owner, direct_alice, direct_bob, direct_charlie
+):
+    vault = vault_contract
+    case_id, commitment_id = _prepare_vault(
+        vault, direct_vm, direct_owner, direct_alice, direct_bob, direct_charlie, 20
+    )
+    digest, alleged, citations = _resolution_provenance(
+        vault, commitment_id, "NEGLIGENT_FAILURE"
+    )
+    with direct_vm.expect_revert("canonical commitment binding mismatch"):
+        vault.apply_resolution(
+            case_id, commitment_id, "NEGLIGENT_FAILURE", 5_000, as_address(direct_bob),
+            "sha256:" + "f" * 64, alleged, citations
+        )
+    with direct_vm.expect_revert("slash requires fetched evidence citation"):
+        vault.apply_resolution(
+            case_id, commitment_id, "NEGLIGENT_FAILURE", 5_000, as_address(direct_bob),
+            digest, alleged, "[]"
+        )
+
+    vault.apply_resolution(
+        case_id, commitment_id, "NEGLIGENT_FAILURE", 5_000, as_address(direct_bob),
+        digest, alleged, citations
+    )
+    application = vault.get_case_application(case_id)
+    assert application["commitment_digest"] == digest
+    assert application["alleged_rule_ids"] == ["R3"]
+    assert application["evidence_citations"][0]["submission_party"] == "CLAIMANT"

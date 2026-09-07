@@ -35,7 +35,7 @@ def test_silent_operator_can_be_marked_ready_after_bounded_timeout():
     assert case["response_deadline"] == "2099-01-02T23:59:59Z"
 
     finalized(
-        court.mark_case_ready(args=["case-1", "[]"]),
+        court.mark_case_ready(args=["case-1", '["R1"]']),
         context={"genvm_datetime": "2099-01-03T00:00:00Z"},
     )
     assert protocol["court"].get_case(args=["case-1"]).call()["status"] == "READY_FOR_ADJUDICATION"

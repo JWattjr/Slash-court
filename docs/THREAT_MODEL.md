@@ -12,6 +12,9 @@
 | Correlated LLM errors | Independent validator re-evaluation and substantive-field comparison | Validators may share model/provider bias |
 | Private evidence | Private/local/raw IP hosts are rejected | Public sources can still disappear |
 | Deadline manipulation | Required canonical UTC timestamps, full-resolution comparisons, transaction context required, bounded windows | Network policy and clock assumptions must be reviewed |
+| Case detached from service duty | Vault computes a canonical commitment digest; Court stores every duty field and revalidates digest, case ID, status, parties, trigger, deadlines, action, rulebook, and exposure immediately before consensus | A new duty requires a new commitment and case |
+| Untraceable slash reasoning | Slash outcomes require findings that cite fetched evidence; party, hash, source, evidence type, and relevant-rule metadata are copied deterministically into Court and Vault records | Source truth still depends on approved-domain integrity |
+| Appeal target lost in UI | Adjudication hash is stored per network/Court/Vault/case at ACCEPTED, rechecked on reload, and finalized in the background; appeal targets only that retained transaction | Browser storage can be cleared, so explorer receipts remain authoritative |
 | Commitment replay | Unique IDs and case-by-commitment index | Storage migration errors could reintroduce duplicates |
 | Resolution replay | Case-keyed application record, exact-payload check, and an original-adjudication-finality gate for retries | A failed callback still requires retry/monitoring |
 | Double withdrawal | Balance debited before finality-safe transfer | External recipient message failure needs operations handling |

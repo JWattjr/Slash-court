@@ -4,8 +4,15 @@ from types import SimpleNamespace
 
 def test_all_four_classifications_have_structured_guardrails(court_contract):
     court = court_contract
-    case = SimpleNamespace()
-    evidence = [{"evidence_id": "E1"}]
+    case = SimpleNamespace(alleged_rule_ids_json='["R3","R4","R5"]')
+    evidence = [{
+        "evidence_id": "E1",
+        "evidence_type": "PUBLIC_STATUS",
+        "submission_party": "CLAIMANT",
+        "source_domain": "status.example.org",
+        "content_hash": "sha256:" + "a" * 64,
+        "relevant_rule_ids": ["R3", "R4", "R5"],
+    }]
     examples = [
         (
             "PROVABLE_MISCONDUCT",
@@ -33,12 +40,15 @@ def test_all_four_classifications_have_structured_guardrails(court_contract):
         ),
     ]
     for classification, violated, exemptions, outcome in examples:
+        findings = []
+        if outcome != "NO_SLASH":
+            findings = [{"evidence_id": "E1", "rule_id": violated[0], "finding": "Cited fact."}]
         result = court._parse_model_result(
             {
                 "classification": classification,
                 "violated_rule_ids": violated,
                 "supported_exemption_ids": exemptions,
-                "findings": [],
+                "findings": findings,
                 "explanation": "A bounded explanation.",
             },
             case,
@@ -48,6 +58,15 @@ def test_all_four_classifications_have_structured_guardrails(court_contract):
 
 
 def test_contradictory_structured_results_fail_closed(court_contract, direct_vm):
+    case = SimpleNamespace(alleged_rule_ids_json='["R3","R4"]')
+    evidence = [{
+        "evidence_id": "E1",
+        "evidence_type": "PUBLIC_STATUS",
+        "submission_party": "CLAIMANT",
+        "source_domain": "status.example.org",
+        "content_hash": "sha256:" + "a" * 64,
+        "relevant_rule_ids": ["R3", "R4"],
+    }]
     with direct_vm.expect_revert("outage requires supported exemption"):
         court_contract._parse_model_result(
             {
@@ -57,8 +76,8 @@ def test_contradictory_structured_results_fail_closed(court_contract, direct_vm)
                 "findings": [],
                 "explanation": "No exemption was actually supported.",
             },
-            SimpleNamespace(),
-            [{"evidence_id": "E1"}],
+            case,
+            evidence,
         )
     with direct_vm.expect_revert("insufficient evidence cannot assert breach"):
         court_contract._parse_model_result(
@@ -69,6 +88,6 @@ def test_contradictory_structured_results_fail_closed(court_contract, direct_vm)
                 "findings": [],
                 "explanation": "Uncertainty is not a breach finding.",
             },
-            SimpleNamespace(),
-            [{"evidence_id": "E1"}],
+            case,
+            evidence,
         )

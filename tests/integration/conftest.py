@@ -111,7 +111,7 @@ def evidence_manifest(evidence_id="E1", path="incident-1"):
                 "source_domain": "status.example.org",
                 "claimed_fact": "A public provider status record describes the incident.",
                 "content_hash": "sha256:1831a9ed89110e78457036e481161472d0d6fdf9367c11f8e8552722deed0f6c",
-                "relevant_rule_ids": ["R3"],
+                "relevant_rule_ids": ["R3", "R4", "R5"],
             }
         ]
     )

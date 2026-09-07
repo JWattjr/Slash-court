@@ -19,7 +19,9 @@ should be left blank unless a polished recording is available before the deadlin
 
 ## Description
 
-> SlashCourt settles disputes for bonded automation operators. Operators lock bounded exposure behind a service duty; beneficiaries can raise a claim and both sides can submit evidence. GenLayer validators independently fetch that evidence and evaluate responsibility under an immutable versioned rulebook, distinguishing provable misconduct, negligence, legitimate outages, and insufficient evidence. Deterministic contracts map each classification to a fixed, capped penalty instead of letting a model choose money. A separate vault applies resolutions only after finality, with exact case binding and replay protection. The live StudioNet deployment includes four finalized consensus cases covering every verdict and settlement path. The repo provides 28 direct tests, evidence cases, threat and economic models, deployment provenance, and a Next.js console. Evidence fixtures are clearly labelled synthetic; bonds are simulated application funds, not native validator stake or real TVL.
+998 of 1,000 characters:
+
+> SlashCourt settles bonded-automation disputes. Every case is hash-bound to the vault duty, trigger, deadlines, expected action, parties, exposure, rulebook, and alleged rules. GenLayer validators fetch allowlisted evidence and preserve each citation's submitting party, content hash, type, domain, and rule metadata. A slash is invalid unless findings cite fetched evidence for every violated rule. Deterministic contracts map classifications to fixed, capped penalties; a separate vault applies them only after finality with case binding and replay protection. The console retains the adjudication transaction at ACCEPTED, exposes appeal window, and tests recovery after reload. Upgraded contracts are live on StudioNet; four finalized outcomes remain verifiable on the documented predecessor deployment. The repo includes 32 direct tests, two console persistence tests, integration scenarios, and a threat model. Fixtures and bonds are synthetic demo data, not native validator stake or real TVL.
 
 ## Demo video
 
@@ -29,48 +31,50 @@ Leave the optional YouTube URL blank unless a polished recording is available.
 
 Add these five steps in order.
 
-### 1. Open the live console
+### 1. Open the upgraded console
 
-Visit [https://slash-court.vercel.app](https://slash-court.vercel.app). Wait for
-the StudioNet snapshot to load. Confirm Court `0x576B…bf8e`, Vault
-`0x95E4…625B`, rulebook v1, and the fixed 100% / 50% / 0% penalty schedule.
+Visit [https://slash-court.vercel.app](https://slash-court.vercel.app). Confirm
+Court `0xA463…15aB`, Vault `0x5eAb…E7E4`, rulebook v1, and the fixed 100% / 50% /
+0% penalty schedule.
 
-### 2. Inspect a bonded commitment
+### 2. Verify canonical adjudication binding
 
-Open `demo-negligence-20260906`. Review its operator, beneficiary, accepted
-terms, 1 GEN locked exposure, and rulebook version. This is application-level
-operator accountability, not native protocol validator slashing.
+Open the repository's `tests/direct/test_case_lifecycle.py` and
+`tests/direct/test_adjudication.py`. Confirm the court snapshots and rechecks
+the vault's canonical duty, trigger, deadlines, expected action, parties,
+exposure, rulebook, case ID, and alleged rules before validator evaluation.
 
-### 3. Compare all verdicts
+### 3. Verify attributable slash evidence
 
-Open `case-1`, `case-2`, `case-3`, and `case-4`. Confirm
-PROVABLE_MISCONDUCT, NEGLIGENT_FAILURE, EXTERNAL_OUTAGE, and
-INSUFFICIENT_EVIDENCE. Compare the reasoning, rule references, and clearly
-labelled synthetic evidence.
+Review `tests/direct/test_adversarial_evidence.py` and
+`tests/direct/test_resolution_application.py`. Confirm slash findings must cite
+fetched evidence and that the court and vault preserve submitting party,
+content hash, evidence type, domain, and relevant rule IDs.
 
-### 4. Trace finalized settlement
+### 4. Verify the appealable transaction flow
 
-Confirm `case-1` applies FULL_SLASH (1 GEN), `case-2` applies PARTIAL_SLASH
-(0.5 GEN), and `case-3` and `case-4` apply NO_SLASH. Every case must show
-PENALTY_APPLIED, FINALIZED, and APPLIED_FINALIZED. The vault should show 2.5 GEN
-remaining bond, 1.2 GEN beneficiary awards, 0.3 GEN safety pool, and zero
-locked exposure.
+Review `tests/frontend/transactions.test.ts`, then open the console. The app
+stores the exact adjudication hash at ACCEPTED, exposes Appeal before finality,
+restores that transaction after reload, and tracks finalization in the
+background.
 
-### 5. Inspect the proof
+### 5. Inspect live and historical proof
 
-Open the repository and review `docs/DEMO_SCRIPT.md`, `docs/THREAT_MODEL.md`,
-`docs/ECONOMICS.md`, `deploy/last-deployment.json`, `deploy/live-demo.json`,
-and `tests/`. The README distinguishes mocked local tests from live StudioNet
-consensus and records the deployed-source provenance.
+Review `deploy/last-deployment.json` for the upgraded pair and
+`deploy/live-demo.json` for the explicitly labelled predecessor deployment.
+The latter contains four real finalized StudioNet outcomes covering full,
+partial, and zero-slash settlement; all evidence fixtures are labelled synthetic.
 
 ## Expected verification outcome
 
-> The steward should see rulebook v1, the current Court and Vault addresses, and four finalized cases. case-1 applies a 1 GEN full slash; case-2 applies a 0.5 GEN partial slash; case-3 and case-4 apply zero. All show PENALTY_APPLIED, FINALIZED, and APPLIED_FINALIZED. The vault ends with 2.5 GEN operator bond, 1.2 GEN beneficiary awards, 0.3 GEN safety pool, and zero locked exposure. Evidence is clearly labelled synthetic.
+443 of 500 characters:
+
+> The steward should see the upgraded Court and Vault addresses, rulebook v1, canonical-duty digest fields, evidence citations with party and rule metadata, and an appeal control bound to a retained adjudication transaction. The repository's historical StudioNet proof still shows four finalized outcomes and fixed 100% / 50% / 0% settlement; it is explicitly identified as the predecessor deployment rather than attributed to the upgraded pair.
 
 ## Contract links
 
-1. SlashCourt: [https://explorer-studio.genlayer.com/address/0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e](https://explorer-studio.genlayer.com/address/0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e)
-2. OperatorBondVault: [https://explorer-studio.genlayer.com/address/0x95E438A856c70a138824c37F937e0f436461625B](https://explorer-studio.genlayer.com/address/0x95E438A856c70a138824c37F937e0f436461625B)
+1. SlashCourt: [https://explorer-studio.genlayer.com/address/0xA4636860ea78c6E29179E7893e1bDa68133D15aB](https://explorer-studio.genlayer.com/address/0xA4636860ea78c6E29179E7893e1bDa68133D15aB)
+2. OperatorBondVault: [https://explorer-studio.genlayer.com/address/0x5eAba41b27560505A45fD51a301f01f30832E7E4](https://explorer-studio.genlayer.com/address/0x5eAba41b27560505A45fD51a301f01f30832E7E4)
 
 ## Project links
 
@@ -86,13 +90,13 @@ The required repository evidence is:
 If the form accepts more links, add these in order:
 
 1. [https://slash-court.vercel.app](https://slash-court.vercel.app)
-2. [https://explorer-studio.genlayer.com/address/0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e](https://explorer-studio.genlayer.com/address/0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e)
-3. [https://explorer-studio.genlayer.com/tx/0x2fca7b681784f8281612b077dc2e2eb3c1dbdf8adc552d7f5014a1648480f19f](https://explorer-studio.genlayer.com/tx/0x2fca7b681784f8281612b077dc2e2eb3c1dbdf8adc552d7f5014a1648480f19f)
+2. [https://explorer-studio.genlayer.com/address/0xA4636860ea78c6E29179E7893e1bDa68133D15aB](https://explorer-studio.genlayer.com/address/0xA4636860ea78c6E29179E7893e1bDa68133D15aB)
+3. [https://explorer-studio.genlayer.com/tx/0xf47ec484113e69f450877dfa633174ed857c88503a7b75fc63549fa892a9355f](https://explorer-studio.genlayer.com/tx/0xf47ec484113e69f450877dfa633174ed857c88503a7b75fc63549fa892a9355f)
 
 ## Final check
 
 - Keep the YouTube field blank unless a polished recording exists.
 - Confirm the selected tags match the portal's exact taxonomy.
-- Open the website, repository, both contracts, and adjudication transaction.
-- Confirm the four case IDs and final vault totals still load.
-- Review the portal preview for truncation or broken links before submitting.
+- Open the website, repository, both upgraded contracts, and rulebook transaction.
+- Confirm historical cases are described only as predecessor-deployment proof.
+- Review the portal preview for truncation or broken links before resubmitting.

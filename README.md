@@ -45,7 +45,8 @@ arithmetic deterministic.
 The vault never accepts an arbitrary amount from the model. `FULL_SLASH`,
 `PARTIAL_SLASH`, and `NO_SLASH` are closed mappings from the four supported
 classifications, and every amount is capped by the commitment's pre-locked
-exposure.
+exposure. It also recomputes the commitment digest before settlement and stores
+the alleged rules plus fetched-evidence citations with the application.
 
 ## Repository map
 
@@ -138,15 +139,17 @@ transaction fees and require a funded account. No StudioNet or Bradbury
 address is claimed by the source code; the current StudioNet deployment is
 recorded in `deploy/last-deployment.json` and listed below.
 
-Current revised StudioNet deployment (2026-09-06):
+Current steward-response StudioNet deployment (2026-09-07):
 
-- `OperatorBondVault`: [`0x95E438A856c70a138824c37F937e0f436461625B`](https://explorer-studio.genlayer.com/address/0x95E438A856c70a138824c37F937e0f436461625B)
-- `SlashCourt`: [`0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e`](https://explorer-studio.genlayer.com/address/0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e)
-- Rulebook publication: [`0x4001a1acc767d3eba88896649799c18d3cee89f06d45961fce229f1d13139a24`](https://explorer-studio.genlayer.com/tx/0x4001a1acc767d3eba88896649799c18d3cee89f06d45961fce229f1d13139a24)
+- `OperatorBondVault`: [`0x5eAba41b27560505A45fD51a301f01f30832E7E4`](https://explorer-studio.genlayer.com/address/0x5eAba41b27560505A45fD51a301f01f30832E7E4)
+- `SlashCourt`: [`0xA4636860ea78c6E29179E7893e1bDa68133D15aB`](https://explorer-studio.genlayer.com/address/0xA4636860ea78c6E29179E7893e1bDa68133D15aB)
+- Rulebook publication: [`0xf47ec484113e69f450877dfa633174ed857c88503a7b75fc63549fa892a9355f`](https://explorer-studio.genlayer.com/tx/0xf47ec484113e69f450877dfa633174ed857c88503a7b75fc63549fa892a9355f)
 
-StudioNet reads verified the bidirectional binding, rulebook v1 digest, fixed
-penalty schedule, and `slash-court.vercel.app` evidence allowlist. Four real
-StudioNet consensus cases are finalized and applied:
+StudioNet reads verified the new pair's bidirectional binding, rulebook v1
+digest, fixed penalty schedule, and `slash-court.vercel.app` evidence
+allowlist. The four real finalized consensus cases below belong to the
+predecessor deployment (`Court 0x576B...bf8e`, `Vault 0x95E4...625B`), retained
+as historical end-to-end evidence while the steward-response pair is seeded:
 
 - `case-1`: `PROVABLE_MISCONDUCT -> FULL_SLASH` (1 GEN)
 - `case-2`: `NEGLIGENT_FAILURE -> PARTIAL_SLASH` (0.5 GEN)
@@ -157,7 +160,8 @@ The operator deposited 4 GEN across four 1 GEN commitments. Final accounting
 is 2.5 GEN remaining bond, 1.5 GEN total penalties, 1.2 GEN beneficiary
 awards, 0.3 GEN safety pool, and zero locked exposure. The incident fixtures
 are explicitly synthetic; adjudication, finality, and settlement are live.
-Exact receipts are recorded in `deploy/live-demo.json`.
+Exact predecessor addresses and receipts are recorded in
+`deploy/live-demo.json`; they are not attributed to the current contracts.
 
 ## Security posture and known limitations
 
@@ -167,9 +171,15 @@ Exact receipts are recorded in `deploy/live-demo.json`.
 - Web/LLM failure becomes `INSUFFICIENT_EVIDENCE`, never a slash.
 - Validators re-run the substantive evaluation and compare classification,
   outcome, rule IDs, and supported exemptions.
+- Every adjudication revalidates the vault's canonical duty digest, trigger,
+  deadlines, expected action, parties, rulebook, exposure, and case binding.
+- Financial slashes require fetched-evidence findings. Court and Vault records
+  preserve each citation's submitting party, relevant rules, domain, type, and
+  committed content hash.
 - Only a finalized vault message changes application balances.
-- The network's appeal operation is the authority for an appeal; the UI links
-  the transaction lifecycle and does not fake a local appeal state.
+- The network's appeal operation is authoritative. The UI persists the exact
+  adjudication hash at ACCEPTED, exposes the pre-finality appeal window, and
+  tracks finalization in the background.
 - Evidence fixtures are synthetic and clearly labeled. They are demo inputs,
   not historical incidents.
 - Current tests use the pinned `py-genlayer:1jb45...` runner requested by the

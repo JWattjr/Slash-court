@@ -12,6 +12,8 @@ derived from the closed classification enum below; the court and its model
 cannot choose an amount.
 """
 
+import hashlib
+import json
 from dataclasses import dataclass
 
 from genlayer import *
@@ -38,6 +40,7 @@ CLASSIFICATIONS = (
     "EXTERNAL_OUTAGE",
     "INSUFFICIENT_EVIDENCE",
 )
+RULE_IDS = ("R1", "R2", "R3", "R4", "R5", "R6", "R7")
 
 STATUS_OFFERED = "OFFERED"
 STATUS_ACTIVE = "ACTIVE"
@@ -97,6 +100,11 @@ class ResolutionApplication:
     safety_pool_amount: u256
     beneficiary: Address
     applied: bool
+    # Appended provenance binds the financial application to the exact duty
+    # and the court's evidence-backed allegations.
+    commitment_digest: str
+    alleged_rule_ids_json: str
+    evidence_citations_json: str
 
 
 @gl.contract_interface
@@ -262,6 +270,60 @@ class OperatorBondVault(gl.Contract):
             return NO_SLASH_BPS
         raise gl.vm.UserError(f"{ERROR_EXPECTED} unknown classification")
 
+    def _commitment_digest(self, commitment: Commitment) -> str:
+        canonical = {
+            "beneficiary": commitment.beneficiary.as_hex,
+            "commitment_id": commitment.commitment_id,
+            "dispute_deadline": commitment.dispute_deadline,
+            "duty_deadline": commitment.duty_deadline,
+            "duty_trigger": commitment.duty_trigger,
+            "expected_action_id": commitment.expected_action_id,
+            "locked_exposure": commitment.locked_exposure,
+            "operator": commitment.operator.as_hex,
+            "rulebook_version": commitment.rulebook_version,
+            "service_description": commitment.service_description,
+        }
+        encoded = json.dumps(canonical, sort_keys=True, separators=(",", ":"))
+        return "sha256:" + hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+    def _canonical_resolution_provenance(
+        self, alleged_rule_ids_json: str, evidence_citations_json: str, slash_required: bool
+    ) -> tuple[str, str]:
+        try:
+            alleged = json.loads(alleged_rule_ids_json)
+            citations = json.loads(evidence_citations_json)
+        except Exception as error:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} invalid resolution provenance: {error}")
+        if not isinstance(alleged, list) or len(alleged) == 0 or len(alleged) > len(RULE_IDS):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} alleged rules are required")
+        seen_rules = []
+        for rule_id in alleged:
+            if rule_id not in RULE_IDS or rule_id in seen_rules:
+                raise gl.vm.UserError(f"{ERROR_EXPECTED} invalid alleged rules")
+            seen_rules.append(rule_id)
+        if not isinstance(citations, list) or len(citations) > 5:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} invalid evidence citations")
+        if slash_required and len(citations) == 0:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} slash requires fetched evidence citation")
+        for citation in citations:
+            if not isinstance(citation, dict):
+                raise gl.vm.UserError(f"{ERROR_EXPECTED} invalid evidence citation")
+            if citation.get("submission_party") not in ("CLAIMANT", "OPERATOR"):
+                raise gl.vm.UserError(f"{ERROR_EXPECTED} evidence citation party is required")
+            relevant = citation.get("relevant_rule_ids")
+            if not isinstance(relevant, list) or len(relevant) == 0:
+                raise gl.vm.UserError(f"{ERROR_EXPECTED} evidence citation rules are required")
+            for rule_id in relevant:
+                if rule_id not in RULE_IDS:
+                    raise gl.vm.UserError(f"{ERROR_EXPECTED} invalid evidence citation rule")
+            content_hash = citation.get("content_hash")
+            if not isinstance(content_hash, str) or not content_hash.startswith("sha256:"):
+                raise gl.vm.UserError(f"{ERROR_EXPECTED} evidence citation hash is required")
+        return (
+            json.dumps(alleged, separators=(",", ":")),
+            json.dumps(citations, sort_keys=True, separators=(",", ":")),
+        )
+
     def _commitment_to_dict(self, commitment: Commitment) -> dict:
         return {
             "commitment_id": commitment.commitment_id,
@@ -279,6 +341,7 @@ class OperatorBondVault(gl.Contract):
             "duty_result_reference": commitment.duty_result_reference,
             "case_id": commitment.case_id,
             "created_at": commitment.created_at,
+            "commitment_digest": self._commitment_digest(commitment),
         }
 
     def _record_transfer(self, recipient: Address, amount: u256) -> None:
@@ -574,6 +637,9 @@ class OperatorBondVault(gl.Contract):
         classification: str,
         penalty_bps: u256,
         beneficiary: Address,
+        commitment_digest: str,
+        alleged_rule_ids_json: str,
+        evidence_citations_json: str,
     ) -> None:
         self._require_court()
         beneficiary = self._normalize_address(beneficiary)
@@ -585,6 +651,11 @@ class OperatorBondVault(gl.Contract):
         expected_bps = self._classification_bps(classification)
         if penalty_bps != expected_bps:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} penalty mapping mismatch")
+        if commitment_digest != self._commitment_digest(commitment):
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} canonical commitment binding mismatch")
+        alleged_rule_ids_json, evidence_citations_json = self._canonical_resolution_provenance(
+            alleged_rule_ids_json, evidence_citations_json, expected_bps > 0
+        )
 
         if case_id in self.resolution_applications:
             existing = self.resolution_applications[case_id]
@@ -593,6 +664,9 @@ class OperatorBondVault(gl.Contract):
                 or existing.classification != classification
                 or existing.penalty_bps != penalty_bps
                 or existing.beneficiary != beneficiary
+                or existing.commitment_digest != commitment_digest
+                or existing.alleged_rule_ids_json != alleged_rule_ids_json
+                or existing.evidence_citations_json != evidence_citations_json
             ):
                 raise gl.vm.UserError(f"{ERROR_EXPECTED} resolution replay payload mismatch")
             # A previous vault application may have succeeded while its
@@ -649,6 +723,9 @@ class OperatorBondVault(gl.Contract):
             safety_pool_amount=safety_pool_amount,
             beneficiary=beneficiary,
             applied=True,
+            commitment_digest=commitment_digest,
+            alleged_rule_ids_json=alleged_rule_ids_json,
+            evidence_citations_json=evidence_citations_json,
         )
         self.resolution_case_ids.append(case_id)
         SlashCourtCallback(self.slash_court).emit(on="finalized").record_resolution_applied(
@@ -752,6 +829,9 @@ class OperatorBondVault(gl.Contract):
             "safety_pool_amount": application.safety_pool_amount,
             "beneficiary": application.beneficiary.as_hex,
             "applied": application.applied,
+            "commitment_digest": application.commitment_digest,
+            "alleged_rule_ids": json.loads(application.alleged_rule_ids_json),
+            "evidence_citations": json.loads(application.evidence_citations_json),
         }
 
     @gl.public.view

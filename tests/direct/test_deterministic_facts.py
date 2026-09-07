@@ -7,11 +7,20 @@ def test_deterministic_facts_are_bounded_and_do_not_make_a_judgment(court_contra
     case = SimpleNamespace(
         commitment_id="commitment-facts",
         commitment_exposure=20,
+        canonical_commitment_json=json.dumps({
+            "commitment_id": "commitment-facts",
+            "locked_exposure": 20,
+            "duty_trigger": "scheduled-trigger",
+            "duty_deadline": "2099-01-01T00:00:00Z",
+            "dispute_deadline": "2099-01-02T00:00:00Z",
+            "expected_action_id": "maintenance-action",
+        }),
+        alleged_rule_ids_json='["R3"]',
         claimant_evidence_json=json.dumps(
-            [{"evidence_id": "E1", "source_domain": "status.example.org"}]
+            [{"evidence_id": "E1", "source_domain": "status.example.org", "submission_party": "CLAIMANT", "relevant_rule_ids": ["R3"]}]
         ),
         operator_evidence_json=json.dumps(
-            [{"evidence_id": "E2", "source_domain": "evidence.example.com"}]
+            [{"evidence_id": "E2", "source_domain": "evidence.example.com", "submission_party": "OPERATOR", "relevant_rule_ids": ["R3"]}]
         ),
         operator_response="A bounded response",
     )
@@ -21,6 +30,9 @@ def test_deterministic_facts_are_bounded_and_do_not_make_a_judgment(court_contra
     assert facts["operator_evidence_count"] == 1
     assert facts["operator_responded"] is True
     assert facts["evidence_ids"] == ["E1", "E2"]
+    assert facts["duty_trigger"] == "scheduled-trigger"
+    assert facts["expected_action_id"] == "maintenance-action"
+    assert facts["alleged_rule_ids"] == ["R3"]
     assert "classification" not in facts
 
 

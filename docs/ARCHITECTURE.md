@@ -35,6 +35,12 @@ not need to be registered operators.
 2. A beneficiary alone can open its commitment's case.
 3. The operator receives a response window before adjudication.
 4. Evidence is canonicalized and immutable once adjudication begins.
+5. The court snapshots the vault's canonical service, trigger, duty and dispute
+   deadlines, expected action, parties, rulebook, and exposure with a vault-made
+   SHA-256 digest. It re-reads and matches that binding before every adjudication.
+6. Slash findings can cite only fetched evidence and alleged rules. Stored
+   citations preserve evidence ID, submitting party, type, domain, hash, and
+   relevant rule IDs through the finalized vault application.
 5. Model output contains no monetary fields and cannot invent IDs or URLs.
 6. Validator comparison covers substantive settlement fields.
 7. A model/web failure returns a no-slash insufficient-evidence result.

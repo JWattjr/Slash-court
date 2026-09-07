@@ -266,6 +266,31 @@ export class SlashCourtClient {
     return { ...snapshot, appealable: Boolean(await this.client.canAppeal({ txId: hash }).catch(() => false)) };
   }
 
+  async waitForAppealWindow(hash: string, kind: TxSnapshot["kind"] = "adjudication"): Promise<TxSnapshot> {
+    try {
+      const receipt = await this.client.waitForTransactionReceipt({
+        hash,
+        status: TransactionStatus.ACCEPTED,
+        interval: 1500,
+        retries: 100,
+        fullTransaction: false,
+      });
+      const snapshot = snapshotFromReceipt(hash, receipt, kind);
+      return { ...snapshot, appealable: Boolean(await this.client.canAppeal({ txId: hash }).catch(() => false)) };
+    } catch (error) {
+      return {
+        hash,
+        status: "UNKNOWN",
+        execution: "UNKNOWN",
+        success: false,
+        appealable: false,
+        kind,
+        error: error instanceof Error ? error.message : "Appeal-window polling failed.",
+        updatedAt: Date.now(),
+      };
+    }
+  }
+
   async wait(hash: string, kind: TxSnapshot["kind"] = "operator"): Promise<TxSnapshot> {
     try {
       const receipt = await this.client.waitForTransactionReceipt({
