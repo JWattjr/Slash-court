@@ -24,6 +24,7 @@ jobs:
 
       - name: Lint and generate schemas
         run: |
+          mkdir -p artifacts
           python -X utf8 -m genvm_linter.cli check contracts/slash_court.py
           python -X utf8 -m genvm_linter.cli check contracts/operator_bond_vault.py
           python -X utf8 -m genvm_linter.cli schema contracts/slash_court.py --json > artifacts/slash_court.schema.json
