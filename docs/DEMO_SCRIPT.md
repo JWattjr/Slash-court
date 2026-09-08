@@ -1,58 +1,57 @@
-# Three-minute demo script
+# 60–90 second demo: negligence versus outage
 
-## 0:00–0:30 — problem
+Use the public console without connecting a wallet. The four examples below are
+finalized StudioNet consensus results from the explicitly labelled predecessor
+deployment and use synthetic evidence fixtures. The current Court/Vault pair is
+shown separately and currently has no cases.
 
-“A log can prove that an automation keeper missed a task. It cannot tell us
-whether the keeper was negligent or whether a widespread provider outage made
-the task impossible. SlashCourt turns that responsibility question into an
-appealable, evidence-based application-layer settlement.”
+## 0:00–0:15 — the responsibility problem
 
-## 0:30–1:00 — commitment
+“A log can show that an automation duty was missed. It cannot decide whether the
+operator was negligent or whether a broad outage made performance impossible.
+SlashCourt binds the duty first, then GenLayer validators evaluate attributable
+evidence under a versioned rulebook.”
 
-Show the operator registry: 4 GEN deposited across four 1 GEN commitments, one
-beneficiary, duty deadlines, failover obligations, and exact maximum penalties.
-Point out that each 1 GEN exposure was locked before its duty began.
+Show the current Court and Vault links. Point out that public inspection is
+wallet-free and financial controls stay disabled if Court, Vault, rulebook, or
+evidence-policy reads are unavailable.
 
-## 1:00–1:50 — negligence
+## 0:15–0:48 — preventable negligence
 
-Open a case with the labelled synthetic fixture at
-`https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt`:
-primary provider failed, secondary provider remained available, and no credible
-failover attempt was supplied.
-Open `case-2`. Show the operator response, evidence freeze, the R3 finding, and the
-`NEGLIGENT_FAILURE -> PARTIAL_SLASH` mapping. Submit adjudication and show the
-transaction timeline: EVM submitted, consensus pending, accepted/provisional,
-appeal window, finalized, resolution message queued, then applied. The 1 GEN
-exposure becomes a 0.5 GEN penalty; the remaining bond is untouched.
+Open the shareable historical case URL:
 
-## 1:50–2:20 — external outage
+`https://slash-court.vercel.app/#case/historical/case-2`
 
-Open `case-3` and use the labelled synthetic outage fixture at
-`https://slash-court.vercel.app/evidence-fixtures/external-outage.txt` with no
-available mitigation. The model can select `EXTERNAL_OUTAGE`, but cannot supply a number.
-The deterministic mapping returns `NO_SLASH`; the entire 1 GEN exposure is
-released without a beneficiary award.
+“This labelled synthetic fixture says the primary RPC failed while the
+configured secondary remained available and no failover attempt was evidenced.
+The case is bound to its duty and 1 GEN exposure. Validators classified it as
+`NEGLIGENT_FAILURE`; the deterministic mapping produced `PARTIAL_SLASH`.”
 
-## 2:20–2:45 — misconduct and uncertainty
+Show the case facts before metadata, evidence, response status, R3 basis,
+adjudication transaction, finalized state, and Vault accounting: 0.5 GEN
+penalty, 0.4 GEN beneficiary compensation, and 0.1 GEN safety-pool allocation.
+If the live historical read is limited, the UI explicitly marks the operator
+response and exact findings unavailable while retaining the checked manifest.
 
-Show the labelled synthetic misconduct fixture at
-`https://slash-court.vercel.app/evidence-fixtures/provable-misconduct.txt` in
-`case-1` and
-the insufficient-evidence fixture at
-`https://slash-court.vercel.app/evidence-fixtures/insufficient-evidence.txt` in
-`case-4`.
-Evidence is delimited as data. A fabricated or contradictory signed report can
-produce `PROVABLE_MISCONDUCT` and a full commitment-level slash; an ambiguous
-record produces `INSUFFICIENT_EVIDENCE` and zero slash.
+## 0:48–1:12 — excusable external outage
 
-The console computes a `sha256:` digest over the fetched fixture bytes before
-submission. Validators fetch the same URL and compare the full response body
-to that committed digest; the fixtures are synthetic demo inputs, not real
-incidents. The committed fixture digest manifest is at
-`frontend/public/evidence-fixtures/manifest.json`.
+Open:
 
-## 2:45–3:00 — close
+`https://slash-court.vercel.app/#case/historical/case-3`
 
-“SlashCourt converts application-specific service bonds from rigid uptime
-counters into evidence-based, appealable commitments. Logs prove failure;
-SlashCourt determines responsibility.”
+“Here the synthetic evidence says primary and secondary providers shared the
+regional incident and mitigation was unavailable. Validators classified it as
+`EXTERNAL_OUTAGE`; deterministic policy produced `NO_SLASH`.”
+
+Show the R4 exemption, finalized adjudication transaction, zero penalty, zero
+beneficiary compensation, zero safety-pool allocation, and release of the full
+1 GEN exposure.
+
+## 1:12–1:25 — close
+
+“The AI decides responsibility from evidence. It never chooses a number. The
+contracts cap the consequence, preserve an appeal window, and apply a case only
+once after finality.”
+
+If time remains, open `case-1` for provable misconduct and `case-4` for
+insufficient evidence. Never describe any fixture as a real incident.

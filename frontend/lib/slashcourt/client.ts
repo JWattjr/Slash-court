@@ -10,7 +10,8 @@ import {
 import { formatUnits, parseUnits } from "viem";
 import { createGenLayerClient, GENLAYER_CHAIN_ID_HEX, getEthereumProvider, RPC_URL, chainForEndpoint } from "@/lib/genlayer/client";
 import type { CalldataEncodable } from "genlayer-js/types";
-import type { CourtCase, CourtStatistics, Dashboard, Rulebook, TxSnapshot, OperatorState, VaultConfiguration, VaultStatistics } from "./types";
+import { classifyReadFailure } from "./refresh";
+import type { CaseBundle, CaseIndex, CourtCase, CourtStatistics, Dashboard, ReadSlice, Rulebook, TxSnapshot, OperatorState, VaultApplication, VaultConfiguration, VaultStatistics } from "./types";
 
 const COURT_ADDRESS = (process.env.NEXT_PUBLIC_SLASH_COURT_ADDRESS || "").trim();
 const VAULT_ADDRESS = (process.env.NEXT_PUBLIC_OPERATOR_BOND_VAULT_ADDRESS || "").trim();
@@ -143,9 +144,9 @@ export class SlashCourtClient {
   private readonly vault: `0x${string}`;
   private readTail: Promise<unknown> = Promise.resolve();
 
-  constructor(account?: string) {
-    this.court = address(COURT_ADDRESS, "SlashCourt");
-    this.vault = address(VAULT_ADDRESS, "OperatorBondVault");
+  constructor(account?: string, addresses?: { courtAddress: string; vaultAddress: string }) {
+    this.court = address(addresses?.courtAddress || COURT_ADDRESS, "SlashCourt");
+    this.vault = address(addresses?.vaultAddress || VAULT_ADDRESS, "OperatorBondVault");
     this.client = createGenLayerClient(account);
   }
 
@@ -166,41 +167,62 @@ export class SlashCourtClient {
     return String(hash);
   }
 
-  async dashboard(account?: string): Promise<Dashboard> {
-    const [statsRaw, rulebookRaw, domainsRaw, idsRaw, vaultRaw, vaultStatsRaw, operatorRaw] = await Promise.all([
-      this.read(this.court, "get_statistics"),
-      this.read(this.court, "get_current_rulebook"),
-      this.read(this.court, "get_approved_evidence_domains"),
-      this.read(this.court, "get_case_ids", [0, 50]),
-      this.read(this.vault, "get_vault_configuration"),
-      this.read(this.vault, "get_vault_statistics"),
-      account ? this.read(this.vault, "get_operator", [account]) : Promise.resolve(null),
-    ]);
-    const ids = Array.isArray(record(idsRaw).ids) ? record(idsRaw).ids.map(String) : [];
-    const cases: CourtCase[] = [];
-    for (const id of ids) {
-      try {
-        cases.push(normalizeCase(await this.read(this.court, "get_case", [id])));
-      } catch {
-        // A case can be between an accepted parent write and its finalized child.
-        // The next poll will pick it up; the dashboard never invents a row.
-      }
+  private async readSlice<T>(read: () => Promise<unknown>, normalize: (value: unknown) => T): Promise<ReadSlice<T>> {
+    try {
+      return { data: normalize(await read()), state: "success", error: null, updatedAt: Date.now() };
+    } catch (error) {
+      return { data: null, state: "error", error: classifyReadFailure(error), updatedAt: null };
     }
-    const rulebook = plain(rulebookRaw) as LooseRecord;
+  }
+
+  async getCaseIndex(offset = 0, limit = 8): Promise<ReadSlice<CaseIndex>> {
+    return this.readSlice(() => this.read(this.court, "get_case_ids", [offset, limit]), (value) => {
+      const item = record(value);
+      return { ids: Array.isArray(item.ids) ? item.ids.map(String) : [], total: numberValue(item.total), offset, limit };
+    });
+  }
+
+  async dashboard(account?: string, offset = 0, limit = 8): Promise<Dashboard> {
+    const [statistics, rulebook, domains, caseIndex, vault, vaultStatistics, operator] = await Promise.all([
+      this.readSlice(() => this.read(this.court, "get_statistics"), normalizeStatistics),
+      this.readSlice(() => this.read(this.court, "get_current_rulebook"), (value) => {
+        const item = plain(value) as LooseRecord;
+        return numberValue(item?.version) > 0 ? normalizeRulebook(item) : null;
+      }),
+      this.readSlice(() => this.read(this.court, "get_approved_evidence_domains"), (value) => {
+        const item = record(value);
+        return Array.isArray(item.domains) ? item.domains.map(String) : [];
+      }),
+      this.getCaseIndex(offset, limit),
+      this.readSlice(() => this.read(this.vault, "get_vault_configuration"), normalizeVaultConfiguration),
+      this.readSlice(() => this.read(this.vault, "get_vault_statistics"), normalizeVaultStatistics),
+      account
+        ? this.readSlice(() => this.read(this.vault, "get_operator", [account]), normalizeOperator)
+        : Promise.resolve({ data: null, state: "idle", error: null, updatedAt: null } as ReadSlice<OperatorState>),
+    ]);
     return {
-      statistics: normalizeStatistics(statsRaw),
-      rulebook: numberValue(rulebook?.version) > 0 ? normalizeRulebook(rulebook) : null,
-      domains: Array.isArray(record(domainsRaw).domains) ? record(domainsRaw).domains.map(String) : [],
-      cases,
-      operator: operatorRaw ? normalizeOperator(operatorRaw) : null,
-      vault: normalizeVaultConfiguration(vaultRaw),
-      vaultStatistics: normalizeVaultStatistics(vaultStatsRaw),
+      statistics,
+      rulebook,
+      domains,
+      caseIndex,
+      operator,
+      vault,
+      vaultStatistics,
       network: chainForEndpoint(RPC_URL).name,
+      attemptedAt: Date.now(),
     };
   }
 
   async getCase(caseId: string) {
     return normalizeCase(await this.read(this.court, "get_case", [caseId]));
+  }
+
+  async getCaseBundle(caseId: string): Promise<CaseBundle> {
+    const [caseRecord, application] = await Promise.all([
+      this.readSlice(() => this.read(this.court, "get_case", [caseId]), normalizeCase),
+      this.readSlice(() => this.read(this.vault, "get_case_application", [caseId]), normalizeVaultApplication),
+    ]);
+    return { caseRecord, application };
   }
 
   async getCommitment(commitmentId: string) {
@@ -381,4 +403,18 @@ function normalizeVaultStatistics(value: unknown): VaultStatistics {
     total_penalties_applied: String(item.total_penalties_applied ?? "0"),
     safety_pool_balance: String(item.safety_pool_balance ?? "0"),
   } as VaultStatistics;
+}
+
+function normalizeVaultApplication(value: unknown): VaultApplication {
+  const item = record(plain(value));
+  return {
+    ...item,
+    penalty_bps: numberValue(item.penalty_bps),
+    penalty_amount: String(item.penalty_amount ?? "0"),
+    beneficiary_award: String(item.beneficiary_award ?? "0"),
+    safety_pool_amount: String(item.safety_pool_amount ?? "0"),
+    applied: Boolean(item.applied),
+    alleged_rule_ids: Array.isArray(item.alleged_rule_ids) ? item.alleged_rule_ids.map(String) : [],
+    evidence_citations: Array.isArray(item.evidence_citations) ? item.evidence_citations : [],
+  } as VaultApplication;
 }

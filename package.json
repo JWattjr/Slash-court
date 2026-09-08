@@ -10,7 +10,7 @@
     "start": "npm --prefix frontend run start",
     "lint": "npm --prefix frontend run lint",
     "typecheck": "npm --prefix frontend run typecheck",
-    "test:frontend": "node --experimental-strip-types --test tests/frontend/transactions.test.ts",
+    "test:frontend": "node --experimental-strip-types --test tests/frontend/transactions.test.ts tests/frontend/refresh.test.ts tests/frontend/historical.test.ts",
     "predeploy": "node scripts/clean-deploy-artifacts.mjs",
     "deploy": "genlayer deploy"
   },

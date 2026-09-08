@@ -19,9 +19,9 @@ should be left blank unless a polished recording is available before the deadlin
 
 ## Description
 
-998 of 1,000 characters:
+993 of 1,000 characters:
 
-> SlashCourt settles bonded-automation disputes. Every case is hash-bound to the vault duty, trigger, deadlines, expected action, parties, exposure, rulebook, and alleged rules. GenLayer validators fetch allowlisted evidence and preserve each citation's submitting party, content hash, type, domain, and rule metadata. A slash is invalid unless findings cite fetched evidence for every violated rule. Deterministic contracts map classifications to fixed, capped penalties; a separate vault applies them only after finality with case binding and replay protection. The console retains the adjudication transaction at ACCEPTED, exposes appeal window, and tests recovery after reload. Upgraded contracts are live on StudioNet; four finalized outcomes remain verifiable on the documented predecessor deployment. The repo includes 32 direct tests, two console persistence tests, integration scenarios, and a threat model. Fixtures and bonds are synthetic demo data, not native validator stake or real TVL.
+> SlashCourt settles bonded-automation disputes. Every case is hash-bound to the vault duty, trigger, deadlines, expected action, parties, exposure, rulebook, and alleged rules. GenLayer validators fetch allowlisted evidence and preserve each citation's submitting party, content hash, type, domain, and rule metadata. A slash is invalid unless findings cite fetched evidence for every violated rule. Deterministic contracts map classifications to fixed, capped penalties; a separate vault applies them only after finality with case binding and replay protection. The console retains the adjudication transaction at ACCEPTED, exposes the appeal window, and tests recovery after reload. Upgraded contracts are live on StudioNet; four finalized outcomes remain verifiable on the labelled predecessor deployment. The repo includes 32 direct tests, focused frontend tests, integration scenarios, and a threat model. Fixtures and bonds are synthetic demo data, not native validator stake or real TVL.
 
 ## Demo video
 
@@ -34,8 +34,10 @@ Add these five steps in order.
 ### 1. Open the upgraded console
 
 Visit [https://slash-court.vercel.app](https://slash-court.vercel.app). Confirm
-Court `0xA463…15aB`, Vault `0x5eAb…E7E4`, rulebook v1, and the fixed 100% / 50% /
-0% penalty schedule.
+the console identifies current Court `0xA463…15aB` and Vault `0x5eAb…E7E4`.
+On a successful StudioNet read it shows rulebook v1 and a proven-empty current
+case index. If the shared public RPC is limited, it labels unavailable or stale
+fields and keeps every write disabled instead of presenting guessed state.
 
 ### 2. Verify canonical adjudication binding
 
@@ -63,13 +65,16 @@ background.
 Review `deploy/last-deployment.json` for the upgraded pair and
 `deploy/live-demo.json` for the explicitly labelled predecessor deployment.
 The latter contains four real finalized StudioNet outcomes covering full,
-partial, and zero-slash settlement; all evidence fixtures are labelled synthetic.
+partial, and zero-slash settlement; all incident evidence is labelled synthetic.
+Open negligence at
+[case-2](https://slash-court.vercel.app/#case/historical/case-2) and the excusable
+outage at [case-3](https://slash-court.vercel.app/#case/historical/case-3).
 
 ## Expected verification outcome
 
 443 of 500 characters:
 
-> The steward should see the upgraded Court and Vault addresses, rulebook v1, canonical-duty digest fields, evidence citations with party and rule metadata, and an appeal control bound to a retained adjudication transaction. The repository's historical StudioNet proof still shows four finalized outcomes and fixed 100% / 50% / 0% settlement; it is explicitly identified as the predecessor deployment rather than attributed to the upgraded pair.
+> The steward should see the upgraded Court and Vault addresses, truthful read health, and explicit current-versus-historical labels. A successful read proves the current zero-case index and rulebook v1; an RPC failure never masquerades as empty state. Historical case-2 shows a finalized 0.5 GEN negligence penalty and case-3 an excusable outage with zero penalty. The 0.4/0.1 GEN beneficiary/safety split is accounting, not platform revenue.
 
 ## Contract links
 

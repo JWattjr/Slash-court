@@ -152,15 +152,50 @@ export type VaultStatistics = {
   safety_pool_balance: string;
 };
 
+export type VaultApplication = {
+  case_id: string;
+  commitment_id?: string;
+  classification?: string;
+  penalty_bps?: number;
+  penalty_amount?: string;
+  beneficiary_award?: string;
+  safety_pool_amount?: string;
+  beneficiary?: string;
+  applied: boolean;
+  commitment_digest?: string;
+  alleged_rule_ids?: string[];
+  evidence_citations?: EvidenceCitation[];
+};
+
+export type CaseIndex = {
+  ids: string[];
+  total: number;
+  offset: number;
+  limit: number;
+};
+
+export type ReadSlice<T> = {
+  data: T | null;
+  state: "idle" | "success" | "error";
+  error: import("./refresh").ReadFailure | null;
+  updatedAt: number | null;
+};
+
 export type Dashboard = {
-  statistics: CourtStatistics;
-  rulebook: Rulebook | null;
-  domains: string[];
-  cases: CourtCase[];
-  operator: OperatorState | null;
-  vault: VaultConfiguration | null;
-  vaultStatistics: VaultStatistics | null;
+  statistics: ReadSlice<CourtStatistics>;
+  rulebook: ReadSlice<Rulebook | null>;
+  domains: ReadSlice<string[]>;
+  caseIndex: ReadSlice<CaseIndex>;
+  operator: ReadSlice<OperatorState>;
+  vault: ReadSlice<VaultConfiguration>;
+  vaultStatistics: ReadSlice<VaultStatistics>;
   network: string;
+  attemptedAt: number;
+};
+
+export type CaseBundle = {
+  caseRecord: ReadSlice<CourtCase>;
+  application: ReadSlice<VaultApplication>;
 };
 
 export type TxSnapshot = {
