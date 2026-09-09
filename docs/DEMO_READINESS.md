@@ -1,8 +1,7 @@
 # Demo readiness and RPC diagnosis
 
-Verified 2026-09-08 against `https://slash-court.vercel.app` and the deployment
-artifacts in this repository. No contract deployment or wallet transaction was
-performed during this pass.
+Verified 2026-09-09 against `https://slash-court.vercel.app` and the current
+StudioNet deployment. The wallet journey below was explicitly authorized.
 
 ## Current deployment
 
@@ -12,13 +11,30 @@ performed during this pass.
 - Rulebook: v1, hash
   `sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d`
 - Approved evidence domain: `slash-court.vercel.app`
-- Current cases: 0. A successful complete dashboard read proved the zero case
-  index before a later refresh hit the shared RPC limit.
+- Current cases: 5. Cases 1–3 are cancelled setup attempts; cases 4–5 are the
+  canonical finalized demo pair.
 
-The current Court/Vault bindings, rulebook, methods, and environment addresses
-are compatible: the deployed client completed all summary reads and displayed
-the zeroed Court/Vault state, rulebook v1, and allowlist before the shared limit
-was exhausted.
+The Court/Vault bindings, rulebook, methods, and environment addresses are
+compatible. Direct reads verified the current cases and Vault accounting.
+
+## Current finalized proof
+
+| URL | Classification | Result | Penalty | Beneficiary | Safety pool |
+| --- | --- | --- | ---: | ---: | ---: |
+| `#case/current/case-4` | Negligent failure | Partial slash | 0.5 GEN | 0.4 GEN | 0.1 GEN |
+| `#case/current/case-5` | External outage | No slash | 0 GEN | 0 GEN | 0 GEN |
+
+Case-4 finalized with R1/R3 violations. Case-5 finalized with the R4 exemption
+and no violated rules. Both Vault applications are finalized. The operator ends
+with 1.5 GEN available, zero locked exposure, and two resolved commitments.
+Exact transactions are recorded in `deploy/current-demo.json`.
+
+The current deployed Court still contains an `E1`-specific prompt example. The
+canonical demo pair uses exact E1/E2 identifiers and therefore completed
+successfully. The repository now removes that bias, lists exact allowed IDs and
+evidence/rule pairs in the prompt, and includes a non-E1 regression test. That
+source hardening is not deployed; redeploying contracts requires separate
+authorization and would create a new Court/Vault provenance record.
 
 ## Demonstrated live failure
 
@@ -71,9 +87,8 @@ locked exposure.
 ## Limits of this verification
 
 Direct-mode tests prove deterministic accounting and duplicate-application
-rejection, but direct mode has no network-finality semantics. The integration
-test proves finalized application and replay-safe retry in its GLSim flow. This
-pass did not submit a live transaction, so it does not independently prove the
-timing boundary on the current StudioNet deployment. A complete wallet journey
-still requires explicit transaction authorization and funded operator and
-beneficiary accounts.
+rejection, while integration tests exercise the finality flow in GLSim. This
+pass also completed an authorized browser-wallet journey on StudioNet and
+verified that both financial applications followed finalized adjudications.
+The shared public RPC can still rate-limit or fail transiently, so truthful
+partial/stale states and fail-closed writes remain necessary.

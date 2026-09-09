@@ -1,9 +1,8 @@
 # 60–90 second demo: negligence versus outage
 
-Use the public console without connecting a wallet. The four examples below are
-finalized StudioNet consensus results from the explicitly labelled predecessor
-deployment and use synthetic evidence fixtures. The current Court/Vault pair is
-shown separately and currently has no cases.
+Use the public console without connecting a wallet. The primary comparison is
+the finalized pair on the current deployment. Both use explicitly labelled
+synthetic evidence fixtures; their consensus and Vault transactions are real.
 
 ## 0:00–0:15 — the responsibility problem
 
@@ -18,9 +17,9 @@ evidence-policy reads are unavailable.
 
 ## 0:15–0:48 — preventable negligence
 
-Open the shareable historical case URL:
+Open the shareable current case URL:
 
-`https://slash-court.vercel.app/#case/historical/case-2`
+`https://slash-court.vercel.app/#case/current/case-4`
 
 “This labelled synthetic fixture says the primary RPC failed while the
 configured secondary remained available and no failover attempt was evidenced.
@@ -37,7 +36,7 @@ response and exact findings unavailable while retaining the checked manifest.
 
 Open:
 
-`https://slash-court.vercel.app/#case/historical/case-3`
+`https://slash-court.vercel.app/#case/current/case-5`
 
 “Here the synthetic evidence says primary and secondary providers shared the
 regional incident and mitigation was unavailable. Validators classified it as
@@ -53,5 +52,6 @@ beneficiary compensation, zero safety-pool allocation, and release of the full
 contracts cap the consequence, preserve an appeal window, and apply a case only
 once after finality.”
 
-If time remains, open `case-1` for provable misconduct and `case-4` for
-insufficient evidence. Never describe any fixture as a real incident.
+If time remains, open the explicitly labelled historical deployment for
+provable misconduct and insufficient evidence. Never describe any fixture as a
+real incident. Current cases 1–3 are cancelled setup attempts.

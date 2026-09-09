@@ -19,9 +19,9 @@ should be left blank unless a polished recording is available before the deadlin
 
 ## Description
 
-993 of 1,000 characters:
+Use this copy (under 1,000 characters):
 
-> SlashCourt settles bonded-automation disputes. Every case is hash-bound to the vault duty, trigger, deadlines, expected action, parties, exposure, rulebook, and alleged rules. GenLayer validators fetch allowlisted evidence and preserve each citation's submitting party, content hash, type, domain, and rule metadata. A slash is invalid unless findings cite fetched evidence for every violated rule. Deterministic contracts map classifications to fixed, capped penalties; a separate vault applies them only after finality with case binding and replay protection. The console retains the adjudication transaction at ACCEPTED, exposes the appeal window, and tests recovery after reload. Upgraded contracts are live on StudioNet; four finalized outcomes remain verifiable on the labelled predecessor deployment. The repo includes 32 direct tests, focused frontend tests, integration scenarios, and a threat model. Fixtures and bonds are synthetic demo data, not native validator stake or real TVL.
+> SlashCourt settles bonded-automation disputes. Each case is hash-bound to its vault duty, trigger, deadlines, expected action, parties, exposure, rulebook, and alleged rules. GenLayer validators fetch allowlisted evidence and preserve every citation's party, hash, type, domain, and rule metadata. Deterministic contracts map responsibility to fixed, capped penalties; the vault applies each result once, only after finality. The current StudioNet deployment proves the core contrast: case-4 is finalized negligence with a 0.5 GEN penalty, while case-5 is a finalized external outage with zero penalty. The console exposes case facts, evidence, response, consensus transaction, finality, and actual vault accounting without requiring a wallet. All incidents and bonds are explicitly synthetic demo data—not native validator stake, real incidents, or real TVL.
 
 ## Demo video
 
@@ -35,46 +35,45 @@ Add these five steps in order.
 
 Visit [https://slash-court.vercel.app](https://slash-court.vercel.app). Confirm
 the console identifies current Court `0xA463…15aB` and Vault `0x5eAb…E7E4`.
-On a successful StudioNet read it shows rulebook v1 and a proven-empty current
-case index. If the shared public RPC is limited, it labels unavailable or stale
-fields and keeps every write disabled instead of presenting guessed state.
+On a successful StudioNet read it shows rulebook v1 and five indexed cases.
+Cases 1–3 are cancelled setup attempts; cases 4–5 are the canonical finalized
+demo pair. If the public RPC is limited, the UI labels unavailable or stale
+fields and keeps writes disabled instead of presenting guessed state.
 
-### 2. Verify canonical adjudication binding
+### 2. Compare negligence with an excusable outage
 
-Open the repository's `tests/direct/test_case_lifecycle.py` and
-`tests/direct/test_adjudication.py`. Confirm the court snapshots and rechecks
-the vault's canonical duty, trigger, deadlines, expected action, parties,
-exposure, rulebook, case ID, and alleged rules before validator evaluation.
+Open [case-4](https://slash-court.vercel.app/#case/current/case-4). Confirm
+`NEGLIGENT_FAILURE`, `PARTIAL_SLASH`, violated rules R1/R3, and finalized
+0.5 GEN accounting. Then open
+[case-5](https://slash-court.vercel.app/#case/current/case-5) and confirm
+`EXTERNAL_OUTAGE`, the supported R4 exemption, `NO_SLASH`, and zero penalty.
 
-### 3. Verify attributable slash evidence
+### 3. Trace evidence and finality
 
-Review `tests/direct/test_adversarial_evidence.py` and
-`tests/direct/test_resolution_application.py`. Confirm slash findings must cite
-fetched evidence and that the court and vault preserve submitting party,
-content hash, evidence type, domain, and relevant rule IDs.
+In each case file inspect claimant evidence E1, operator evidence E2, response,
+classification, rule findings, adjudication transaction, finality, and Vault
+application. The fixtures are labelled synthetic; the StudioNet consensus and
+accounting transactions are real.
 
-### 4. Verify the appealable transaction flow
+### 4. Verify actual Vault accounting
 
-Review `tests/frontend/transactions.test.ts`, then open the console. The app
-stores the exact adjudication hash at ACCEPTED, exposes Appeal before finality,
-restores that transaction after reload, and tracks finalization in the
-background.
+Case-4 routes 0.4 GEN to beneficiary compensation and 0.1 GEN to the safety
+pool. Case-5 routes zero. The operator ends with 1.5 GEN available, zero locked
+exposure, and two resolved commitments. The safety pool is protocol accounting,
+not platform revenue.
 
-### 5. Inspect live and historical proof
+### 5. Inspect source and predecessor proof
 
-Review `deploy/last-deployment.json` for the upgraded pair and
-`deploy/live-demo.json` for the explicitly labelled predecessor deployment.
-The latter contains four real finalized StudioNet outcomes covering full,
-partial, and zero-slash settlement; all incident evidence is labelled synthetic.
-Open negligence at
-[case-2](https://slash-court.vercel.app/#case/historical/case-2) and the excusable
-outage at [case-3](https://slash-court.vercel.app/#case/historical/case-3).
+Review `deploy/last-deployment.json`, `deploy/current-demo.json`, the direct and
+integration tests, and `docs/THREAT_MODEL.md`. The separately labelled
+predecessor deployment remains available for misconduct and insufficient-
+evidence examples; never describe its synthetic fixtures as real incidents.
 
 ## Expected verification outcome
 
-443 of 500 characters:
+Use this copy (under 500 characters):
 
-> The steward should see the upgraded Court and Vault addresses, truthful read health, and explicit current-versus-historical labels. A successful read proves the current zero-case index and rulebook v1; an RPC failure never masquerades as empty state. Historical case-2 shows a finalized 0.5 GEN negligence penalty and case-3 an excusable outage with zero penalty. The 0.4/0.1 GEN beneficiary/safety split is accounting, not platform revenue.
+> The steward should see rulebook v1, the current Court/Vault addresses, and five indexed cases. Case-4 must show finalized NEGLIGENT_FAILURE, a 0.5 GEN penalty, and a 0.4/0.1 beneficiary/safety split. Case-5 must show finalized EXTERNAL_OUTAGE, R4 exemption, and zero penalty. Operator accounting ends at 1.5 GEN available with zero locked exposure. Fixtures are synthetic; RPC failures never appear as empty state.
 
 ## Contract links
 
@@ -96,12 +95,17 @@ If the form accepts more links, add these in order:
 
 1. [https://slash-court.vercel.app](https://slash-court.vercel.app)
 2. [https://explorer-studio.genlayer.com/address/0xA4636860ea78c6E29179E7893e1bDa68133D15aB](https://explorer-studio.genlayer.com/address/0xA4636860ea78c6E29179E7893e1bDa68133D15aB)
-3. [https://explorer-studio.genlayer.com/tx/0xf47ec484113e69f450877dfa633174ed857c88503a7b75fc63549fa892a9355f](https://explorer-studio.genlayer.com/tx/0xf47ec484113e69f450877dfa633174ed857c88503a7b75fc63549fa892a9355f)
+3. [https://slash-court.vercel.app/#case/current/case-4](https://slash-court.vercel.app/#case/current/case-4)
+4. [https://slash-court.vercel.app/#case/current/case-5](https://slash-court.vercel.app/#case/current/case-5)
+5. [https://explorer-studio.genlayer.com/tx/0x4749fcc86e4e6bb07970ec3ff08f43ccb41bfebfa2531242ec51171c009844be](https://explorer-studio.genlayer.com/tx/0x4749fcc86e4e6bb07970ec3ff08f43ccb41bfebfa2531242ec51171c009844be)
 
 ## Final check
 
 - Keep the YouTube field blank unless a polished recording exists.
 - Confirm the selected tags match the portal's exact taxonomy.
 - Open the website, repository, both upgraded contracts, and rulebook transaction.
-- Confirm historical cases are described only as predecessor-deployment proof.
+- Confirm cases 1–3 are labelled cancelled setup attempts and historical cases
+  are described only as predecessor-deployment proof.
+- Keep the deployed-source limitation in `docs/DEMO_READINESS.md`; the latest
+  prompt hardening is tested source code and is not represented as deployed.
 - Review the portal preview for truncation or broken links before resubmitting.

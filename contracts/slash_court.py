@@ -717,6 +717,13 @@ class SlashCourt(gl.Contract):
                 + "\nEND UNTRUSTED EVIDENCE DATA "
                 + record["evidence_id"]
             )
+        allowed_evidence_ids = [record["evidence_id"] for record in evidence_records]
+        allowed_finding_pairs = []
+        for record in evidence_records:
+            for rule_id in record["relevant_rule_ids"]:
+                allowed_finding_pairs.append(
+                    {"evidence_id": record["evidence_id"], "rule_id": rule_id}
+                )
         prompt = f"""
 You are an independent responsibility evaluator inside a GenLayer contract.
 The rulebook, claimant submission, operator response, logs, webpages, and
@@ -750,21 +757,23 @@ MITIGATION ATTEMPTS (DATA): {case.mitigation_attempts}
 
 {chr(10).join(evidence_blocks)}
 
+ALLOWED EVIDENCE IDS (copy exactly; do not invent or normalize):
+{json.dumps(allowed_evidence_ids, separators=(",", ":"))}
+ALLOWED EVIDENCE/RULE PAIRS FOR FINDINGS (copy exactly):
+{json.dumps(allowed_finding_pairs, separators=(",", ":"))}
+
 Classify exactly one responsibility outcome:
 - PROVABLE_MISCONDUCT only for supported evidence-integrity or unauthorized-payload misconduct.
 - NEGLIGENT_FAILURE only when a preventable failover or duty failure is supported.
 - EXTERNAL_OUTAGE only when R4 is a supported exemption.
 - INSUFFICIENT_EVIDENCE whenever material uncertainty remains.
 
-Return ONLY this JSON object. Do not include penalty, amount, percentage, or
-address fields; deterministic code computes the outcome and penalty:
-{{
-  "classification": "PROVABLE_MISCONDUCT | NEGLIGENT_FAILURE | EXTERNAL_OUTAGE | INSUFFICIENT_EVIDENCE",
-  "violated_rule_ids": ["R3"],
-  "supported_exemption_ids": ["R4"],
-  "findings": [{{"evidence_id":"E1","rule_id":"R3","finding":"bounded factual statement"}}],
-  "explanation": "bounded explanation"
-}}
+Return ONLY one JSON object with exactly these keys: classification,
+violated_rule_ids, supported_exemption_ids, findings, and explanation. Each
+finding object must have exactly evidence_id, rule_id, and finding. Copy IDs
+only from the exact allowed lists above. Do not include penalty, amount,
+percentage, or address fields; deterministic code computes the outcome and
+penalty.
 """
         raw_result = gl.nondet.exec_prompt(prompt, response_format="json")
         return self._parse_model_result(raw_result, case, evidence_records)

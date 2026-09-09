@@ -59,6 +59,37 @@ def test_hostile_evidence_is_delimited_and_valid_result_is_rechecked(
     assert direct_vm.run_validator() is True
 
 
+def test_prompt_supports_non_e1_evidence_ids(court_contract, direct_vm, direct_owner):
+    court = court_contract
+    direct_vm.sender = direct_owner
+    rulebook = "R3 — FAILOVER_DUTY\nR4 — OUTAGE"
+    court.create_initial_rulebook(rulebook, "sha256:" + hashlib.sha256(rulebook.encode("utf-8")).hexdigest())
+    court.configure_approved_evidence_domains(json.dumps(["status.example.org"]))
+    body = "The secondary provider remained available during the missed duty window."
+    evidence = _evidence(evidence_id="incident-alpha")
+    evidence["content_hash"] = "sha256:" + hashlib.sha256(body.encode("utf-8")).hexdigest()
+    case = _case()
+    case.claimant_evidence_json = json.dumps([evidence])
+    direct_vm.mock_web(
+        r"status\.example\.org/incidents/42",
+        {"status": 200, "body": body},
+    )
+    valid = {
+        "classification": "NEGLIGENT_FAILURE",
+        "violated_rule_ids": ["R3"],
+        "supported_exemption_ids": [],
+        "findings": [{"evidence_id": "incident-alpha", "rule_id": "R3", "finding": "Failover was available."}],
+        "explanation": "The bounded record supports a preventable failover failure.",
+    }
+    direct_vm.mock_llm(
+        r'(?s).*ALLOWED EVIDENCE IDS.*\["incident-alpha"\].*ALLOWED EVIDENCE/RULE PAIRS.*incident-alpha.*',
+        json.dumps(valid),
+    )
+    result = court._produce_independent_result(case, court._rulebook(1))
+    assert result["classification"] == "NEGLIGENT_FAILURE"
+    assert result["findings"][0]["evidence_id"] == "incident-alpha"
+
+
 def test_evidence_body_hash_mismatch_fails_closed(court_contract, direct_vm):
     court = court_contract
     direct_vm.mock_web(
