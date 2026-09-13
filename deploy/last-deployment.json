@@ -1,8 +1,11 @@
 {
   "network": "Genlayer Studio Network",
-  "deployedAt": "2026-09-07T10:31:12.885Z",
-  "operatorBondVaultAddress": "0x5eAba41b27560505A45fD51a301f01f30832E7E4",
-  "slashCourtAddress": "0xA4636860ea78c6E29179E7893e1bDa68133D15aB",
+  "chainId": 61999,
+  "deployedAt": "2026-09-13T17:35:36.754Z",
+  "contractSourceRevision": "cdaba784931d4cd4020bb66bebe795c22f47efa5",
+  "frontendSourceRevision": "6423dfb950468fd63f1c6f518fb3e85fb8fec82e",
+  "operatorBondVaultAddress": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
+  "slashCourtAddress": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
   "rulebookVersion": 1,
   "approvedEvidenceDomains": [
     "slash-court.vercel.app"
@@ -10,27 +13,42 @@
   "deploymentTransactions": [
     {
       "label": "1/7 Operator Bond Vault",
-      "hash": "0xfcbe0419e812c33742e37cee99683e48de17e29259691a5aa402565c55fbaf19"
+      "hash": "0x8a438d6bdabe02447c3e318f4761fe3d41cbfde41a20b0e0a42032b609bff00f"
     },
     {
       "label": "2/7 SlashCourt",
-      "hash": "0x43248a1666e47efcd260e118084a37e8ee93c0ffbfedb547593bfa66517ab52a"
+      "hash": "0x4a51e10ba44a29b7b9a81e7ee4d20538c2bd7f8a6a86a4fb22ecf91c40fffc88"
     },
     {
       "label": "3/7 Bind vault → court",
-      "hash": "0x950b4a90c10739ece9192c66172ef71f3ab8a1e145c3d4e421d337d342e5a0d0"
+      "hash": "0x0f9b4a8bcadb5f82eb11127defc8682da5bf8a753a9eb2004aadcd4c3af46007"
     },
     {
       "label": "4/7 Bind court → vault",
-      "hash": "0xe82c639eab9098d1f5c9f62487479ca780212f00967f135102ba5deb3862255a"
+      "hash": "0x9afa99ff5ad0415d3d4f9b1829d548705281a0f60f0ae5fb511a42cea082b318"
     },
     {
       "label": "5/7 Publish immutable rulebook v1",
-      "hash": "0xf47ec484113e69f450877dfa633174ed857c88503a7b75fc63549fa892a9355f"
+      "hash": "0x4e7aba1894f3d857ae5ccf7e467ab18c8571c4b2896dbc6dbb4c51d4b0ea0e08"
     },
     {
       "label": "6/7 Configure evidence domains",
-      "hash": "0x8ec183f5abeef9f93cdd038fc26f1a4fac92aabd43286f8d479985089b194015"
+      "hash": "0x819a3dd53ce34db197e239532617a1a741704075da127f1a956ad5191eb5bbb9"
     }
-  ]
+  ],
+  "frontendDeployment": {
+    "project": "wattxs-projects/slash-court",
+    "deploymentId": "dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw",
+    "productionUrl": "https://slash-court-q7epop9ro-wattxs-projects.vercel.app",
+    "alias": "https://slash-court.vercel.app",
+    "verifiedAt": "2026-09-13T19:01:43.630Z"
+  },
+  "verification": {
+    "courtVaultBinding": true,
+    "vaultCourtBinding": true,
+    "rulebookPublished": true,
+    "approvedEvidenceDomainConfigured": true,
+    "network": "Genlayer Studio Network",
+    "protocolStatus": "FINALIZED"
+  }
 }

@@ -1,45 +1,44 @@
 # Steward response draft
 
-Thank you. We confirmed that every case already freezes the Vault's canonical
-duty, trigger, duty/dispute deadlines, expected action, parties, exposure,
-rulebook version, and commitment digest; adjudication re-reads and exact-matches
-that commitment, and the Vault rechecks the digest before applying a result.
-Alleged rules are frozen before evaluation and forwarded with settlement.
+Thank you. SlashCourt now runs a fresh mutually bound StudioNet Court/Vault
+pair at `0x56e26ec256afe37199fe9845e039f5DEdd9e955a` and
+`0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7`. The deployed contract source is
+recorded at revision `cdaba784931d4cd4020bb66bebe795c22f47efa5`, and the
+production console is deployed as `dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw` from
+frontend revision `6423dfb950468fd63f1c6f518fb3e85fb8fec82e`.
 
-We have now closed the remaining source-level citation gap. Both the proposed
-leader result and each validator's independent result are canonicalized against
-the evidence fetched and hash-verified during that evaluation. Evidence ID,
-rule association, submitting party, evidence type, source domain, content hash,
-and relevant rules are validator-bound and exactly compared. Unknown, altered,
-missing, malformed, oversized, or duplicated references cannot authorize a
-slash. Penalties remain a deterministic mapping from the bound classification;
-finding prose and the bounded explanation remain informational and do not set
-money or introduce citations.
+Every adjudication rebinds the Vault's canonical duty, trigger, duty/dispute
+deadlines, expected action, parties, exposure, rulebook version, commitment
+digest, and alleged rule IDs. The hardened consensus path canonicalizes each
+fetched evidence citation and binds evidence ID, party, type, source domain,
+content hash, and relevant rules. The fresh live case proves this with
+`negligence-rc-01`, `CLAIMANT`, `slash-court.vercel.app`, the recorded SHA-256
+hash, and R1/R3 metadata in both Court and Vault records.
 
-The console now retains the adjudication hash from submission through ACCEPTED
-and finality, keeps the appeal window interactive while finality polls in the
-background, recovers nonterminal adjudications after reload, treats failed
-`canAppeal` reads as unavailable rather than false, and rechecks eligibility
-immediately before any wallet request. Mocked workflow tests prove the retained
-appeal target survives unrelated case transactions and cannot remain enabled
-after finality.
+The authorized synthetic case finalized as `NEGLIGENT_FAILURE` /
+`PARTIAL_SLASH`. The adjudication is
+`0x003e75129584a8a044f86a50b79f1f34cc8e48de5c5ad91daeb52c47eed550c2`; the
+finality acknowledgement is
+`0xde154a09b3a4648dfee7fecc2f3c3a3dd1af261d804ed0bd339557ef130f7899`; and the
+Vault application is
+`0xb317a13f944b9165d5b851cd889050ea06bf39ed9fd0233513de7d95403c915c`. All
+are FINALIZED. The Vault applied one deterministic 0.5 GEN penalty: 0.4 GEN
+beneficiary compensation and 0.1 GEN safety pool, leaving 1.5 GEN available
+and zero locked exposure. No penalty was applied before finality and no
+duplicate application was submitted.
 
-We also corrected case-5's truncated receipt reference to the verified finalized
-transaction:
-`0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d26c16d3ff4954b47cb5ff366`.
+The console retains the exact adjudication hash after ACCEPTED and releases
+its busy state while finality continues in the background. In this bounded
+run, the first appeal-eligibility read was unavailable and finality completed
+before the recheck returned, so the appeal control was not captured enabled.
+No appeal was clicked or submitted. Historical predecessor cases remain
+clearly labelled synthetic and historical; they are not claimed as cases of
+the fresh deployment.
 
-Deployment status: these citation-consensus and appeal-console changes are
-local and tested (43 direct tests, 8 five-validator GLSim integration
-tests, and 12 frontend workflow tests pass); they are not yet live. The existing StudioNet pair remains
-valid finalized predecessor evidence for canonical duty binding and deterministic
-Vault accounting, but it is not presented as proof of the new citation consensus
-or appeal UI. Before resubmission we will deploy a new mutually bound Court/Vault
-pair and frontend, verify source identity and bindings, and capture one exact
-adjudication hash with the appeal control enabled at ACCEPTED, followed by its
-finalized one-time Vault application. We will submit an actual appeal only with
-separate authorization.
+Checks: 13 frontend tests, focused direct contract tests, full local direct and
+GLSim integration suites, typecheck, lint, production build, GenVM lint, and
+schema checks passed. The optional pyright check was unavailable because the
+binary is not installed.
 
-Evidence map: `docs/SUBMISSION_GUIDE.md` → **Steward requirement map**.
-Deployment and verification limits: `docs/DEMO_READINESS.md`.
-
-**Resubmit-ready: NO — deployment and live ACCEPTED-window evidence remain.**
+**Resubmit-ready: NO.** Exact blocker: one live screenshot/recording proving
+an ACCEPTED adjudication with the appeal control enabled before finality.

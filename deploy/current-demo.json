@@ -1,52 +1,119 @@
 {
   "network": "Genlayer Studio Network",
-  "verifiedAt": "2026-09-09T16:22:00Z",
-  "slashCourtAddress": "0xA4636860ea78c6E29179E7893e1bDa68133D15aB",
-  "operatorBondVaultAddress": "0x5eAba41b27560505A45fD51a301f01f30832E7E4",
-  "evidenceNote": "All incident evidence is explicitly synthetic. The adjudications and Vault applications are real finalized StudioNet transactions.",
-  "sourceProvenance": "These cases ran against the source recorded by last-deployment.json. The current local source adds generic evidence-ID prompting, consensus-bound citation/reference metadata, and appeal-workflow hardening; those changes are tested locally but are not deployed. E1/E2 exact identifiers avoided the deployed example bias.",
-  "caseIndexNote": "The deployment contains five indexed cases. Cases 1-3 are cancelled setup attempts; cases 4-5 are the canonical demo pair.",
+  "chainId": 61999,
+  "verifiedAt": "2026-09-13T19:01:43.630Z",
+  "slashCourtAddress": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
+  "operatorBondVaultAddress": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
+  "contractSourceRevision": "cdaba784931d4cd4020bb66bebe795c22f47efa5",
+  "frontendSourceRevision": "6423dfb950468fd63f1c6f518fb3e85fb8fec82e",
+  "frontendDeploymentId": "dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw",
+  "rulebook": {
+    "version": 1,
+    "hash": "sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d"
+  },
+  "approvedEvidenceDomains": ["slash-court.vercel.app"],
+  "evidenceNote": "All incident evidence is explicitly synthetic. The current case, adjudication, Court-to-Vault messages, and Vault application are real finalized StudioNet transactions. This is demo bond accounting, not real TVL or native validator stake.",
+  "caseIndexNote": "This fresh mutually bound deployment contains one case: case-1, the verified synthetic negligence example. The predecessor deployments retain the misconduct, outage, and insufficient-evidence examples and are labelled historical in the console.",
+  "deploymentTransactions": [
+    {"label": "1/7 Operator Bond Vault", "hash": "0x8a438d6bdabe02447c3e318f4761fe3d41cbfde41a20b0e0a42032b609bff00f"},
+    {"label": "2/7 SlashCourt", "hash": "0x4a51e10ba44a29b7b9a81e7ee4d20538c2bd7f8a6a86a4fb22ecf91c40fffc88"},
+    {"label": "3/7 Bind vault to Court", "hash": "0x0f9b4a8bcadb5f82eb11127defc8682da5bf8a753a9eb2004aadcd4c3af46007"},
+    {"label": "4/7 Bind Court to Vault", "hash": "0x9afa99ff5ad0415d3d4f9b1829d548705281a0f60f0ae5fb511a42cea082b318"},
+    {"label": "5/7 Publish immutable rulebook v1", "hash": "0x4e7aba1894f3d857ae5ccf7e467ab18c8571c4b2896dbc6dbb4c51d4b0ea0e08"},
+    {"label": "6/7 Configure evidence domains", "hash": "0x819a3dd53ce34db197e239532617a1a741704075da127f1a956ad5191eb5bbb9"}
+  ],
   "cases": [
     {
-      "caseId": "case-4",
-      "commitmentId": "demo-negligence-current-20260909",
+      "caseId": "case-1",
+      "commitmentId": "demo-negligence-rc-20260913",
       "classification": "NEGLIGENT_FAILURE",
       "outcome": "PARTIAL_SLASH",
       "allegedRuleIds": ["R1", "R3"],
+      "violatedRuleIds": ["R1", "R3"],
+      "penaltyBps": 5000,
       "penaltyWei": "500000000000000000",
       "beneficiaryAwardWei": "400000000000000000",
       "safetyPoolWei": "100000000000000000",
       "status": "PENALTY_APPLIED",
+      "networkStatus": "FINALIZED",
       "applicationStatus": "APPLIED_FINALIZED",
-      "responseTransaction": "0x091909c923387c8c702d77b65dbf3add0e2328fe41dfa95c754a9f7bb349eff4",
-      "readyTransaction": "0x34d843338b681b17c1ff914834e2f18a02cf0fed96aaf7ad8887d14f72460ebd",
-      "adjudicationTransaction": "0x4749fcc86e4e6bb07970ec3ff08f43ccb41bfebfa2531242ec51171c009844be",
-      "applicationTransaction": "0x3695b16651c1666d55b51feefead47e5dc541cd3d3a3e404620581076819dd07"
-    },
-    {
-      "caseId": "case-5",
-      "commitmentId": "demo-outage-current-20260909",
-      "classification": "EXTERNAL_OUTAGE",
-      "outcome": "NO_SLASH",
-      "supportedExemptions": ["R4"],
-      "allegedRuleIds": ["R1", "R4"],
-      "penaltyWei": "0",
-      "beneficiaryAwardWei": "0",
-      "safetyPoolWei": "0",
-      "status": "PENALTY_APPLIED",
-      "applicationStatus": "APPLIED_FINALIZED",
-      "responseTransaction": "0x3292c615d4a8214e8ee76d5048189d719658d5b5aba087a5de55ce6ba3c53f50",
-      "readyTransaction": "0x5da82f142ed2b542457deec38860081f60f2e5b034e02ce5aa8d17b32db9e160",
-      "adjudicationTransaction": "0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d26c16d3ff4954b47cb5ff366",
-      "applicationTransaction": "0x1f7e832d435be8f6d23066d3a68a5123fc58e7608ef37514036c50b5b191f396"
+      "adjudicationFinalized": true,
+      "canonicalCommitment": {
+        "duty": "Synthetic failover keeper duty for release verification",
+        "dutyTrigger": "scheduled-rc-negligence",
+        "dutyDeadline": "2026-09-14T00:00:00Z",
+        "disputeDeadline": "2026-09-15T00:00:00Z",
+        "expectedActionId": "maintenance-action-rc",
+        "commitmentDigest": "sha256:91904956c93defdf5560bf1e28015dc430242fa865bb9f53eb799dc26a3080cb",
+        "operator": "0xdB433ff614bDD1ecE21Aa97221C3E0a7ecf79c92",
+        "beneficiary": "0x2C8EB5dB1105A85BE66BadafeD88D10cF393CDD8",
+        "lockedExposureWei": "1000000000000000000",
+        "rulebookVersion": 1
+      },
+      "evidenceCitations": [
+        {
+          "evidenceId": "negligence-rc-01",
+          "evidenceType": "PUBLIC_STATUS",
+          "submissionParty": "CLAIMANT",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
+          "relevantRuleIds": ["R1", "R3"],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
+        }
+      ],
+      "responseTransaction": "0xfb1c6bc5f8773917eac3fa919d56416f2e91e3234f0577d58b1318100443996a",
+      "readyTransaction": "0xaa13813c0bd2bd282c363d487e3917b9f36be4a0b403514f420610fb2de019ce",
+      "adjudicationTransaction": "0x003e75129584a8a044f86a50b79f1f34cc8e48de5c5ad91daeb52c47eed550c2",
+      "adjudicationReceiptStatus": "FINALIZED",
+      "finalityAcknowledgementTransaction": "0xde154a09b3a4648dfee7fecc2f3c3a3dd1af261d804ed0bd339557ef130f7899",
+      "applicationTransaction": "0xb317a13f944b9165d5b851cd889050ea06bf39ed9fd0233513de7d95403c915c",
+      "applicationReceiptStatus": "FINALIZED",
+      "applicationTriggeredCallbacks": [
+        "0xa3539e73b4a313f73f13cbb2c28ea268846f2658b87d5b09da5028ac7160fbfb",
+        "0xb91c469f8abff5e75c5f16309f6fbe1c60222275bc2d444d1bd4fc0b488dfe01"
+      ]
     }
   ],
+  "acceptedWindowProof": {
+    "status": "MISSED",
+    "adjudicationTransaction": "0x003e75129584a8a044f86a50b79f1f34cc8e48de5c5ad91daeb52c47eed550c2",
+    "observedAccepted": true,
+    "appealControlEnabled": false,
+    "appealSubmitted": false,
+    "reason": "The console retained the exact ACCEPTED hash, but the first eligibility read was temporarily unavailable. Before the explicit recheck returned, the protocol reached FINALIZED. No screenshot was presented as ACCEPTED-window proof and no appeal was clicked."
+  },
   "vault": {
     "initialBondWei": "2000000000000000000",
     "remainingOperatorBondWei": "1500000000000000000",
     "lockedExposureWei": "0",
     "totalPenaltiesWei": "500000000000000000",
     "beneficiaryAwardsWei": "400000000000000000",
-    "safetyPoolWei": "100000000000000000"
+    "safetyPoolWei": "100000000000000000",
+    "applicationCount": 1
+  },
+  "historical": {
+    "predecessorCurrentDeployment": {
+      "verifiedAt": "2026-09-09T16:22:00Z",
+      "slashCourtAddress": "0xA4636860ea78c6E29179E7893e1bDa68133D15aB",
+      "operatorBondVaultAddress": "0x5eAba41b27560505A45fD51a301f01f30832E7E4",
+      "caseIndexNote": "Cases 1-3 were cancelled setup attempts; cases 4-5 were its canonical pair.",
+      "cases": [
+        {"caseId": "case-4", "classification": "NEGLIGENT_FAILURE", "outcome": "PARTIAL_SLASH", "penaltyWei": "500000000000000000", "beneficiaryAwardWei": "400000000000000000", "safetyPoolWei": "100000000000000000", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "adjudicationTransaction": "0x4749fcc86e4e6bb07970ec3ff08f43ccb41bfebfa2531242ec51171c009844be"},
+        {"caseId": "case-5", "classification": "EXTERNAL_OUTAGE", "outcome": "NO_SLASH", "penaltyWei": "0", "beneficiaryAwardWei": "0", "safetyPoolWei": "0", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "adjudicationTransaction": "0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d26c16d3ff4954b47cb5ff366"}
+      ],
+      "vault": {"initialBondWei": "2000000000000000000", "remainingOperatorBondWei": "1500000000000000000", "lockedExposureWei": "0", "totalPenaltiesWei": "500000000000000000", "beneficiaryAwardsWei": "400000000000000000", "safetyPoolWei": "100000000000000000"}
+    },
+    "predecessorFourCaseDemo": {
+      "verifiedAt": "2026-09-07T07:53:02Z",
+      "slashCourtAddress": "0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e",
+      "operatorBondVaultAddress": "0x95E438A856c70a138824c37F937e0f436461625B",
+      "cases": [
+        {"caseId": "case-1", "classification": "PROVABLE_MISCONDUCT", "outcome": "FULL_SLASH", "penaltyWei": "1000000000000000000", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "adjudicationTransaction": "0x690df6e61ba56a7aed60cfb5290969810d01bcac482b91c9928daedeff3f45e7"},
+        {"caseId": "case-2", "classification": "NEGLIGENT_FAILURE", "outcome": "PARTIAL_SLASH", "penaltyWei": "500000000000000000", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "adjudicationTransaction": "0x2fca7b681784f8281612b077dc2e2eb3c1dbdf8adc552d7f5014a1648480f19f"},
+        {"caseId": "case-3", "classification": "EXTERNAL_OUTAGE", "outcome": "NO_SLASH", "penaltyWei": "0", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "adjudicationTransaction": "0xcc9b9eb38a760491f401d16f66f2e8cda2986505e10d88d8827768062957b589"},
+        {"caseId": "case-4", "classification": "INSUFFICIENT_EVIDENCE", "outcome": "NO_SLASH", "penaltyWei": "0", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "adjudicationTransaction": "0x52f11c2cbe1fef269be0e22d7892891395754e967066bed1453edc35002d4eb2"}
+      ],
+      "vault": {"initialBondWei": "4000000000000000000", "remainingOperatorBondWei": "2500000000000000000", "lockedExposureWei": "0", "totalPenaltiesWei": "1500000000000000000", "beneficiaryAwardsWei": "1200000000000000000", "safetyPoolWei": "300000000000000000"}
+    }
   }
 }

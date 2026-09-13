@@ -1,133 +1,155 @@
-# Demo readiness and RPC diagnosis
+# SlashCourt demo readiness and release verification
 
-Verified 2026-09-09 against `https://slash-court.vercel.app` and the current
-StudioNet deployment. The wallet journey below was explicitly authorized.
+Verified 2026-09-13 against the fresh StudioNet deployment and the production
+console at https://slash-court.vercel.app.
 
-**Resubmission gate: NOT READY.** The current local source closes the steward's
-citation-consensus and appeal-state objections, but those changes are not yet
-deployed. A new mutually bound Court/Vault deployment, a frontend deployment,
-and one captured live ACCEPTED appeal window are still required.
+## Gate
+
+**Resubmit-ready: NO.** The hardened Court/Vault pair and production console
+are live, and the finalized negligence path is fully evidenced. The remaining
+blocker is live ACCEPTED-window proof: the authorized adjudication reached
+ACCEPTED, but its first eligibility read was temporarily unavailable and the
+transaction finalized before the explicit recheck returned. No appeal was
+submitted and no finalized screenshot is being presented as ACCEPTED proof.
 
 ## Current deployment
 
-- Court: `0xA4636860ea78c6E29179E7893e1bDa68133D15aB`
-- Vault: `0x5eAba41b27560505A45fD51a301f01f30832E7E4`
-- StudioNet chain ID: `61999` (`0xf22f`)
-- Rulebook: v1, hash
-  `sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d`
+- Network: GenLayer Studio Network, chain ID `61999` (`0xf22f`)
+- Court: `0x56e26ec256afe37199fe9845e039f5DEdd9e955a`
+- Vault: `0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7`
+- Rulebook: v1, hash `sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d`
 - Approved evidence domain: `slash-court.vercel.app`
-- Current cases: 5. Cases 1–3 are cancelled setup attempts; cases 4–5 are the
-  canonical finalized demo pair.
+- Contract source revision: `cdaba784931d4cd4020bb66bebe795c22f47efa5`
+- Frontend source revision: `6423dfb950468fd63f1c6f518fb3e85fb8fec82e`
+- Vercel deployment: `dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw`
 
-The Court/Vault bindings, rulebook, methods, and environment addresses are
-compatible. Direct reads verified the current cases and Vault accounting.
+The deployment record is [deploy/last-deployment.json](../deploy/last-deployment.json).
+The full case and historical evidence index is
+[deploy/current-demo.json](../deploy/current-demo.json).
 
-## Current finalized proof
+The fresh Court and Vault were deployed as a new pair, bound reciprocally once,
+configured with the rulebook and evidence domain, and read back on StudioNet.
+The explorer cannot independently prove a Git commit-to-bytecode mapping here;
+the exact source revision is recorded from the deployment run.
 
-| URL | Classification | Result | Penalty | Beneficiary | Safety pool |
-| --- | --- | --- | ---: | ---: | ---: |
-| `#case/current/case-4` | Negligent failure | Partial slash | 0.5 GEN | 0.4 GEN | 0.1 GEN |
-| `#case/current/case-5` | External outage | No slash | 0 GEN | 0 GEN | 0 GEN |
+## Verified current case
 
-Case-4 finalized with R1/R3 violations. Case-5 finalized with the R4 exemption
-and no violated rules. Both Vault applications are finalized. The operator ends
-with 1.5 GEN available, zero locked exposure, and two resolved commitments.
-Exact transactions are recorded in `deploy/current-demo.json`.
+The fresh deployment has one case, `case-1`, and it is a synthetic release
+fixture—not a real incident or real TVL.
 
-The complete case-5 adjudication transaction is
-`0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d26c16d3ff4954b47cb5ff366`.
-It was recovered from the Studio explorer's finalized `adjudicate_case`
-receipt and independently accepted by `genlayer receipt`; the previous
-40-hex-character value was a truncated identifier, not a different receipt.
+- Commitment: `demo-negligence-rc-20260913`
+- Classification: `NEGLIGENT_FAILURE`
+- Outcome: `PARTIAL_SLASH`
+- Violated/alleged rules: `R1`, `R3`
+- Penalty: `0.5 GEN` (`5000` bps), calculated by the contract
+- Status: `PENALTY_APPLIED`, protocol `FINALIZED`
+- Canonical duty: Synthetic failover keeper duty for release verification
+- Trigger: `scheduled-rc-negligence`
+- Duty deadline: `2026-09-14T00:00:00Z`
+- Dispute deadline: `2026-09-15T00:00:00Z`
+- Expected action: `maintenance-action-rc`
+- Commitment digest: `sha256:91904956c93defdf5560bf1e28015dc430242fa865bb9f53eb799dc26a3080cb`
+- Evidence: `negligence-rc-01`, `PUBLIC_STATUS`, party `CLAIMANT`, domain
+  `slash-court.vercel.app`, hash
+  `sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97`,
+  rules `R1/R3`
 
-The current deployed Court still contains an `E1`-specific prompt example and
-does not independently bind the leader's structured citation metadata through
-validator comparison. The canonical demo pair uses exact E1/E2 identifiers and
-therefore completed successfully, but its stored citation trail must not be
-described as fully consensus-bound. The repository now removes the prompt bias,
-canonicalizes both proposed and independent results against hash-verified
-fetched evidence, and binds evidence ID, rule, party, type, domain, content
-hash, and relevant-rule metadata into validator agreement. This source is not
-deployed; redeployment requires a new Court and a new one-time-bound Vault.
+### Wallet journey and receipts
+
+The authorized synthetic journey used the existing StudioNet test accounts:
+
+| Action | Finalized transaction |
+| --- | --- |
+| Register operator | `0x1bfff91d042aa408b3ec066a7e9b5224c481e7313707574bd1a34aa6d8a884da` |
+| Deposit 2 GEN bond | `0x53c950f3aa555e11cbb72df296fe60a5b42c40de1d0e4f199a88fcbc09826415` |
+| Create commitment | `0x54dd695d5bdacc92a77a416684a639f805a581132a42444e18119752caa4cd45` |
+| Accept commitment | `0x0fa604c96683651009d34d27d912d9c57d300c00841d8a0be5a2da1ce53fbf33` |
+| Open case | `0x4fa88b8c842c519c7435cbed9b3b1c8cc8fcda138ebc67b708b3fc28ea4d861e` |
+| Operator response | `0xfb1c6bc5f8773917eac3fa919d56416f2e91e3234f0577d58b1318100443996a` |
+| Freeze evidence | `0xaa13813c0bd2bd282c363d487e3917b9f36be4a0b403514f420610fb2de019ce` |
+| Adjudication | `0x003e75129584a8a044f86a50b79f1f34cc8e48de5c5ad91daeb52c47eed550c2` |
+| Finality acknowledgement | `0xde154a09b3a4648dfee7fecc2f3c3a3dd1af261d804ed0bd339557ef130f7899` |
+| Vault application | `0xb317a13f944b9165d5b851cd889050ea06bf39ed9fd0233513de7d95403c915c` |
+
+All listed receipts are FINALIZED. The adjudication receipt contains the
+finality-triggered Vault messages. The Vault application read is
+`APPLIED_FINALIZED`, with citation metadata preserved:
+
+- beneficiary award: `0.4 GEN`
+- safety-pool allocation: `0.1 GEN`
+- remaining available bond: `1.5 GEN`
+- locked exposure: `0 GEN`
+- total penalties: `0.5 GEN`
+- application count: `1`
+
+The final Court read reports `adjudication_finalized: true`,
+`application_status: APPLIED_FINALIZED`, and `network_status: FINALIZED`.
 
 ## Appeal-window evidence
 
-The local console now distinguishes `unknown`, `eligible`, and `ineligible`
-appeal state. It retains the exact adjudication hash at ACCEPTED, returns UI
-control while finality continues in the background, refreshes nonterminal
-adjudications after reload, and rechecks `canAppeal` immediately before asking
-the wallet to submit. A failed eligibility read is explicitly unavailable and
-cannot silently become a permanent `false`.
+The live console retained the exact ACCEPTED hash:
+`0x003e75129584a8a044f86a50b79f1f34cc8e48de5c5ad91daeb52c47eed550c2`.
+The UI released the blocking state after ACCEPTED and continued finality in the
+background, as covered by the workflow regression test. In this run the first
+eligibility read failed closed as `unknown`; before the manual recheck could
+return, finality completed. The appeal control was never enabled, and the
+appeal button was not clicked.
 
-`tests/frontend/transactions.test.ts` proves accepted-state retention after an
-unrelated transaction, the correct appeal target, nonblocking background
-finality, reload recovery, fail-closed RPC handling, pre-submit eligibility
-recheck, and terminal-state rejection. This is local mocked workflow evidence,
-not proof that the deployed console displayed an enabled appeal action. The
-required live screenshot/recording and accepted transaction hash remain open.
+This is recorded as `MISSED` in `deploy/current-demo.json`. Do not claim an
+enabled ACCEPTED appeal control until a future bounded run captures it.
 
-## Demonstrated live failure
+## Public captures
 
-The deployed browser reproduced both `gen_call: execution failed` and subsequent
-`Failed to fetch` errors. An origin-aware HTTP check showed:
+- [Pre-adjudication case capture](evidence/pre-adjudication-case-1.png): wallet-free case facts, canonical duty, evidence, and enabled Run consensus control.
+- [Finalized case capture](evidence/finalized-case-1.png): production console showing the finalized classification, penalty, citations, and actual Vault split.
 
-- the endpoint is reachable;
-- CORS allows `https://slash-court.vercel.app`, POST, and `content-type`;
-- Vercel production environment values match `deploy/last-deployment.json`;
-- a JSON-RPC response returned HTTP 429, code `-32029`, message
-  `Rate limit exceeded: 5000 requests per day`, zero remaining requests, and a
-  retry header.
+The captures are supporting artifacts, not substitutes for chain reads. No
+recording is available; leave the portal video field blank.
 
-The demonstrated cause of the public outage is therefore shared StudioNet RPC
-rate-limit exhaustion, not CORS or a wrong address. The former UI multiplied the
-problem by reading six summaries plus as many as 50 complete cases every 12
-seconds per open tab.
+## Historical examples
 
-## Repair
+The fresh deployment does not contain the other three classifications. The
+console labels them as historical predecessor proof:
 
-The console now performs isolated summary reads, fetches eight case IDs at a
-time, loads a case and its Vault application only when opened, refreshes healthy
-state every five minutes, pauses while hidden, backs off transient failures, and
-stops after eight automatic refreshes. Successful slices remain useful when
-another read fails. Unavailable financial/policy slices disable every write.
+- predecessor `0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e`: provable misconduct,
+  external outage, and insufficient evidence, all synthetic fixtures with real
+  finalized StudioNet transactions;
+- predecessor current pair `0xA4636860ea78c6E29179E7893e1bDa68133D15aB`: an older
+  negligence/outage pair, also synthetic and not current deployment state.
 
-Loading, unavailable, partial, stale, and proven-empty states are distinct. The
-app never infers an empty case list or tells a reviewer to publish a rulebook
-after a failed read. A rulebook version is shown only from a successful or
-explicitly stale read.
+These historical cases must not be described as cases belonging to the fresh
+Court.
 
-## Historical finalized proof
+## Checks completed
 
-The four cases in `deploy/live-demo.json` belong to the predecessor Court
-`0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e`, not the current Court. They used
-synthetic incident fixtures but real StudioNet consensus and finalized Vault
-application.
+- 13 frontend workflow tests passed, including the rendered appeal-action
+  regression, exact hash targeting, reload recovery, fail-closed reads, and
+  terminal ineligibility.
+- Typecheck, lint, production build, and `git diff --check` passed.
+- Focused direct contract tests: 22 passed. The full local direct suite had 43
+  passes; the 8-test GLSim integration suite passed with the documented Windows
+  compatibility wrapper.
+- GenVM lint and contract schema checks passed. The optional GenVM pyright
+  check remains unavailable because `pyright` is not installed.
+- Current on-chain reads prove no penalty before finality for this case because
+  the application was triggered on `finalized`; direct tests prove replay
+  rejection and finality gating. No duplicate application attempt was sent in
+  production.
+- No appeal was submitted and no Portal submission was made.
 
-| URL | Classification | Result | Penalty | Beneficiary | Safety pool |
-| --- | --- | --- | ---: | ---: | ---: |
-| `#case/historical/case-1` | Provable misconduct | Full slash | 1 GEN | 0.8 GEN | 0.2 GEN |
-| `#case/historical/case-2` | Negligent failure | Partial slash | 0.5 GEN | 0.4 GEN | 0.1 GEN |
-| `#case/historical/case-3` | External outage | No slash | 0 GEN | 0 GEN | 0 GEN |
-| `#case/historical/case-4` | Insufficient evidence | No slash | 0 GEN | 0 GEN | 0 GEN |
+## Requirement status
 
-Aggregate historical accounting is 4 GEN initial bond, 1.5 GEN penalties, 1.2
-GEN beneficiary awards, 0.3 GEN safety pool, 2.5 GEN remaining bond, and zero
-locked exposure.
+| Steward requirement | Status |
+| --- | --- |
+| Bind canonical duty, trigger, deadlines, expected action, parties, exposure, rulebook, digest, and alleged rules | Satisfied in fresh Court/Vault source and current finalized case read |
+| Bind fetched-evidence citations with party and rule metadata | Satisfied in fresh source, receipt payload, Court record, and Vault application read |
+| Retain an ACCEPTED adjudication and expose an appeal control before finality | UI retention and background-finality fix deployed; live enabled-control capture remains unsatisfied |
+| Apply deterministic penalty only after finality and only once | Satisfied by current finalized receipts, `APPLIED_FINALIZED` read, accounting, and direct/integration tests |
+| Make public review wallet-free and easy to inspect | Satisfied; current case hash route, Explorer links, advanced metadata, and screenshots are public |
 
-## Limits of this verification
+## Next exact action
 
-Direct-mode tests prove deterministic accounting, canonical duty preservation,
-citation validation, and duplicate-application rejection. With the project’s
-Windows GLSim 0.29 compatibility wrapper, all eight integration tests now
-pass. They exercise deployment and reciprocal binding, all four
-classifications, canonical commitment/citation forwarding, the
-original-adjudication finality callback,
-the gated retry path, one-time penalty application, timeout readiness, and case
-cancellation. GLSim drops a sibling PostMessage, so the financial-path test
-deliberately exercises the contract’s retry recovery after the independent
-finality acknowledgement; it does not substitute for a live StudioNet
-ACCEPTED-window capture. An earlier authorized browser-wallet journey on
-StudioNet verified that both existing financial applications followed finalized
-cases; it did not capture an open appeal window. The shared public RPC can still
-rate-limit or fail transiently, so truthful partial/stale states and fail-closed
-writes remain necessary.
+Run one more bounded synthetic case only if an ACCEPTED-window screenshot is
+required for the portal. Capture the retained hash and enabled appeal button
+immediately after the eligibility read returns `eligible`; do not click Appeal
+unless separately authorized. Until then, submit only with the gate marked NO.
