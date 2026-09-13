@@ -657,6 +657,13 @@ export default function SlashCourtConsole() {
             } catch (error) {
               toast.warning(`${label} dashboard refresh delayed`, { description: error instanceof Error ? error.message : "The finalized state will be recovered on the next refresh." });
             }
+            if (caseId) {
+              try {
+                await loadCase("current", caseId, true);
+              } catch (error) {
+                toast.warning(`${label} case refresh delayed`, { description: error instanceof Error ? error.message : "The finalized case file will be recovered on the next refresh." });
+              }
+            }
           })
           .catch((error) => {
             toast.warning(`${label} finality tracking delayed`, { description: error instanceof Error ? error.message : "The finalized state will be recovered on the next refresh." });
@@ -675,7 +682,7 @@ export default function SlashCourtConsole() {
     } finally {
       endBusy(operation);
     }
-  }, [wallet.address, refresh, rememberTransaction]);
+  }, [wallet.address, loadCase, refresh, rememberTransaction]);
 
   const submitCase = async (form: typeof EMPTY_FORM) => {
     try {
