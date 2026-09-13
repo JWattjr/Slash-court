@@ -91,11 +91,7 @@ const HISTORICAL_CASES = [
 ] as const;
 
 const CURRENT_CASE_PROVENANCE: Record<string, { label: string; transaction?: string }> = {
-  "case-1": { label: "Cancelled setup attempt · retained for audit history" },
-  "case-2": { label: "Cancelled setup attempt · retained for audit history" },
-  "case-3": { label: "Cancelled setup attempt · retained for audit history" },
-  "case-4": { label: "Canonical demo · finalized negligence", transaction: "0x4749fcc86e4e6bb07970ec3ff08f43ccb41bfebfa2531242ec51171c009844be" },
-  "case-5": { label: "Canonical demo · finalized external outage", transaction: "0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d26c16d3ff4954b47cb5ff366" },
+  "case-1": { label: "Synthetic negligence · release candidate" },
 };
 
 type ActiveView = "Home" | "Explorer" | "Submit" | "Operate";
