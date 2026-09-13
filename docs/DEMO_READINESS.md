@@ -3,6 +3,11 @@
 Verified 2026-09-09 against `https://slash-court.vercel.app` and the current
 StudioNet deployment. The wallet journey below was explicitly authorized.
 
+**Resubmission gate: NOT READY.** The current local source closes the steward's
+citation-consensus and appeal-state objections, but those changes are not yet
+deployed. A new mutually bound Court/Vault deployment, a frontend deployment,
+and one captured live ACCEPTED appeal window are still required.
+
 ## Current deployment
 
 - Court: `0xA4636860ea78c6E29179E7893e1bDa68133D15aB`
@@ -29,12 +34,37 @@ and no violated rules. Both Vault applications are finalized. The operator ends
 with 1.5 GEN available, zero locked exposure, and two resolved commitments.
 Exact transactions are recorded in `deploy/current-demo.json`.
 
-The current deployed Court still contains an `E1`-specific prompt example. The
-canonical demo pair uses exact E1/E2 identifiers and therefore completed
-successfully. The repository now removes that bias, lists exact allowed IDs and
-evidence/rule pairs in the prompt, and includes a non-E1 regression test. That
-source hardening is not deployed; redeploying contracts requires separate
-authorization and would create a new Court/Vault provenance record.
+The complete case-5 adjudication transaction is
+`0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d26c16d3ff4954b47cb5ff366`.
+It was recovered from the Studio explorer's finalized `adjudicate_case`
+receipt and independently accepted by `genlayer receipt`; the previous
+40-hex-character value was a truncated identifier, not a different receipt.
+
+The current deployed Court still contains an `E1`-specific prompt example and
+does not independently bind the leader's structured citation metadata through
+validator comparison. The canonical demo pair uses exact E1/E2 identifiers and
+therefore completed successfully, but its stored citation trail must not be
+described as fully consensus-bound. The repository now removes the prompt bias,
+canonicalizes both proposed and independent results against hash-verified
+fetched evidence, and binds evidence ID, rule, party, type, domain, content
+hash, and relevant-rule metadata into validator agreement. This source is not
+deployed; redeployment requires a new Court and a new one-time-bound Vault.
+
+## Appeal-window evidence
+
+The local console now distinguishes `unknown`, `eligible`, and `ineligible`
+appeal state. It retains the exact adjudication hash at ACCEPTED, returns UI
+control while finality continues in the background, refreshes nonterminal
+adjudications after reload, and rechecks `canAppeal` immediately before asking
+the wallet to submit. A failed eligibility read is explicitly unavailable and
+cannot silently become a permanent `false`.
+
+`tests/frontend/transactions.test.ts` proves accepted-state retention after an
+unrelated transaction, the correct appeal target, nonblocking background
+finality, reload recovery, fail-closed RPC handling, pre-submit eligibility
+recheck, and terminal-state rejection. This is local mocked workflow evidence,
+not proof that the deployed console displayed an enabled appeal action. The
+required live screenshot/recording and accepted transaction hash remain open.
 
 ## Demonstrated live failure
 
@@ -86,9 +116,18 @@ locked exposure.
 
 ## Limits of this verification
 
-Direct-mode tests prove deterministic accounting and duplicate-application
-rejection, while integration tests exercise the finality flow in GLSim. This
-pass also completed an authorized browser-wallet journey on StudioNet and
-verified that both financial applications followed finalized adjudications.
-The shared public RPC can still rate-limit or fail transiently, so truthful
-partial/stale states and fail-closed writes remain necessary.
+Direct-mode tests prove deterministic accounting, canonical duty preservation,
+citation validation, and duplicate-application rejection. With the project’s
+Windows GLSim 0.29 compatibility wrapper, all eight integration tests now
+pass. They exercise deployment and reciprocal binding, all four
+classifications, canonical commitment/citation forwarding, the
+original-adjudication finality callback,
+the gated retry path, one-time penalty application, timeout readiness, and case
+cancellation. GLSim drops a sibling PostMessage, so the financial-path test
+deliberately exercises the contract’s retry recovery after the independent
+finality acknowledgement; it does not substitute for a live StudioNet
+ACCEPTED-window capture. An earlier authorized browser-wallet journey on
+StudioNet verified that both existing financial applications followed finalized
+cases; it did not capture an open appeal window. The shared public RPC can still
+rate-limit or fail transiently, so truthful partial/stale states and fail-closed
+writes remain necessary.

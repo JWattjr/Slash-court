@@ -94,17 +94,21 @@ python -X utf8 -m genvm_linter.cli schema contracts\operator_bond_vault.py
 python -m pytest tests\direct -v
 ```
 
-For Windows with the v0.29 GLSim package, start the compatibility wrapper so
-payable transaction values reach `gl.message.value`:
+For Windows with the v0.29 GLSim package, start the compatibility wrapper. It
+keeps the pinned SDK alive across nested schema reads, unwraps the direct-test
+proxy so GLSim caches the real ABI, preserves payable transaction values, and
+uses UTF-8 simulator logs:
 
 ```powershell
 python -m tools.glsim_compat --port 4001 --validators 5 --no-browser --seed slashcourt
 python -m pytest tests\integration -v -s
 ```
 
-The wrapper only repairs a simulator plumbing gap; the production contracts
-use the documented payable API. The CI workflow runs direct tests by default
-and exposes the consensus suite as a manual/local step.
+The wrapper only repairs local simulator plumbing; it does not alter production
+contract behavior. GLSim 0.29 drains only one sibling PostMessage, so the
+financial integration test uses the contract's finality-gated retry path after
+the acknowledgement callback. The CI workflow runs direct tests by default and
+exposes the consensus suite as a manual/local step.
 
 ## Frontend
 
@@ -165,12 +169,18 @@ Exact predecessor addresses and receipts are recorded in
 
 ## Security posture and known limitations
 
+These bullets describe the current repository source. The existing StudioNet
+deployment predates the latest citation-consensus and appeal-console changes;
+see `docs/DEMO_READINESS.md` for the exact live/source boundary.
+
 - Public HTTPS evidence is allowlisted by domain; localhost, raw/private IPs,
   unsupported schemes, oversized items, invented IDs, and post-freeze writes
   are rejected.
 - Web/LLM failure becomes `INSUFFICIENT_EVIDENCE`, never a slash.
-- Validators re-run the substantive evaluation and compare classification,
-  outcome, rule IDs, and supported exemptions.
+- Validators re-fetch evidence, canonicalize the proposed and independent
+  results, and compare classification, outcome, rule sets, evidence/rule
+  references, and citation party/type/domain/hash/rule metadata. Bounded
+  finding and explanation prose remains informational and cannot alter money.
 - Every adjudication revalidates the vault's canonical duty digest, trigger,
   deadlines, expected action, parties, rulebook, exposure, and case binding.
 - Financial slashes require fetched-evidence findings. Court and Vault records

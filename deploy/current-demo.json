@@ -4,7 +4,7 @@
   "slashCourtAddress": "0xA4636860ea78c6E29179E7893e1bDa68133D15aB",
   "operatorBondVaultAddress": "0x5eAba41b27560505A45fD51a301f01f30832E7E4",
   "evidenceNote": "All incident evidence is explicitly synthetic. The adjudications and Vault applications are real finalized StudioNet transactions.",
-  "sourceProvenance": "These cases ran against the source recorded by last-deployment.json. The later prompt hardening in contracts/slash_court.py is tested but not deployed; E1/E2 exact identifiers avoided the deployed example bias.",
+  "sourceProvenance": "These cases ran against the source recorded by last-deployment.json. The current local source adds generic evidence-ID prompting, consensus-bound citation/reference metadata, and appeal-workflow hardening; those changes are tested locally but are not deployed. E1/E2 exact identifiers avoided the deployed example bias.",
   "caseIndexNote": "The deployment contains five indexed cases. Cases 1-3 are cancelled setup attempts; cases 4-5 are the canonical demo pair.",
   "cases": [
     {
@@ -37,7 +37,7 @@
       "applicationStatus": "APPLIED_FINALIZED",
       "responseTransaction": "0x3292c615d4a8214e8ee76d5048189d719658d5b5aba087a5de55ce6ba3c53f50",
       "readyTransaction": "0x5da82f142ed2b542457deec38860081f60f2e5b034e02ce5aa8d17b32db9e160",
-      "adjudicationTransaction": "0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d",
+      "adjudicationTransaction": "0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d26c16d3ff4954b47cb5ff366",
       "applicationTransaction": "0x1f7e832d435be8f6d23066d3a68a5123fc58e7608ef37514036c50b5b191f396"
     }
   ],

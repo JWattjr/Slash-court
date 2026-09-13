@@ -26,10 +26,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { useWallet, formatAddress } from "@/lib/genlayer/WalletProvider";
+import { AppealAction } from "@/lib/slashcourt/AppealAction";
 import { deploymentConfiguration, formatGenAmount, missingConfigurationKeys, SlashCourtClient } from "@/lib/slashcourt/client";
 import { historicalArtifactBundle } from "@/lib/slashcourt/historical";
 import { MAX_AUTOMATIC_REFRESHES, nextRefreshDelay } from "@/lib/slashcourt/refresh";
-import { findAppealableAdjudication, mergeTransaction, transactionStorageKey } from "@/lib/slashcourt/transactions";
+import { appealEligibility, findAppealableAdjudication, findLatestAdjudication, findRefreshableAdjudications, mergeTransaction, trackAppealableTransaction, transactionStorageKey } from "@/lib/slashcourt/transactions";
 import type { CaseBundle, CourtCase, Dashboard, ReadSlice, TxSnapshot } from "@/lib/slashcourt/types";
 
 const EMPTY_FORM = {
@@ -94,7 +95,7 @@ const CURRENT_CASE_PROVENANCE: Record<string, { label: string; transaction?: str
   "case-2": { label: "Cancelled setup attempt · retained for audit history" },
   "case-3": { label: "Cancelled setup attempt · retained for audit history" },
   "case-4": { label: "Canonical demo · finalized negligence", transaction: "0x4749fcc86e4e6bb07970ec3ff08f43ccb41bfebfa2531242ec51171c009844be" },
-  "case-5": { label: "Canonical demo · finalized external outage", transaction: "0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d" },
+  "case-5": { label: "Canonical demo · finalized external outage", transaction: "0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d26c16d3ff4954b47cb5ff366" },
 };
 
 type ActiveView = "Home" | "Explorer" | "Submit" | "Operate";
@@ -340,7 +341,7 @@ function OperatorActions({ configured, writeReady, rulebookVersion, walletConnec
   </div>;
 }
 
-function CaseModal({ item, application, source, adjudicationTransaction, tx, onClose, onAction, busy, onGenLayer, writeReady }: { item: CourtCase; application: CaseBundle["application"]; source: CaseSource; adjudicationTransaction?: string; tx?: TxSnapshot[]; onClose: () => void; onAction: (action: "respond" | "ready" | "adjudicate" | "retry" | "appeal", values?: { response?: string; exemption?: string; mitigation?: string; rules?: string[]; counterEvidence?: { evidenceId: string; url: string; domain: string; fact: string; contentHash: string } }) => Promise<void>; busy: boolean; onGenLayer: boolean; writeReady: boolean }) {
+function CaseModal({ item, application, source, adjudicationTransaction, tx, onClose, onAction, busy, onGenLayer, writeReady }: { item: CourtCase; application: CaseBundle["application"]; source: CaseSource; adjudicationTransaction?: string; tx?: TxSnapshot[]; onClose: () => void; onAction: (action: "respond" | "ready" | "adjudicate" | "retry" | "appeal" | "recheckAppeal", values?: { response?: string; exemption?: string; mitigation?: string; rules?: string[]; counterEvidence?: { evidenceId: string; url: string; domain: string; fact: string; contentHash: string } }) => Promise<void>; busy: boolean; onGenLayer: boolean; writeReady: boolean }) {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const onCloseRef = useRef(onClose);
@@ -364,7 +365,9 @@ function CaseModal({ item, application, source, adjudicationTransaction, tx, onC
   const canRetry = Boolean(item.adjudication_finalized) && ["RESOLUTION_RECORDED", "APPLICATION_QUEUED"].includes(item.status);
   const latestTx = tx?.[tx.length - 1];
   const appealableAdjudication = findAppealableAdjudication(tx);
-  const adjudicationHash = adjudicationTransaction || tx?.find((entry) => entry.kind === "adjudication")?.hash;
+  const latestAdjudication = findLatestAdjudication(tx);
+  const adjudicationEligibility = latestAdjudication ? appealEligibility(latestAdjudication) : null;
+  const adjudicationHash = adjudicationTransaction || latestAdjudication?.hash;
   const duty = item.canonical_commitment;
   const historical = source === "historical";
   useEffect(() => {
@@ -415,7 +418,7 @@ function CaseModal({ item, application, source, adjudicationTransaction, tx, onC
           <div><span>Penalty</span><strong>{settlement?.applied ? `${amount(settlement.penalty_amount)} GEN` : item.adjudication_finalized ? `${amount(item.penalty_amount)} GEN` : "Not applied"}</strong></div>
           <div><span>Finality</span><strong>{item.adjudication_finalized ? "Finalized" : prettyStatus(item.network_status || "Pending")}</strong></div>
         </div>
-        {item.explanation ? <div className="banner decision-banner"><ShieldCheck size={15} /><div><strong>Decision reasoning</strong><span>{item.explanation}</span></div></div> : null}
+        {item.explanation ? <div className="banner decision-banner"><ShieldCheck size={15} /><div><strong>Model explanation · informational</strong><span>{item.explanation} Settlement facts and attributed citation references—not this prose—are consensus-bound.</span></div></div> : null}
         {item.operator_response || item.claimed_exemption || item.mitigation_attempts || historical ? <section className="response-sheet"><h3>Operator response</h3><p>{item.operator_response || (application.state === "error" ? "Unavailable in the checked deployment artifact; a live historical case read is required." : "No response was recorded on chain.")}</p><dl><div><dt>Claimed exemption</dt><dd>{item.claimed_exemption || (application.state === "error" ? "Unavailable" : "None")}</dd></div><div><dt>Mitigation</dt><dd>{item.mitigation_attempts || (application.state === "error" ? "Unavailable" : "None recorded")}</dd></div></dl></section> : null}
         <Lifecycle item={item} />
         {duty ? <div className="banner" style={{ marginTop: 14 }}><LockKeyhole size={15} /><div><strong>Vault-bound duty</strong><span>{duty.service_description} · trigger {duty.duty_trigger} · expected action {duty.expected_action_id}<br />Duty {dateLabel(duty.duty_deadline)} · dispute {dateLabel(duty.dispute_deadline)} · alleged rules {item.alleged_rule_ids.join(", ") || "none"}</span></div></div> : null}
@@ -427,8 +430,8 @@ function CaseModal({ item, application, source, adjudicationTransaction, tx, onC
         <div className="proof-links"><a href={`https://explorer-studio.genlayer.com/address/${historical ? HISTORICAL_DEPLOYMENT.courtAddress : deploymentConfiguration().courtAddress}`} target="_blank" rel="noreferrer">Court contract <ArrowUpRight size={11} /></a>{adjudicationHash ? <a href={`https://explorer-studio.genlayer.com/tx/${adjudicationHash}`} target="_blank" rel="noreferrer">Adjudication transaction <ArrowUpRight size={11} /></a> : <span>Adjudication transaction unavailable</span>}</div>
         {!historical && canRespond && !showResponse ? <button className="ghost-button" style={{ marginTop: 13 }} disabled={!writeReady} onClick={() => setShowResponse(true)}>Add operator response</button> : null}
         {!historical && showResponse ? <div className="intake-grid" style={{ marginTop: 13 }}><label className="form-label"><span>Response</span><textarea className="textarea" value={response} onChange={(event) => setResponse(event.target.value)} /></label><label className="form-label"><span>Claimed exemption</span><input className="input" value={exemption} onChange={(event) => setExemption(event.target.value)} /></label><label className="form-label"><span>Mitigation attempts</span><input className="input" value={mitigation} onChange={(event) => setMitigation(event.target.value)} /></label><label className="form-label"><span>Counterevidence URL</span><input className="input" value={counterEvidenceUrl} onChange={(event) => setCounterEvidenceUrl(event.target.value)} /></label><label className="form-label"><span>Counterevidence fact</span><textarea className="textarea" value={counterEvidenceFact} onChange={(event) => setCounterEvidenceFact(event.target.value)} /></label><details className="advanced-fields"><summary>Optional evidence metadata</summary><label className="form-label"><span>Evidence ID</span><input className="input" value={counterEvidenceId} onChange={(event) => setCounterEvidenceId(event.target.value)} /></label><label className="form-label"><span>Approved domain</span><input className="input" value={counterEvidenceDomain} onChange={(event) => setCounterEvidenceDomain(event.target.value)} /></label><label className="form-label"><span>Content SHA-256</span><input className="input" value={counterEvidenceHash} onChange={(event) => setCounterEvidenceHash(event.target.value)} placeholder="Derived from the evidence body when blank" /></label></details><button className="primary-button" disabled={busy || !onGenLayer || !writeReady} onClick={() => void onAction("respond", { response, exemption, mitigation, counterEvidence: counterEvidenceUrl.trim() ? { evidenceId: counterEvidenceId, url: counterEvidenceUrl, domain: counterEvidenceDomain, fact: counterEvidenceFact, contentHash: counterEvidenceHash } : undefined })}>Submit response</button></div> : null}
-        {!historical ? <><div className="form-help" style={{ marginTop: 14 }}>{!writeReady ? "Writes are locked until current Court, Vault, rulebook, and evidence-policy reads succeed." : !onGenLayer ? "Switch MetaMask to GenLayer Studio Network before writing." : deadlinePassed ? "The response deadline has passed; a claimant may mark this case ready even if the operator stayed silent." : `Response deadline: ${dateLabel(item.response_deadline)}. Evidence becomes frozen when consensus starts.`}</div><div className="modal-actions" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 18 }}>{canReady ? <label className="form-label" style={{ width: 170 }}><span>Alleged rule IDs</span><input className="input" value={rules} onChange={(event) => setRules(event.target.value)} aria-label="Rule IDs" placeholder="e.g. R1,R4" aria-invalid={rules.length > 0 && !validReadyRules} /></label> : null}<button className="ghost-button" disabled={busy || !onGenLayer || !writeReady || !canReady || !validReadyRules} onClick={() => void onAction("ready", { rules: parsedRules })}>Mark ready · rules</button><button className="ghost-button" disabled={busy || !onGenLayer || !writeReady || !canAdjudicate} onClick={() => void onAction("adjudicate")}>Run consensus</button><button className="ghost-button" disabled={busy || !onGenLayer || !writeReady || !canRetry} onClick={() => void onAction("retry")}>Retry finalized message</button>{appealableAdjudication ? <button className="primary-button" disabled={busy || !onGenLayer || !writeReady} onClick={() => void onAction("appeal")}>Appeal accepted adjudication</button> : null}</div></> : null}
-        {latestTx ? <div className="footer-note">Latest transaction <code>{latestTx.hash}</code> · {latestTx.status} · {latestTx.execution}{latestTx.success ? " · execution succeeded" : latestTx.error ? ` · ${latestTx.error}` : " · outcome unknown"}{latestTx.appealable ? " · appeal window open" : ""}</div> : null}
+        {!historical ? <><div className="form-help" style={{ marginTop: 14 }}>{!writeReady ? "Writes are locked until current Court, Vault, rulebook, and evidence-policy reads succeed." : !onGenLayer ? "Switch MetaMask to GenLayer Studio Network before writing." : deadlinePassed ? "The response deadline has passed; a claimant may mark this case ready even if the operator stayed silent." : `Response deadline: ${dateLabel(item.response_deadline)}. Evidence becomes frozen when consensus starts.`}</div>{latestAdjudication?.status.toUpperCase() === "ACCEPTED" && adjudicationEligibility === "unknown" ? <div className="form-help">The ACCEPTED adjudication is retained, but appeal eligibility could not be verified. Recheck before attempting an appeal; an RPC failure never counts as ineligible.</div> : null}<div className="modal-actions" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 18 }}>{canReady ? <label className="form-label" style={{ width: 170 }}><span>Alleged rule IDs</span><input className="input" value={rules} onChange={(event) => setRules(event.target.value)} aria-label="Rule IDs" placeholder="e.g. R1,R4" aria-invalid={rules.length > 0 && !validReadyRules} /></label> : null}<button className="ghost-button" disabled={busy || !onGenLayer || !writeReady || !canReady || !validReadyRules} onClick={() => void onAction("ready", { rules: parsedRules })}>Mark ready · rules</button><button className="ghost-button" disabled={busy || !onGenLayer || !writeReady || !canAdjudicate} onClick={() => void onAction("adjudicate")}>Run consensus</button><button className="ghost-button" disabled={busy || !onGenLayer || !writeReady || !canRetry} onClick={() => void onAction("retry")}>Retry finalized message</button>{latestAdjudication?.status.toUpperCase() === "ACCEPTED" && adjudicationEligibility === "unknown" ? <button className="ghost-button" disabled={busy} onClick={() => void onAction("recheckAppeal")}>Recheck appeal window</button> : null}<AppealAction transaction={appealableAdjudication} busy={busy} enabled={Boolean(onGenLayer && writeReady)} onAppeal={() => void onAction("appeal")} /></div></> : null}
+        {latestTx ? <div className="footer-note">Latest transaction <code>{latestTx.hash}</code> · {latestTx.status} · {latestTx.execution}{latestTx.success ? " · execution succeeded" : latestTx.error ? ` · ${latestTx.error}` : " · outcome unknown"}{latestTx.kind === "adjudication" && appealEligibility(latestTx) === "eligible" ? " · appeal window open" : latestTx.kind === "adjudication" && appealEligibility(latestTx) === "unknown" ? " · appeal eligibility unavailable" : ""}</div> : null}
       </div>
     </div>
   </div>;
@@ -449,6 +452,7 @@ export default function SlashCourtConsole() {
   const [automaticRefreshes, setAutomaticRefreshes] = useState(0);
   const [transactions, setTransactions] = useState<Record<string, TxSnapshot[]>>({});
   const [transactionsReady, setTransactionsReady] = useState(false);
+  const busyOperation = useRef(0);
   const refreshInFlight = useRef<Promise<void> | null>(null);
   const failureCount = useRef(0);
   const lastAttemptAt = useRef(0);
@@ -460,6 +464,17 @@ export default function SlashCourtConsole() {
   }, []);
   const selectedKey = selectedCase ? `${selectedCase.source}:${selectedCase.caseId}` : null;
   const selectedBundle = selectedKey ? caseBundles[selectedKey] || null : null;
+
+  const beginBusy = () => {
+    const operation = busyOperation.current + 1;
+    busyOperation.current = operation;
+    setBusy(true);
+    return operation;
+  };
+
+  const endBusy = (operation: number) => {
+    if (busyOperation.current === operation) setBusy(false);
+  };
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -611,34 +626,49 @@ export default function SlashCourtConsole() {
     transactionRefreshStarted.current = true;
     const client = new SlashCourtClient(wallet.address || undefined);
     for (const [caseId, history] of Object.entries(transactions)) {
-      for (const entry of history) {
-        if (entry.kind !== "adjudication" || !entry.appealable) continue;
+      for (const entry of findRefreshableAdjudications(history)) {
         void client.snapshot(entry.hash, entry.kind).then((snapshot) => rememberTransaction(caseId, snapshot));
       }
     }
   }, [configured, transactionsReady, transactions, wallet.address, rememberTransaction]);
 
   const runTransaction = useCallback(async (caseId: string | null, kind: TxSnapshot["kind"], action: () => Promise<string>, label: string, mode: "finalized" | "appealable" = "finalized") => {
-    setBusy(true);
+    const operation = beginBusy();
     try {
       const client = new SlashCourtClient(wallet.address || undefined);
       const hash = await action();
       toast.success(`${label} submitted`, { description: hash, className: "toast-copy" });
-      rememberTransaction(caseId, { hash, status: "SUBMITTED", execution: "PENDING", appealable: false, success: false, kind, updatedAt: Date.now() });
-      const provisional = await client.snapshot(hash, kind).catch(() => null);
-      if (provisional) rememberTransaction(caseId, provisional);
+      rememberTransaction(caseId, { hash, status: "SUBMITTED", execution: "PENDING", appealable: false, appealEligibility: "unknown", success: false, kind, updatedAt: Date.now() });
       if (mode === "appealable") {
-        const accepted = await client.waitForAppealWindow(hash, kind);
-        rememberTransaction(caseId, accepted);
-        if (accepted.appealable) toast.success(`${label} accepted`, { description: "Adjudication retained; appeal window is open.", className: "toast-copy" });
+        const { accepted, finalized } = await trackAppealableTransaction(
+          client,
+          hash,
+          kind,
+          (snapshot) => rememberTransaction(caseId, snapshot),
+        );
+        // Release the blocking UI state as soon as the exact ACCEPTED
+        // adjudication is retained. Refresh and finality continue in the
+        // background so the appeal action can be used during the window.
+        endBusy(operation);
+        const eligibility = appealEligibility(accepted);
+        if (eligibility === "eligible") toast.success(`${label} accepted`, { description: "Adjudication retained; appeal window is open.", className: "toast-copy" });
+        else if (eligibility === "unknown") toast.warning(`${label} status retained`, { description: accepted.appealEligibilityError || accepted.error || "Appeal eligibility is temporarily unavailable. Use Recheck appeal window before appealing.", className: "toast-copy" });
         else toast.error(`${label} is not appealable`, { description: accepted.error || `${accepted.status} · ${accepted.execution}`, className: "toast-copy" });
-        void client.wait(hash, kind).then(async (finalized) => {
-          rememberTransaction(caseId, finalized);
-          await refresh(true);
-        });
-        await refresh(true);
+        void finalized
+          .then(async () => {
+            try {
+              await refresh(true);
+            } catch (error) {
+              toast.warning(`${label} dashboard refresh delayed`, { description: error instanceof Error ? error.message : "The finalized state will be recovered on the next refresh." });
+            }
+          })
+          .catch((error) => {
+            toast.warning(`${label} finality tracking delayed`, { description: error instanceof Error ? error.message : "The finalized state will be recovered on the next refresh." });
+          });
         return;
       }
+      const provisional = await client.snapshot(hash, kind).catch(() => null);
+      if (provisional) rememberTransaction(caseId, provisional);
       const snapshot = await client.wait(hash, kind);
       rememberTransaction(caseId, snapshot);
       if (snapshot.success) toast.success(`${label} finalized`, { description: `${snapshot.status} · ${snapshot.execution}`, className: "toast-copy" });
@@ -647,7 +677,7 @@ export default function SlashCourtConsole() {
     } catch (error) {
       toast.error(`${label} failed`, { description: error instanceof Error ? error.message : "The network rejected the transaction.", className: "toast-copy" });
     } finally {
-      setBusy(false);
+      endBusy(operation);
     }
   }, [wallet.address, refresh, rememberTransaction]);
 
@@ -660,7 +690,7 @@ export default function SlashCourtConsole() {
     }
   };
 
-  const caseAction = async (action: "respond" | "ready" | "adjudicate" | "retry" | "appeal", values?: { response?: string; exemption?: string; mitigation?: string; rules?: string[]; counterEvidence?: { evidenceId: string; url: string; domain: string; fact: string; contentHash: string } }) => {
+  const caseAction = async (action: "respond" | "ready" | "adjudicate" | "retry" | "appeal" | "recheckAppeal", values?: { response?: string; exemption?: string; mitigation?: string; rules?: string[]; hash?: string; counterEvidence?: { evidenceId: string; url: string; domain: string; fact: string; contentHash: string } }) => {
     if (!selectedCase || selectedCase.source !== "current") return;
     const client = new SlashCourtClient(wallet.address || undefined);
     const id = selectedCase.caseId;
@@ -676,8 +706,29 @@ export default function SlashCourtConsole() {
     if (action === "ready") await runTransaction(id, "ready", () => client.markCaseReady(id, values?.rules || []), "Evidence freeze");
     if (action === "adjudicate") await runTransaction(id, "adjudication", () => client.adjudicateCase(id), "Consensus evaluation", "appealable");
     if (action === "retry") await runTransaction(id, "retry", () => client.retryApplication(id), "Finality message retry");
+    if (action === "recheckAppeal") {
+      const adjudication = findLatestAdjudication(transactions[id]);
+      if (!adjudication) {
+        toast.error("Appeal status unavailable", { description: "No retained adjudication transaction was found for this case." });
+        return;
+      }
+      const operation = beginBusy();
+      try {
+        const snapshot = await client.snapshot(adjudication.hash, "adjudication");
+        rememberTransaction(id, snapshot);
+        const eligibility = appealEligibility(snapshot);
+        if (eligibility === "eligible") toast.success("Appeal window verified", { description: adjudication.hash, className: "toast-copy" });
+        else if (eligibility === "unknown") toast.warning("Appeal eligibility unavailable", { description: snapshot.appealEligibilityError || "The RPC read failed; no eligibility conclusion was made.", className: "toast-copy" });
+        else toast.error("Appeal window closed", { description: `${snapshot.status} · no appeal was submitted.`, className: "toast-copy" });
+      } catch (error) {
+        toast.error("Appeal status check failed", { description: error instanceof Error ? error.message : "The transaction could not be read.", className: "toast-copy" });
+      } finally {
+        endBusy(operation);
+      }
+      return;
+    }
     if (action === "appeal") {
-      const adjudication = findAppealableAdjudication(transactions[id]);
+      const adjudication = (values?.hash ? transactions[id]?.find((entry) => entry.hash === values.hash) : undefined) || findAppealableAdjudication(transactions[id]);
       if (!adjudication) {
         toast.error("Appeal unavailable", { description: "No retained ACCEPTED adjudication is currently appealable. Appeals must be submitted before finalization." });
         return;
@@ -710,7 +761,7 @@ export default function SlashCourtConsole() {
   const network = dashboard?.network || deployment.network;
   const networkAvailable = health === "fresh" || health === "partial";
   const displayCase = networkAvailable ? featuredCase : null;
-  const previewState = health === "loading" ? "Checking network" : health === "stale" ? "Stale snapshot" : health === "partial" ? "Partial snapshot" : health === "fresh" && caseIndex?.data?.total === 0 ? "No cases opened" : "Snapshot unavailable";
+  const previewState = health === "loading" ? "Checking network" : health === "stale" ? "Stale snapshot" : health === "partial" ? "Partial snapshot" : health === "fresh" && caseIndex?.data?.total === 0 ? "No cases opened" : health === "fresh" ? "Select a case" : "Snapshot unavailable";
   const retryLabel = loading ? "Retrying now…" : nextRetryAt ? `Next automatic retry ${new Date(nextRetryAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Automatic retry paused";
   const healthCopy = health === "loading"
     ? { title: "Loading current deployment", body: "Court, Vault, rulebook, evidence policy, and case index are being checked independently." }

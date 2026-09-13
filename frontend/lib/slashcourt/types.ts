@@ -198,11 +198,16 @@ export type CaseBundle = {
   application: ReadSlice<VaultApplication>;
 };
 
+export type AppealEligibility = "unknown" | "eligible" | "ineligible";
+
 export type TxSnapshot = {
   hash: string;
   status: string;
   execution: string;
+  /** Backward-compatible mirror for deployment-scoped browser history. */
   appealable: boolean;
+  appealEligibility?: AppealEligibility;
+  appealEligibilityError?: string;
   success: boolean;
   kind: "operator" | "intake" | "response" | "ready" | "adjudication" | "retry" | "appeal";
   error?: string;

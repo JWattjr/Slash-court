@@ -56,6 +56,42 @@ MAX_EXPLANATION_LENGTH = 900
 MAX_ALLOWED_DOMAINS = 25
 RESPONSE_WINDOW_SECONDS = 86_400
 
+MODEL_RESULT_FIELDS = (
+    "classification",
+    "violated_rule_ids",
+    "supported_exemption_ids",
+    "findings",
+    "explanation",
+)
+ADJUDICATION_RESULT_FIELDS = (
+    "classification",
+    "outcome",
+    "violated_rule_ids",
+    "supported_exemptions",
+    "findings",
+    "evidence_citations",
+    "explanation",
+)
+MODEL_FINDING_FIELDS = ("evidence_id", "rule_id", "finding")
+CANONICAL_FINDING_FIELDS = (
+    "evidence_id",
+    "rule_id",
+    "finding",
+    "submission_party",
+    "evidence_type",
+    "source_domain",
+    "content_hash",
+    "relevant_rule_ids",
+)
+CITATION_FIELDS = (
+    "evidence_id",
+    "evidence_type",
+    "submission_party",
+    "source_domain",
+    "content_hash",
+    "relevant_rule_ids",
+)
+
 FULL_SLASH_BPS = 10_000
 PARTIAL_SLASH_BPS = 5_000
 NO_SLASH_BPS = 0
@@ -345,6 +381,19 @@ class SlashCourt(gl.Contract):
             result.append(raw_rule_id)
         return result
 
+    def _require_exact_fields(self, value, required_fields: tuple, label: str) -> None:
+        if not isinstance(value, dict):
+            raise gl.vm.UserError(f"{ERROR_LLM} {label} must be an object")
+        keys = list(value.keys())
+        if len(keys) != len(required_fields):
+            raise gl.vm.UserError(f"{ERROR_LLM} {label} has missing or unexpected fields")
+        for key in keys:
+            if not isinstance(key, str) or key not in required_fields:
+                raise gl.vm.UserError(f"{ERROR_LLM} {label} has missing or unexpected fields")
+        for field in required_fields:
+            if field not in value:
+                raise gl.vm.UserError(f"{ERROR_LLM} {label} has missing or unexpected fields")
+
     def _parse_json_list(self, value: str, label: str, maximum_length: int) -> list:
         if len(value) > maximum_length:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} {label} is too large")
@@ -588,6 +637,249 @@ class SlashCourt(gl.Contract):
             )
         return True, records
 
+    def _authoritative_citation(self, record: dict) -> dict:
+        if not isinstance(record, dict):
+            raise gl.vm.UserError(f"{ERROR_LLM} fetched evidence record is invalid")
+        evidence_id = record.get("evidence_id")
+        evidence_type = record.get("evidence_type")
+        submission_party = record.get("submission_party")
+        source_domain = record.get("source_domain")
+        content_hash = record.get("content_hash")
+        if not isinstance(evidence_id, str):
+            raise gl.vm.UserError(f"{ERROR_LLM} fetched evidence id is invalid")
+        self._validate_identifier(evidence_id, "fetched evidence id", 48)
+        self._validate_text(evidence_type, "fetched evidence type", 64)
+        self._validate_text(
+            source_domain, "fetched evidence source domain", MAX_EVIDENCE_DOMAIN_LENGTH
+        )
+        if submission_party not in ("CLAIMANT", "OPERATOR"):
+            raise gl.vm.UserError(f"{ERROR_LLM} fetched evidence party is invalid")
+        self._validate_sha256_hash(content_hash, "fetched evidence content hash")
+        relevant = sorted(
+            self._validate_rule_ids(
+                record.get("relevant_rule_ids"), "fetched evidence rule ids", 3
+            )
+        )
+        return {
+            "evidence_id": evidence_id,
+            "evidence_type": evidence_type.strip(),
+            "submission_party": submission_party,
+            "source_domain": source_domain.strip().lower(),
+            "content_hash": content_hash.lower(),
+            "relevant_rule_ids": relevant,
+        }
+
+    def _authoritative_evidence_index(self, evidence_records: list) -> dict:
+        if not isinstance(evidence_records, list) or len(evidence_records) > MAX_EVIDENCE_ITEMS:
+            raise gl.vm.UserError(f"{ERROR_LLM} fetched evidence records are invalid")
+        evidence_by_id = {}
+        for record in evidence_records:
+            citation = self._authoritative_citation(record)
+            evidence_id = citation["evidence_id"]
+            if evidence_id in evidence_by_id:
+                raise gl.vm.UserError(f"{ERROR_LLM} duplicate fetched evidence id")
+            evidence_by_id[evidence_id] = citation
+        return evidence_by_id
+
+    def _canonicalize_adjudication_result(
+        self, proposed_result, case: CourtCase, evidence_records: list
+    ) -> dict:
+        """Bind settlement facts to independently fetched evidence.
+
+        Finding prose and the explanation are bounded informational text. The
+        classification, rule sets, finding references, and citation metadata
+        are canonical consensus facts.
+        """
+        self._require_exact_fields(
+            proposed_result, ADJUDICATION_RESULT_FIELDS, "adjudication result"
+        )
+        classification = proposed_result.get("classification")
+        if classification not in CLASSIFICATIONS:
+            raise gl.vm.UserError(f"{ERROR_LLM} missing or invalid classification")
+        outcome = proposed_result.get("outcome")
+        if outcome not in OUTCOMES or outcome != self._outcome_for(classification):
+            raise gl.vm.UserError(f"{ERROR_LLM} classification and outcome are inconsistent")
+        explanation = proposed_result.get("explanation")
+        if not isinstance(explanation, str) or len(explanation.strip()) == 0:
+            raise gl.vm.UserError(f"{ERROR_LLM} bounded explanation is required")
+        if len(explanation) > MAX_EXPLANATION_LENGTH:
+            raise gl.vm.UserError(f"{ERROR_LLM} explanation is too long")
+
+        violated = sorted(
+            self._validate_rule_ids(proposed_result.get("violated_rule_ids"), "violated rule ids")
+        )
+        exemptions = sorted(
+            self._validate_rule_ids(
+                proposed_result.get("supported_exemptions"), "supported exemption ids", 2
+            )
+        )
+        alleged = self._validate_rule_ids(
+            self._parse_json_list(case.alleged_rule_ids_json, "alleged rule ids", 500),
+            "alleged rule ids",
+        )
+        for rule_id in violated + exemptions:
+            if rule_id not in alleged:
+                raise gl.vm.UserError(f"{ERROR_LLM} result cites a rule outside the allegations")
+        if classification == "PROVABLE_MISCONDUCT" and "R5" not in violated:
+            raise gl.vm.UserError(f"{ERROR_LLM} misconduct requires evidence-integrity rule")
+        if classification == "NEGLIGENT_FAILURE" and "R3" not in violated:
+            raise gl.vm.UserError(f"{ERROR_LLM} negligence requires failover rule")
+        if classification in ("PROVABLE_MISCONDUCT", "NEGLIGENT_FAILURE") and len(exemptions) > 0:
+            raise gl.vm.UserError(f"{ERROR_LLM} slash classification cannot retain an exemption")
+        if classification == "EXTERNAL_OUTAGE":
+            if "R4" not in exemptions:
+                raise gl.vm.UserError(f"{ERROR_LLM} outage requires supported exemption")
+            if len(violated) > 0:
+                raise gl.vm.UserError(f"{ERROR_LLM} external outage cannot assert a breach")
+        if classification == "INSUFFICIENT_EVIDENCE" and (
+            len(violated) > 0 or len(exemptions) > 0
+        ):
+            raise gl.vm.UserError(
+                f"{ERROR_LLM} insufficient evidence cannot assert breach or exemption"
+            )
+
+        evidence_by_id = self._authoritative_evidence_index(evidence_records)
+        findings_raw = proposed_result.get("findings")
+        if not isinstance(findings_raw, list) or len(findings_raw) > MAX_FINDINGS:
+            raise gl.vm.UserError(f"{ERROR_LLM} invalid findings")
+        findings = []
+        accepted_rules = violated + exemptions
+        for finding in findings_raw:
+            self._require_exact_fields(finding, CANONICAL_FINDING_FIELDS, "finding")
+            evidence_id = finding.get("evidence_id")
+            rule_id = finding.get("rule_id")
+            statement = finding.get("finding")
+            if evidence_id not in evidence_by_id or rule_id not in RULE_IDS:
+                raise gl.vm.UserError(f"{ERROR_LLM} invented evidence or rule id")
+            authority = evidence_by_id[evidence_id]
+            relevant = finding.get("relevant_rule_ids")
+            proposed_metadata = {
+                "evidence_id": evidence_id,
+                "evidence_type": finding.get("evidence_type"),
+                "submission_party": finding.get("submission_party"),
+                "source_domain": (
+                    finding.get("source_domain").strip().lower()
+                    if isinstance(finding.get("source_domain"), str)
+                    else finding.get("source_domain")
+                ),
+                "content_hash": (
+                    finding.get("content_hash").lower()
+                    if isinstance(finding.get("content_hash"), str)
+                    else finding.get("content_hash")
+                ),
+                "relevant_rule_ids": (
+                    sorted(self._validate_rule_ids(relevant, "finding evidence rule ids", 3))
+                    if isinstance(relevant, list)
+                    else relevant
+                ),
+            }
+            if proposed_metadata != authority:
+                raise gl.vm.UserError(
+                    f"{ERROR_LLM} finding metadata does not match fetched evidence"
+                )
+            if rule_id not in authority["relevant_rule_ids"] or rule_id not in alleged:
+                raise gl.vm.UserError(f"{ERROR_LLM} finding rule is not bound to cited evidence")
+            if rule_id not in accepted_rules:
+                raise gl.vm.UserError(f"{ERROR_LLM} finding rule is not part of the accepted result")
+            if not isinstance(statement, str) or len(statement.strip()) == 0 or len(statement) > MAX_FINDING_LENGTH:
+                raise gl.vm.UserError(f"{ERROR_LLM} invalid finding text")
+            findings.append({
+                "evidence_id": evidence_id,
+                "rule_id": rule_id,
+                "finding": statement.strip(),
+                "submission_party": authority["submission_party"],
+                "evidence_type": authority["evidence_type"],
+                "source_domain": authority["source_domain"],
+                "content_hash": authority["content_hash"],
+                "relevant_rule_ids": authority["relevant_rule_ids"],
+            })
+        findings.sort(
+            key=lambda item: item["evidence_id"] + "\x00" + item["rule_id"] + "\x00" + item["finding"]
+        )
+        canonical_findings = []
+        finding_pairs = []
+        for finding in findings:
+            pair = finding["evidence_id"] + "\x00" + finding["rule_id"]
+            if pair in finding_pairs:
+                continue
+            finding_pairs.append(pair)
+            canonical_findings.append(finding)
+
+        citations_raw = proposed_result.get("evidence_citations")
+        if not isinstance(citations_raw, list) or len(citations_raw) > MAX_EVIDENCE_ITEMS:
+            raise gl.vm.UserError(f"{ERROR_LLM} invalid evidence citations")
+        citations = []
+        for citation in citations_raw:
+            self._require_exact_fields(citation, CITATION_FIELDS, "evidence citation")
+            evidence_id = citation.get("evidence_id")
+            if evidence_id not in evidence_by_id:
+                raise gl.vm.UserError(f"{ERROR_LLM} invented evidence citation")
+            authority = evidence_by_id[evidence_id]
+            relevant = citation.get("relevant_rule_ids")
+            proposed_metadata = {
+                "evidence_id": evidence_id,
+                "evidence_type": citation.get("evidence_type"),
+                "submission_party": citation.get("submission_party"),
+                "source_domain": (
+                    citation.get("source_domain").strip().lower()
+                    if isinstance(citation.get("source_domain"), str)
+                    else citation.get("source_domain")
+                ),
+                "content_hash": (
+                    citation.get("content_hash").lower()
+                    if isinstance(citation.get("content_hash"), str)
+                    else citation.get("content_hash")
+                ),
+                "relevant_rule_ids": (
+                    sorted(self._validate_rule_ids(relevant, "citation evidence rule ids", 3))
+                    if isinstance(relevant, list)
+                    else relevant
+                ),
+            }
+            if proposed_metadata != authority:
+                raise gl.vm.UserError(
+                    f"{ERROR_LLM} citation metadata does not match fetched evidence"
+                )
+            citations.append(authority)
+        citations.sort(key=lambda item: item["evidence_id"])
+        canonical_citations = []
+        citation_ids = []
+        for citation in citations:
+            if citation["evidence_id"] in citation_ids:
+                continue
+            citation_ids.append(citation["evidence_id"])
+            canonical_citations.append(citation)
+
+        expected_ids = []
+        for finding in canonical_findings:
+            if finding["evidence_id"] not in expected_ids:
+                expected_ids.append(finding["evidence_id"])
+        expected_ids.sort()
+        expected_citations = [evidence_by_id[evidence_id] for evidence_id in expected_ids]
+        if canonical_citations != expected_citations:
+            raise gl.vm.UserError(
+                f"{ERROR_LLM} evidence citations do not match finding references"
+            )
+
+        if outcome in ("FULL_SLASH", "PARTIAL_SLASH"):
+            if len(canonical_findings) == 0:
+                raise gl.vm.UserError(f"{ERROR_LLM} slash requires a fetched evidence finding")
+            cited_rules = [finding["rule_id"] for finding in canonical_findings]
+            for rule_id in violated:
+                if rule_id not in cited_rules:
+                    raise gl.vm.UserError(
+                        f"{ERROR_LLM} every violated rule requires evidence citation"
+                    )
+        return {
+            "classification": classification,
+            "outcome": outcome,
+            "violated_rule_ids": violated,
+            "supported_exemptions": exemptions,
+            "findings": canonical_findings,
+            "evidence_citations": canonical_citations,
+            "explanation": explanation.strip(),
+        }
+
     def _parse_model_result(self, raw_result, case: CourtCase, evidence_records: list) -> dict:
         if isinstance(raw_result, str):
             try:
@@ -599,6 +891,7 @@ class SlashCourt(gl.Contract):
         for forbidden in ("penalty_bps", "penalty_amount", "amount", "percentage"):
             if forbidden in raw_result:
                 raise gl.vm.UserError(f"{ERROR_LLM} model cannot choose monetary fields")
+        self._require_exact_fields(raw_result, MODEL_RESULT_FIELDS, "model response")
         classification = raw_result.get("classification")
         if classification not in CLASSIFICATIONS:
             raise gl.vm.UserError(f"{ERROR_LLM} missing or invalid classification")
@@ -618,13 +911,12 @@ class SlashCourt(gl.Contract):
         for rule_id in violated + exemptions:
             if rule_id not in alleged:
                 raise gl.vm.UserError(f"{ERROR_LLM} result cites a rule outside the allegations")
-        findings_raw = raw_result.get("findings", [])
+        findings_raw = raw_result.get("findings")
         if not isinstance(findings_raw, list) or len(findings_raw) > MAX_FINDINGS:
             raise gl.vm.UserError(f"{ERROR_LLM} invalid findings")
         findings = []
         for finding in findings_raw:
-            if not isinstance(finding, dict) or "url" in finding:
-                raise gl.vm.UserError(f"{ERROR_LLM} finding contains untrusted or invented field")
+            self._require_exact_fields(finding, MODEL_FINDING_FIELDS, "model finding")
             evidence_id = finding.get("evidence_id")
             rule_id = finding.get("rule_id")
             statement = finding.get("finding")
@@ -679,21 +971,30 @@ class SlashCourt(gl.Contract):
                 "content_hash": record["content_hash"],
                 "relevant_rule_ids": record["relevant_rule_ids"],
             })
-        return {
-            "classification": classification,
-            "outcome": outcome,
-            "violated_rule_ids": violated,
-            "supported_exemptions": exemptions,
-            "findings": findings,
-            "evidence_citations": citations,
-            "explanation": explanation.strip(),
-        }
+        return self._canonicalize_adjudication_result(
+            {
+                "classification": classification,
+                "outcome": outcome,
+                "violated_rule_ids": violated,
+                "supported_exemptions": exemptions,
+                "findings": findings,
+                "evidence_citations": citations,
+                "explanation": explanation.strip(),
+            },
+            case,
+            evidence_records,
+        )
 
-    def _produce_independent_result(self, case: CourtCase, rulebook: RulebookVersion) -> dict:
+    def _produce_independent_result_with_evidence(
+        self, case: CourtCase, rulebook: RulebookVersion
+    ) -> tuple[dict, list]:
         available, evidence_records = self._fetch_public_evidence(case)
         if not available:
-            return self._safe_insufficient_result(
-                "Approved evidence was unavailable; the burden of proof was not met."
+            return (
+                self._safe_insufficient_result(
+                    "Approved evidence was unavailable; the burden of proof was not met."
+                ),
+                [],
             )
         evidence_blocks = []
         for record in evidence_records:
@@ -776,7 +1077,32 @@ percentage, or address fields; deterministic code computes the outcome and
 penalty.
 """
         raw_result = gl.nondet.exec_prompt(prompt, response_format="json")
-        return self._parse_model_result(raw_result, case, evidence_records)
+        return self._parse_model_result(raw_result, case, evidence_records), evidence_records
+
+    def _produce_independent_result(self, case: CourtCase, rulebook: RulebookVersion) -> dict:
+        result, _ = self._produce_independent_result_with_evidence(case, rulebook)
+        return result
+
+    def _consensus_bound_result(self, result: dict) -> dict:
+        finding_references = []
+        for finding in result["findings"]:
+            finding_references.append({
+                "evidence_id": finding["evidence_id"],
+                "rule_id": finding["rule_id"],
+                "submission_party": finding["submission_party"],
+                "evidence_type": finding["evidence_type"],
+                "source_domain": finding["source_domain"],
+                "content_hash": finding["content_hash"],
+                "relevant_rule_ids": finding["relevant_rule_ids"],
+            })
+        return {
+            "classification": result["classification"],
+            "outcome": result["outcome"],
+            "violated_rule_ids": result["violated_rule_ids"],
+            "supported_exemptions": result["supported_exemptions"],
+            "finding_references": finding_references,
+            "evidence_citations": result["evidence_citations"],
+        }
 
     def _leader_error_agrees(self, leader_result, case: CourtCase, rulebook: RulebookVersion) -> bool:
         # A malformed LLM result must not become a safe-looking slash. Force a
@@ -799,20 +1125,29 @@ penalty.
 
     def _evaluate_with_consensus(self, case: CourtCase, rulebook: RulebookVersion) -> dict:
         def leader_fn() -> dict:
-            return self._produce_independent_result(case, rulebook)
+            result, evidence_records = self._produce_independent_result_with_evidence(case, rulebook)
+            return self._canonicalize_adjudication_result(result, case, evidence_records)
 
         def validator_fn(leader_result) -> bool:
             if not isinstance(leader_result, gl.vm.Return):
                 return self._leader_error_agrees(leader_result, case, rulebook)
-            leader = leader_result.calldata
-            validator = self._produce_independent_result(case, rulebook)
-            # Compare the substantive settlement fields, not just JSON shape.
-            return (
-                leader["classification"] == validator["classification"]
-                and leader["outcome"] == validator["outcome"]
-                and leader["violated_rule_ids"] == validator["violated_rule_ids"]
-                and leader["supported_exemptions"] == validator["supported_exemptions"]
-            )
+            try:
+                validator, evidence_records = self._produce_independent_result_with_evidence(
+                    case, rulebook
+                )
+                leader = self._canonicalize_adjudication_result(
+                    leader_result.calldata, case, evidence_records
+                )
+                validator = self._canonicalize_adjudication_result(
+                    validator, case, evidence_records
+                )
+                return self._consensus_bound_result(
+                    leader
+                ) == self._consensus_bound_result(validator)
+            except Exception:
+                # Any malformed or unbound leader fact forces disagreement and
+                # rotation; it can never reach storage or the Vault payload.
+                return False
 
         return gl.vm.run_nondet_unsafe(leader_fn, validator_fn)
 

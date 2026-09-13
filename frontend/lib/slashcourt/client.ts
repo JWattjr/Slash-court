@@ -11,7 +11,8 @@ import { formatUnits, parseUnits } from "viem";
 import { createGenLayerClient, GENLAYER_CHAIN_ID_HEX, getEthereumProvider, RPC_URL, chainForEndpoint } from "@/lib/genlayer/client";
 import type { CalldataEncodable } from "genlayer-js/types";
 import { classifyReadFailure } from "./refresh";
-import type { CaseBundle, CaseIndex, CourtCase, CourtStatistics, Dashboard, ReadSlice, Rulebook, TxSnapshot, OperatorState, VaultApplication, VaultConfiguration, VaultStatistics } from "./types";
+import { isTerminalTransaction, requestVerifiedAppeal } from "./transactions";
+import type { AppealEligibility, CaseBundle, CaseIndex, CourtCase, CourtStatistics, Dashboard, ReadSlice, Rulebook, TxSnapshot, OperatorState, VaultApplication, VaultConfiguration, VaultStatistics } from "./types";
 
 const COURT_ADDRESS = (process.env.NEXT_PUBLIC_SLASH_COURT_ADDRESS || "").trim();
 const VAULT_ADDRESS = (process.env.NEXT_PUBLIC_OPERATOR_BOND_VAULT_ADDRESS || "").trim();
@@ -126,12 +127,14 @@ function snapshotFromReceipt(hash: string, receipt: GenLayerTransaction, kind: T
   const status = statusName(receipt);
   const execution = executionName(receipt);
   const error = transactionError(receipt);
+  const terminal = isTerminalTransaction({ status });
   return {
     hash,
     status,
     execution,
     success: succeeded(execution),
     appealable: false,
+    appealEligibility: terminal ? "ineligible" : "unknown",
     kind,
     ...(error ? { error } : {}),
     updatedAt: Date.now(),
@@ -276,16 +279,39 @@ export class SlashCourtClient {
   }
 
   async appeal(txHash: string) {
-    const sdk = this.client as { getAppealCharge?: (args: { txId: `0x${string}` }) => Promise<bigint>; getMinAppealBond?: (args: { txId: `0x${string}` }) => Promise<bigint>; appealTransaction: (args: { txId: `0x${string}`; value: bigint }) => Promise<unknown> };
-    const txId = txHash as `0x${string}`;
-    const value = sdk.getAppealCharge ? await sdk.getAppealCharge({ txId }) : await sdk.getMinAppealBond!({ txId });
-    return String(await sdk.appealTransaction({ txId, value }));
+    return requestVerifiedAppeal(this.client, txHash);
+  }
+
+  private async withAppealEligibility(snapshot: TxSnapshot): Promise<TxSnapshot> {
+    if (snapshot.kind !== "adjudication" || isTerminalTransaction(snapshot)) {
+      return { ...snapshot, appealable: false, appealEligibility: "ineligible" };
+    }
+    let eligibility: AppealEligibility;
+    try {
+      eligibility = (await this.client.canAppeal({ txId: snapshot.hash }))
+        ? "eligible"
+        : "ineligible";
+      return {
+        ...snapshot,
+        appealable: eligibility === "eligible",
+        appealEligibility: eligibility,
+        appealEligibilityError: undefined,
+      };
+    } catch (error) {
+      return {
+        ...snapshot,
+        appealable: false,
+        appealEligibility: "unknown",
+        appealEligibilityError:
+          error instanceof Error ? error.message : "Appeal eligibility read failed.",
+      };
+    }
   }
 
   async snapshot(hash: string, kind: TxSnapshot["kind"] = "operator"): Promise<TxSnapshot> {
     const receipt = await this.client.getTransaction({ hash });
     const snapshot = snapshotFromReceipt(hash, receipt, kind);
-    return { ...snapshot, appealable: Boolean(await this.client.canAppeal({ txId: hash }).catch(() => false)) };
+    return this.withAppealEligibility(snapshot);
   }
 
   async waitForAppealWindow(hash: string, kind: TxSnapshot["kind"] = "adjudication"): Promise<TxSnapshot> {
@@ -298,7 +324,7 @@ export class SlashCourtClient {
         fullTransaction: false,
       });
       const snapshot = snapshotFromReceipt(hash, receipt, kind);
-      return { ...snapshot, appealable: Boolean(await this.client.canAppeal({ txId: hash }).catch(() => false)) };
+      return this.withAppealEligibility(snapshot);
     } catch (error) {
       return {
         hash,
@@ -306,6 +332,9 @@ export class SlashCourtClient {
         execution: "UNKNOWN",
         success: false,
         appealable: false,
+        appealEligibility: "unknown",
+        appealEligibilityError:
+          error instanceof Error ? error.message : "Appeal-window polling failed.",
         kind,
         error: error instanceof Error ? error.message : "Appeal-window polling failed.",
         updatedAt: Date.now(),
@@ -323,7 +352,7 @@ export class SlashCourtClient {
         fullTransaction: false,
       });
       const snapshot = snapshotFromReceipt(hash, receipt, kind);
-      return { ...snapshot, appealable: Boolean(await this.client.canAppeal({ txId: hash }).catch(() => false)) };
+      return this.withAppealEligibility(snapshot);
     } catch (error) {
       return {
         hash,
@@ -331,6 +360,7 @@ export class SlashCourtClient {
         execution: "UNKNOWN",
         success: false,
         appealable: false,
+        appealEligibility: "unknown",
         kind,
         error: error instanceof Error ? error.message : "Finality polling failed.",
         updatedAt: Date.now(),

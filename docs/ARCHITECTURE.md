@@ -41,21 +41,23 @@ not need to be registered operators.
 6. Slash findings can cite only fetched evidence and alleged rules. Stored
    citations preserve evidence ID, submitting party, type, domain, hash, and
    relevant rule IDs through the finalized vault application.
-5. Model output contains no monetary fields and cannot invent IDs or URLs.
-6. Validator comparison covers substantive settlement fields.
-7. A model/web failure returns a no-slash insufficient-evidence result.
-8. The court emits the financial application only with `on="finalized"`.
-9. Application retry requires a balance-free finalized vault acknowledgement emitted by the original adjudication; a retry cannot establish its own authorization.
+7. Model output contains no monetary fields and cannot invent IDs or URLs.
+8. Validator comparison covers canonical settlement and citation-reference fields.
+9. A model/web failure returns a no-slash insufficient-evidence result.
+10. The court emits the financial application only with `on="finalized"`.
+11. Application retry requires a balance-free finalized vault acknowledgement emitted by the original adjudication; a retry cannot establish its own authorization.
 
 ## Consensus boundary
 
 `_produce_independent_result` re-fetches the same bounded public evidence and
 constructs the instruction inside the contract. The evidence is delimited as
 data and explicitly cannot issue instructions. `run_nondet_unsafe` then runs a
-leader result plus an independent validator function. Validators compare the
-closed classification, derived outcome, violated rules, and supported
-exemptions. The amount is always derived by `_bps_for` and the vault's
-commitment exposure.
+leader result plus an independent validator function. Both results are
+canonicalized against the validator's hash-verified fetched records. Validators
+compare the closed classification, derived outcome, violated rules, supported
+exemptions, evidence/rule references, and citation party/type/domain/hash/rule
+metadata. Finding and explanation prose is bounded but informational. The
+amount is always derived by `_bps_for` and the vault's commitment exposure.
 
 ## Frontend data boundary
 

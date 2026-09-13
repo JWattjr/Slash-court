@@ -16,14 +16,66 @@ import runpy
 import sys
 import os
 import tempfile
+import threading
 
+import glsim.engine as glsim_engine
+import glsim.tx_decoder as glsim_tx_decoder
 from glsim.engine import SimEngine
+from glsim.state import StateStore
 from gltest.direct import loader
 from gltest.direct.vm import VMContext
 
 
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8")
+
+
 _original_call_method = SimEngine.call_method
 _original_refresh_gl_message = VMContext._refresh_gl_message
+_original_deploy_contract = glsim_engine.deploy_contract
+_original_decode_raw_transaction = glsim_tx_decoder.decode_raw_transaction
+_original_add_transaction = StateStore.add_transaction
+_decoded_transaction = threading.local()
+
+
+def _deploy_contract_without_calldata_proxy(*args, **kwargs):
+    """Give GLSim the concrete instance expected by its class cache.
+
+    ``gltest.direct.deploy_contract`` intentionally returns a calldata proxy for
+    direct-test ergonomics.  GLSim treats that return value as the persistent
+    contract instance and derives the ABI from its class, so an uncached first
+    deployment records the proxy's empty ABI.  The simulator already performs
+    its own calldata roundtrip, making the proxy redundant here.
+    """
+
+    deployed = _original_deploy_contract(*args, **kwargs)
+    try:
+        return object.__getattribute__(deployed, "_instance")
+    except AttributeError:
+        return deployed
+
+
+glsim_engine.deploy_contract = _deploy_contract_without_calldata_proxy
+
+
+def _decode_raw_transaction_with_value(raw_hex):
+    decoded = _original_decode_raw_transaction(raw_hex)
+    _decoded_transaction.value = int(decoded.get("value", 0))
+    return decoded
+
+
+def _add_transaction_with_value(state, transaction):
+    # GLSim 0.29 decodes the outer Ethereum value but drops it before creating
+    # its transaction record.  Retain it there so the existing call shim can
+    # recover the correct payable value for this exact recipient and sender.
+    transaction.value = int(getattr(_decoded_transaction, "value", 0))
+    _decoded_transaction.value = 0
+    return _original_add_transaction(state, transaction)
+
+
+glsim_tx_decoder.decode_raw_transaction = _decode_raw_transaction_with_value
+StateStore.add_transaction = _add_transaction_with_value
 
 
 def _canonical_timestamp(value) -> str:
@@ -36,7 +88,12 @@ def _canonical_timestamp(value) -> str:
 
 def _refresh_with_canonical_timestamp(vm):
     _original_refresh_gl_message(vm)
-    import genlayer.gl as gl
+    try:
+        import genlayer.gl as gl
+    except ImportError:
+        # GLSim initializes its VM before the first contract load installs the
+        # pinned SDK path. There is no contract message to normalize yet.
+        return
 
     if getattr(gl, "message_raw", None) is not None:
         gl.message_raw["datetime"] = _canonical_timestamp(vm._datetime)
@@ -128,7 +185,31 @@ _original_cleanup = VMContext._cleanup_after_deactivate
 
 
 def _cleanup_with_deferred_temp_files(vm):
+    # GLSim keeps loaded contract classes in a process-wide cache.  The direct
+    # runner normally removes every pinned-SDK and ``_contract_`` module when a
+    # VM context exits, which is correct for isolated direct tests.  Schema
+    # discovery uses a short-lived nested VM, though, so that cleanup otherwise
+    # leaves GLSim's cached class tied to modules which can no longer be
+    # imported.  A later deployment then mixes two SDK module generations and
+    # loses the contract storage descriptor.  Preserve only the modules and
+    # paths that the nested cleanup is about to evict; the wrapper process is
+    # already pinned to one SDK version by the contracts under test.
+    sdk_roots = [path for path in sys.path if "gltest-direct" in path]
+    preserved_modules = {}
+    for name, module in tuple(sys.modules.items()):
+        module_file = getattr(module, "__file__", None) or ""
+        if name.startswith(("_contract_", "_deployed_")) or any(
+            module_file.startswith(root) for root in sdk_roots
+        ):
+            preserved_modules[name] = module
+
     _original_cleanup(vm)
+
+    for path in reversed(sdk_roots):
+        if path not in sys.path:
+            sys.path.insert(0, path)
+    sys.modules.update(preserved_modules)
+
     for path in getattr(vm, "_slashcourt_temp_message_paths", []):
         try:
             os.unlink(path)

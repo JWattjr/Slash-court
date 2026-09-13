@@ -22,6 +22,10 @@ RULEBOOK_V1_HASH = "sha256:" + hashlib.sha256(RULEBOOK_V1.encode("utf-8")).hexdi
 def finalized(function, *, context=None, triggered=False, value=0):
     """Wait for finality and assert actual GenVM execution success."""
 
+    context = dict(context or {})
+    # GLSim keeps the previous explicit timestamp when a later request omits
+    # one. Pin ordinary transactions so time-warp tests remain order-isolated.
+    context.setdefault("genvm_datetime", "2025-01-01T00:00:00Z")
     receipt = function.transact(
         value=value,
         wait_transaction_status=TransactionStatus.FINALIZED,
@@ -196,9 +200,20 @@ def run_case(protocol, classification, *, exposure=20, commitment_id="commitment
         context=consensus_context(classification),
         triggered=True,
     )
-    # A read drains finalized messages in GLSim, allowing the callback from
-    # the vault to move the court case from provisional to applied.
+    # GLSim 0.29 drains one PostMessage per top-level call and discards a
+    # sibling message. Drain the independent finality acknowledgement first,
+    # then exercise the contract's production retry path for the dropped
+    # application message. This preserves the security boundary: retry cannot
+    # authorize a penalty until the original adjudication callback finalized.
     court.get_case(args=[case_id]).call()
+    pre_retry_case = court.get_case(args=[case_id]).call()
+    pre_retry_application = vault.get_case_application(args=[case_id]).call()
+    pre_retry_operator = vault.get_operator(args=[protocol["operator"].address]).call()
+    if not pre_retry_application["applied"]:
+        finalized(court.retry_resolution_application(args=[case_id]), triggered=True)
+        # Drain record_resolution_applied, then read the updated court state.
+        court.get_case(args=[case_id]).call()
+
     application = vault.get_case_application(args=[case_id]).call()
     operator_state = vault.get_operator(args=[protocol["operator"].address]).call()
     beneficiary_state = vault.get_operator(args=[protocol["beneficiary"].address]).call()
@@ -209,4 +224,7 @@ def run_case(protocol, classification, *, exposure=20, commitment_id="commitment
         "operator": operator_state,
         "beneficiary": beneficiary_state,
         "commitment": vault.get_commitment(args=[commitment_id]).call(),
+        "pre_retry_case": pre_retry_case,
+        "pre_retry_application": pre_retry_application,
+        "pre_retry_operator": pre_retry_operator,
     }
