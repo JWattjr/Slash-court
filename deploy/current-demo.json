@@ -1,7 +1,7 @@
 {
   "network": "Genlayer Studio Network",
   "chainId": 61999,
-  "verifiedAt": "2026-09-13T19:01:43.630Z",
+  "verifiedAt": "2026-09-13T19:50:26.1858511Z",
   "slashCourtAddress": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
   "operatorBondVaultAddress": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
   "contractSourceRevision": "cdaba784931d4cd4020bb66bebe795c22f47efa5",
@@ -12,8 +12,8 @@
     "hash": "sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d"
   },
   "approvedEvidenceDomains": ["slash-court.vercel.app"],
-  "evidenceNote": "All incident evidence is explicitly synthetic. The current case, adjudication, Court-to-Vault messages, and Vault application are real finalized StudioNet transactions. This is demo bond accounting, not real TVL or native validator stake.",
-  "caseIndexNote": "This fresh mutually bound deployment contains one case: case-1, the verified synthetic negligence example. The predecessor deployments retain the misconduct, outage, and insufficient-evidence examples and are labelled historical in the console.",
+  "evidenceNote": "All incident evidence is explicitly synthetic. The current cases, adjudications, Court-to-Vault messages, and Vault applications are real finalized StudioNet transactions. This is demo bond accounting, not real TVL or native validator stake.",
+  "caseIndexNote": "This fresh mutually bound deployment contains two current synthetic cases: case-1 is the verified negligence example and case-2 is the verified R4 external-outage/no-slash contrast. The predecessor deployments retain the misconduct and insufficient-evidence examples and are labelled historical in the console.",
   "deploymentTransactions": [
     {"label": "1/7 Operator Bond Vault", "hash": "0x8a438d6bdabe02447c3e318f4761fe3d41cbfde41a20b0e0a42032b609bff00f"},
     {"label": "2/7 SlashCourt", "hash": "0x4a51e10ba44a29b7b9a81e7ee4d20538c2bd7f8a6a86a4fb22ecf91c40fffc88"},
@@ -72,15 +72,97 @@
         "0xa3539e73b4a313f73f13cbb2c28ea268846f2658b87d5b09da5028ac7160fbfb",
         "0xb91c469f8abff5e75c5f16309f6fbe1c60222275bc2d444d1bd4fc0b488dfe01"
       ]
+    },
+    {
+      "caseId": "case-2",
+      "commitmentId": "demo-appeal-window-outage-rc-20260913",
+      "classification": "EXTERNAL_OUTAGE",
+      "outcome": "NO_SLASH",
+      "allegedRuleIds": ["R1", "R4"],
+      "violatedRuleIds": [],
+      "supportedExemptions": ["R4"],
+      "penaltyBps": 0,
+      "penaltyWei": "0",
+      "beneficiaryAwardWei": "0",
+      "safetyPoolWei": "0",
+      "status": "PENALTY_APPLIED",
+      "networkStatus": "FINALIZED",
+      "applicationStatus": "APPLIED_FINALIZED",
+      "adjudicationFinalized": true,
+      "canonicalCommitment": {
+        "duty": "Synthetic external-outage keeper duty for appeal-window verification",
+        "dutyTrigger": "scheduled-rc-appeal-window",
+        "dutyDeadline": "2026-09-14T03:00:00Z",
+        "disputeDeadline": "2026-09-14T04:00:00Z",
+        "expectedActionId": "outage-recovery-action-rc",
+        "commitmentDigest": "sha256:c349b7cd19bc3f5922a4af87309b3aa0da676db3d6d4168b94c7f7f06691ce8d",
+        "operator": "0xdB433ff614bDD1ecE21Aa97221C3E0a7ecf79c92",
+        "beneficiary": "0x2C8EB5dB1105A85BE66BadafeD88D10cF393CDD8",
+        "lockedExposureWei": "500000000000000000",
+        "rulebookVersion": 1
+      },
+      "evidenceCitations": [
+        {
+          "evidenceId": "outage-appeal-rc-01",
+          "evidenceType": "PUBLIC_STATUS_REPORT",
+          "submissionParty": "CLAIMANT",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:fbec80b52824fa1f69220403343462e0db60a4defe1d475105dcdaec1f82a97b",
+          "relevantRuleIds": ["R1", "R4"],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/external-outage.txt"
+        },
+        {
+          "evidenceId": "outage-operator-rc-01",
+          "evidenceType": "OPERATOR_STATUS_REPORT",
+          "submissionParty": "OPERATOR",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:fbec80b52824fa1f69220403343462e0db60a4defe1d475105dcdaec1f82a97b",
+          "relevantRuleIds": ["R1", "R4"],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/external-outage.txt"
+        }
+      ],
+      "operatorResponse": {
+        "summary": "The operator confirms the scheduled task could not complete because both configured providers reported the same regional outage.",
+        "claimedExemption": "R4 external-outage exemption: primary and secondary provider outage was regional and no reasonable mitigation path was available.",
+        "mitigation": "Checked both configured providers; failover was unavailable during the verified regional incident."
+      },
+      "responseTransaction": "0xaac8ea69e09ddcb7d15eb72d3121578c2b23d14ff5894ad8bf464a079ed7691f",
+      "readyTransaction": "0x3f3e419f6fc0a010cd305b50c7809f0b0c8aa48c638e3b64ed4a49c8330f237e",
+      "adjudicationTransaction": "0x27350a2b64cd0dce7c505678787c9e6d7085b064446e224ea03d591b8fa06d3b",
+      "adjudicationReceiptStatus": "FINALIZED",
+      "finalityAcknowledgementTransaction": "0x75908f2e5f104fdb5e0cb6c36f876ba237f4c516d55cb74cccd7ebf4a5f58ebf",
+      "applicationTransaction": "0x42493f6116efb397dd78202174df0ada3d2a7861e046492c4eda06f69cde7645",
+      "applicationReceiptStatus": "FINALIZED",
+      "finalityTriggeredMessages": [
+        "0x75908f2e5f104fdb5e0cb6c36f876ba237f4c516d55cb74cccd7ebf4a5f58ebf",
+        "0x42493f6116efb397dd78202174df0ada3d2a7861e046492c4eda06f69cde7645"
+      ],
+      "verificationNote": "The finalized adjudication and both finalized Court-to-Vault child receipts were verified. The Vault read independently confirms applied=true, zero penalty, preserved R1/R4 citations, and zero locked exposure. A subsequent direct Court read was transiently unavailable, so no additional Court field is inferred from that failed read."
     }
   ],
   "acceptedWindowProof": {
     "status": "MISSED",
-    "adjudicationTransaction": "0x003e75129584a8a044f86a50b79f1f34cc8e48de5c5ad91daeb52c47eed550c2",
     "observedAccepted": true,
     "appealControlEnabled": false,
     "appealSubmitted": false,
-    "reason": "The console retained the exact ACCEPTED hash, but the first eligibility read was temporarily unavailable. Before the explicit recheck returned, the protocol reached FINALIZED. No screenshot was presented as ACCEPTED-window proof and no appeal was clicked."
+    "attempts": [
+      {
+        "caseId": "case-1",
+        "adjudicationTransaction": "0x003e75129584a8a044f86a50b79f1f34cc8e48de5c5ad91daeb52c47eed550c2",
+        "hashRetained": true,
+        "appealControlEnabled": false,
+        "reason": "The first eligibility read was temporarily unavailable and finality completed before the recheck returned."
+      },
+      {
+        "caseId": "case-2",
+        "adjudicationTransaction": "0x27350a2b64cd0dce7c505678787c9e6d7085b064446e224ea03d591b8fa06d3b",
+        "hashRetained": true,
+        "appealControlEnabled": false,
+        "appealSubmitted": false,
+        "reason": "The console reached the external-outage Appeal window and retained the exact hash, but the browser connection reset before an eligible appeal action rendered. The adjudication then finalized. No appeal was clicked or submitted."
+      }
+    ],
+    "reason": "Two bounded synthetic ACCEPTED-window attempts were made. Both finalized before a live enabled appeal control could be captured; no screenshot or finalized transaction is presented as ACCEPTED-window proof."
   },
   "vault": {
     "initialBondWei": "2000000000000000000",
@@ -89,7 +171,7 @@
     "totalPenaltiesWei": "500000000000000000",
     "beneficiaryAwardsWei": "400000000000000000",
     "safetyPoolWei": "100000000000000000",
-    "applicationCount": 1
+    "applicationCount": 2
   },
   "historical": {
     "predecessorCurrentDeployment": {

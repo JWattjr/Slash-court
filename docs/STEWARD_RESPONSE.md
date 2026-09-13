@@ -27,13 +27,32 @@ beneficiary compensation and 0.1 GEN safety pool, leaving 1.5 GEN available
 and zero locked exposure. No penalty was applied before finality and no
 duplicate application was submitted.
 
+A second authorized synthetic case provides the outage contrast. Case-2,
+`demo-appeal-window-outage-rc-20260913`, finalized as `EXTERNAL_OUTAGE` /
+`NO_SLASH` under supported exemption `R4`, with alleged rules R1/R4 and no
+violated rules. Its canonical duty is
+`scheduled-rc-appeal-window` / `outage-recovery-action-rc`, with a 0.5 GEN
+locked exposure. The adjudication is
+`0x27350a2b64cd0dce7c505678787c9e6d7085b064446e224ea03d591b8fa06d3b`; the
+finality acknowledgement is
+`0x75908f2e5f104fdb5e0cb6c36f876ba237f4c516d55cb74cccd7ebf4a5f58ebf`; and the
+finalized Vault application is
+`0x42493f6116efb397dd78202174df0ada3d2a7861e046492c4eda06f69cde7645`. The
+application payload preserved both claimant and operator citations with their
+party, type, domain, hash, and R1/R4 metadata. The Vault applied zero penalty,
+zero award, and zero safety-pool allocation; aggregate accounting remains 1.5
+GEN available and zero locked exposure. A subsequent direct Court read was
+transiently unavailable, so the evidence record relies on the finalized
+receipts and independent Vault read for this case.
+
 The console retains the exact adjudication hash after ACCEPTED and releases
-its busy state while finality continues in the background. In this bounded
-run, the first appeal-eligibility read was unavailable and finality completed
-before the recheck returned, so the appeal control was not captured enabled.
-No appeal was clicked or submitted. Historical predecessor cases remain
-clearly labelled synthetic and historical; they are not claimed as cases of
-the fresh deployment.
+its busy state while finality continues in the background. In two bounded
+runs, the eligibility/control capture was not completed before finality: the
+first eligibility read was unavailable for case-1, and the browser connection
+reset during the case-2 Appeal window. The appeal control was not captured
+enabled. No appeal was clicked or submitted. Historical predecessor cases
+remain clearly labelled synthetic and historical; they are not claimed as
+cases of the fresh deployment.
 
 Checks: 13 frontend tests, focused direct contract tests, full local direct and
 GLSim integration suites, typecheck, lint, production build, GenVM lint, and
@@ -41,4 +60,5 @@ schema checks passed. The optional pyright check was unavailable because the
 binary is not installed.
 
 **Resubmit-ready: NO.** Exact blocker: one live screenshot/recording proving
-an ACCEPTED adjudication with the appeal control enabled before finality.
+an ACCEPTED adjudication with the appeal control enabled before finality. The
+current record must not substitute a finalized transaction for that proof.
