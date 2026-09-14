@@ -45,11 +45,29 @@ GEN available and zero locked exposure. A subsequent direct Court read was
 transiently unavailable, so the evidence record relies on the finalized
 receipts and independent Vault read for this case.
 
+A final bounded authorized synthetic run was then opened specifically to test
+the ACCEPTED-window workflow. Case-3,
+`demo-appeal-window-negligence-rc-20260914`, is bound to the canonical duty
+`scheduled-rc-final-appeal-window` / `maintenance-action-final-rc`, exposure
+`0.5 GEN`, dispute deadline `2026-09-16T02:00:00Z`, and alleged rules R1/R3.
+The fetched claimant and operator citations preserve IDs
+`negligence-appeal-rc-01` and `operator-appeal-rc-01`, their parties, the
+`slash-court.vercel.app` domain, the SHA-256 content hash, and rule metadata.
+The adjudication finalized at
+`0xd315d43889d5c0be676490504ce88c604fe72448058d948f8ef832a5e8e04203` as
+`NEGLIGENT_FAILURE` / `PARTIAL_SLASH`. The production console shows the Vault
+application as **Applied once**, with `0.2 GEN` beneficiary compensation and
+`0.05 GEN` safety-pool allocation. The aggregate console read after this case
+shows `1.25 GEN` available, `0 GEN` locked exposure, and `0.75 GEN` penalties.
+The public UI does not expose the child application hash, so no child hash is
+invented or presented.
+
 The console retains the exact adjudication hash after ACCEPTED and releases
-its busy state while finality continues in the background. In two bounded
-runs, the eligibility/control capture was not completed before finality: the
-first eligibility read was unavailable for case-1, and the browser connection
-reset during the case-2 Appeal window. The appeal control was not captured
+its busy state while finality continues in the background. Across three
+bounded runs, the eligibility/control capture was not completed before
+finality: the first eligibility read was unavailable for case-1, the browser
+connection reset during the case-2 Appeal window, and the next poll for the
+final case-3 run observed FINALIZED. The appeal control was not captured
 enabled. No appeal was clicked or submitted. Historical predecessor cases
 remain clearly labelled synthetic and historical; they are not claimed as
 cases of the fresh deployment.
@@ -61,4 +79,5 @@ binary is not installed.
 
 **Resubmit-ready: NO.** Exact blocker: one live screenshot/recording proving
 an ACCEPTED adjudication with the appeal control enabled before finality. The
-current record must not substitute a finalized transaction for that proof.
+current record must not substitute the finalized case-3 screenshot or
+transaction for that proof.

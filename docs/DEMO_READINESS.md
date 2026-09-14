@@ -1,16 +1,16 @@
 # SlashCourt demo readiness and release verification
 
-Verified 2026-09-13 against the fresh StudioNet deployment and the production
+Verified 2026-09-14 against the fresh StudioNet deployment and the production
 console at https://slash-court.vercel.app.
 
 ## Gate
 
 **Resubmit-ready: NO.** The hardened Court/Vault pair and production console
 are live, and the finalized negligence and external-outage paths are evidenced.
-The remaining blocker is live ACCEPTED-window proof: two bounded authorized
-synthetic adjudications reached ACCEPTED, but the eligibility/control capture
-was not completed before finality. No appeal was submitted and no finalized
-screenshot is being presented as ACCEPTED proof.
+The remaining blocker is live ACCEPTED-window proof: three bounded authorized
+synthetic attempts are recorded, including the final case-3 run, but no enabled
+appeal control was captured before finality. No appeal was submitted and no
+finalized screenshot is being presented as ACCEPTED proof.
 
 ## Current deployment
 
@@ -34,8 +34,8 @@ the exact source revision is recorded from the deployment run.
 
 ## Verified current case
 
-The fresh deployment has two cases, `case-1` and `case-2`; both are synthetic
-release fixtures—not real incidents or real TVL.
+The fresh deployment has three cases, `case-1`, `case-2`, and `case-3`; all are
+synthetic release fixtures—not real incidents or real TVL.
 
 - Commitment: `demo-negligence-rc-20260913`
 - Classification: `NEGLIGENT_FAILURE`
@@ -132,14 +132,61 @@ and two applied resolution records. A post-finality direct Court read was
 temporarily unavailable, so this record does not infer any additional Court
 field from that failed RPC call.
 
+## Verified current case 3: final bounded appeal-window attempt
+
+`case-3` is the one final authorized synthetic run requested for live appeal
+workflow capture. It is a release fixture, not a real incident.
+
+- Commitment: `demo-appeal-window-negligence-rc-20260914`
+- Classification: `NEGLIGENT_FAILURE`
+- Outcome: `PARTIAL_SLASH`
+- Violated/alleged rules: `R1`, `R3`
+- Exposure: `0.5 GEN`; contract-determined penalty: `0.25 GEN` (`5000` bps)
+- Status: `PENALTY_APPLIED`, protocol `FINALIZED`
+- Canonical duty: Synthetic failover keeper duty for final appeal-window verification
+- Trigger: `scheduled-rc-final-appeal-window`
+- Duty deadline: `2026-09-15T02:00:00Z`
+- Dispute deadline: `2026-09-16T02:00:00Z`
+- Expected action: `maintenance-action-final-rc`
+- Commitment digest: `sha256:8b8dcc20aeba05e38f0bc03fd841f0ead839ba7cb317fc774345f681e4daaf67`
+- Evidence: claimant `negligence-appeal-rc-01` and operator
+  `operator-appeal-rc-01`, both fetched from `slash-court.vercel.app`, with
+  the recorded SHA-256 hash and R1/R3 metadata.
+- Response: the primary provider failed; the operator checked the secondary
+  path but did not complete the maintenance action before the deadline.
+
+### Case 3 receipts and accounting
+
+| Action | Finalized transaction |
+| --- | --- |
+| Create commitment | `0x0c52d7673a11664866ee665f5270fef717f2c94630566b6486f81572a6b39942` |
+| Accept commitment | `0x18ecf6e0346079059d3d88036583e21ebbce855b53b480517488c8ca9d5f1f2e` |
+| Record duty | `0x80c6b21722aa28026eb1da5b0b1477c24ede2fbecb75c90cce5cf7d027d7da58` |
+| Open case | `0x78d0ed0b7018443cc90218f9233bf9850073bc83e1d607c29e7fecfb9902389c` |
+| Operator response | `0x027acb1f2d16184826c05c65ecedd3edeeaff03f970caffcbc73564914c1652e` |
+| Freeze evidence / rules | `0xc6788019124d679fc5ef8b134800fb9e93a5bafbcbd707ae67fe7d40d0f5c531` |
+| Adjudication | [`0xd315…4203`](https://explorer-studio.genlayer.com/tx/0xd315d43889d5c0be676490504ce88c604fe72448058d948f8ef832a5e8e04203) |
+
+The adjudication receipt is FINALIZED and the console reports successful
+execution. The finality-triggered Vault application is shown as **Applied
+once**, with `0.2 GEN` beneficiary compensation and `0.05 GEN` safety-pool
+allocation. The public console does not expose the child application hash, so
+none is inferred or presented as a link. A direct StudioNet
+`get_vault_statistics` read independently returned `1.25 GEN` available,
+`0 GEN` locked, `0.75 GEN` total penalties, and `0.15 GEN` safety-pool balance
+with one operator. The case read independently returned
+`network_status: FINALIZED`, `adjudication_finalized: true`, and
+`application_status: APPLIED_FINALIZED`.
+
 ## Appeal-window evidence
 
-The live console retained the exact ACCEPTED hash for case-1 and for case-2.
-For case-2, the console reached the external-outage Appeal window before the
-browser connection reset. The UI releases its blocking state after ACCEPTED
-and continues finality in the background, as covered by the workflow
-regression test. The appeal control was not captured enabled in either bounded
-run, and the appeal button was never clicked.
+The live console retained the exact adjudication hash for the final case-3
+attempt, but the next bounded browser poll observed FINALIZED. The prior
+case-1 and case-2 runs are also retained in the evidence index; case-2 reached
+the external-outage Appeal window before the browser connection reset. The UI
+release-after-ACCEPTED behavior remains covered by the workflow regression
+test. No enabled appeal control was captured in any bounded run, and the
+appeal button was never clicked.
 
 This is recorded as `MISSED` in `deploy/current-demo.json`. Do not claim an
 enabled ACCEPTED appeal control until a future bounded run captures it.
@@ -148,10 +195,11 @@ enabled ACCEPTED appeal control until a future bounded run captures it.
 
 - [Pre-adjudication case capture](evidence/pre-adjudication-case-1.png): wallet-free case facts, canonical duty, evidence, and enabled Run consensus control.
 - [Finalized case capture](evidence/finalized-case-1.png): production console showing the finalized classification, penalty, citations, and actual Vault split.
+- [Finalized case-3 capture](evidence/case-3-finalized-no-appeal-window.png): the final bounded synthetic case showing finality, one-time Vault application, citation metadata, and accounting. It is not ACCEPTED-window proof.
 
 The captures are supporting artifacts, not substitutes for chain reads. No
-case-2 ACCEPTED-window capture or recording is available; leave the portal
-video field blank.
+ACCEPTED-window capture or recording is available for any current case; leave
+the portal video field blank.
 
 ## Historical examples
 
@@ -197,8 +245,8 @@ Court.
 
 ## Next exact action
 
-The only remaining evidence action is a future bounded synthetic run, if the
-portal requires an ACCEPTED-window screenshot. Capture the retained hash and
-enabled appeal button immediately after the eligibility read returns `eligible`;
-do not click Appeal unless separately authorized. Until then, submit only with
-the gate marked NO.
+The exact remaining blocker is a live screenshot or recording of an ACCEPTED
+adjudication with the enabled appeal control before finality. No further
+on-chain run is authorized by this record; if the portal requires that proof,
+obtain fresh authorization before attempting another synthetic case. Until
+then, submit only with the gate marked NO.
