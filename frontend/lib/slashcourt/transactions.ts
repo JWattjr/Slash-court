@@ -1,4 +1,5 @@
 import type { AppealEligibility, TxSnapshot } from "./types";
+import type { AppealTraceObservation } from "./appealDiagnostics";
 
 const TERMINAL_STATUSES = new Set(["FINALIZED", "CANCELED", "CANCELLED"]);
 
@@ -18,7 +19,25 @@ type AppealTrackingClient = {
     hash: string,
     kind: TxSnapshot["kind"],
   ) => Promise<TxSnapshot>;
-  wait: (hash: string, kind: TxSnapshot["kind"]) => Promise<TxSnapshot>;
+};
+
+export type AppealMonitorOptions = {
+  network?: string;
+  courtAddress?: string;
+  vaultAddress?: string;
+  intervalMs?: number;
+  maxDurationMs?: number;
+  signal?: AbortSignal;
+  onSubmitted?: (hash: string) => void;
+  onObservation?: (observation: AppealTraceObservation) => void;
+};
+
+export type AppealTrackingResult = {
+  accepted: TxSnapshot;
+  /** Resolves when finality/cancellation is observed or the bounded monitor stops. */
+  finalized: Promise<TxSnapshot>;
+  /** Alias that makes the background lifecycle explicit to callers. */
+  monitoring: Promise<TxSnapshot>;
 };
 
 export function transactionStorageKey(network: string, court: string, vault: string) {
@@ -26,7 +45,29 @@ export function transactionStorageKey(network: string, court: string, vault: str
 }
 
 export function mergeTransaction(history: TxSnapshot[] | undefined, snapshot: TxSnapshot) {
-  return [...(history || []).filter((entry) => entry.hash !== snapshot.hash), snapshot].slice(-20);
+  const entries = history || [];
+  const existing = entries.find((entry) => entry.hash === snapshot.hash);
+  if (existing) {
+    const existingTerminal = isTerminalTransaction(existing);
+    const nextTerminal = isTerminalTransaction(snapshot);
+    const existingRank = statusRank(existing.status);
+    const nextRank = statusRank(snapshot.status);
+    if (existingTerminal && !nextTerminal) return entries;
+    if (!nextTerminal && existingRank > nextRank) return entries;
+    if (existingRank === nextRank && existing.updatedAt > snapshot.updatedAt) return entries;
+    // A transient eligibility read must not erase a verified eligible window.
+    if (existing.appealEligibility === "eligible" && snapshot.appealEligibility === "unknown") return entries;
+  }
+  return [...entries.filter((entry) => entry.hash !== snapshot.hash), snapshot].slice(-20);
+}
+
+function statusRank(status: string) {
+  const normalized = status.toUpperCase();
+  if (["FINALIZED", "CANCELED", "CANCELLED"].includes(normalized)) return 5;
+  if (normalized === "ACCEPTED") return 4;
+  if (["PENDING", "PROPOSING", "ADJUDICATING", "CONSENSUS_PENDING"].includes(normalized)) return 3;
+  if (normalized === "SUBMITTED") return 2;
+  return 1;
 }
 
 export function isTerminalTransaction(snapshot: Pick<TxSnapshot, "status">) {
@@ -61,6 +102,83 @@ export function findRefreshableAdjudications(history: TxSnapshot[] | undefined) 
   );
 }
 
+function trace(
+  hash: string,
+  phase: AppealTraceObservation["phase"],
+  snapshot: Pick<TxSnapshot, "status" | "appealEligibility">,
+  options: AppealMonitorOptions,
+  extra: Pick<AppealTraceObservation, "reason" | "error"> = {},
+) {
+  options.onObservation?.({
+    observedAt: new Date().toISOString(),
+    network: options.network || "unknown",
+    courtAddress: options.courtAddress || "unknown",
+    vaultAddress: options.vaultAddress || "unknown",
+    transactionHash: hash,
+    phase,
+    receiptStatus: snapshot.status,
+    eligibility: snapshot.appealEligibility || "unknown",
+    ...extra,
+  });
+}
+
+function wait(ms: number, signal?: AbortSignal) {
+  if (signal?.aborted) return Promise.resolve(false);
+  return new Promise<boolean>((resolve) => {
+    const timer = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve(true);
+    }, ms);
+    const onAbort = () => {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", onAbort);
+      resolve(false);
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+async function monitorAppealWindow(
+  client: AppealTrackingClient,
+  accepted: TxSnapshot,
+  retain: (snapshot: TxSnapshot) => void,
+  options: AppealMonitorOptions,
+) {
+  const intervalMs = Math.max(500, options.intervalMs ?? 3000);
+  const maxDurationMs = Math.max(intervalMs, options.maxDurationMs ?? 5 * 60_000);
+  const deadline = Date.now() + maxDurationMs;
+  let latest = accepted;
+  trace(accepted.hash, "monitor_started", accepted, options, { reason: "accepted retained; eligibility monitor started" });
+
+  while (Date.now() < deadline && !options.signal?.aborted) {
+    try {
+      // snapshot performs one receipt read followed by one canAppeal read. The
+      // loop is deliberately serial so transient eligibility failures do not
+      // create overlapping RPC requests.
+      const next = await client.snapshot(accepted.hash, accepted.kind);
+      latest = next;
+      retain(next);
+      if (isTerminalTransaction(next)) {
+        trace(accepted.hash, "finalized", next, options, { reason: "terminal receipt observed" });
+        return next;
+      }
+      trace(accepted.hash, "eligibility", next, options, {
+        error: next.appealEligibilityError,
+        reason: next.appealEligibility === "unknown" ? "eligibility unavailable; retrying while nonterminal" : "eligibility observed",
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Appeal monitor read failed.";
+      trace(accepted.hash, "eligibility", latest, options, { error: message, reason: "read failed; retrying while nonterminal" });
+    }
+    const remaining = Math.max(0, Math.min(intervalMs, deadline - Date.now()));
+    if (!(await wait(remaining, options.signal))) break;
+  }
+
+  const reason = options.signal?.aborted ? "monitor aborted by lifecycle change" : "bounded appeal monitor limit reached";
+  trace(accepted.hash, "stopped", latest, options, { reason });
+  return latest;
+}
+
 export async function requestVerifiedAppeal(sdk: AppealSdk, txHash: string) {
   const txId = txHash as `0x${string}`;
   let eligible: boolean;
@@ -86,17 +204,46 @@ export async function trackAppealableTransaction(
   hash: string,
   kind: TxSnapshot["kind"],
   retain: (snapshot: TxSnapshot) => void,
-) {
-  try {
-    retain(await client.snapshot(hash, kind));
-  } catch {
-    // The ACCEPTED wait below remains authoritative if the provisional read fails.
-  }
+  options: AppealMonitorOptions = {},
+): Promise<AppealTrackingResult> {
+  // Do not perform a canAppeal read before the ACCEPTED receipt. The exact
+  // ACCEPTED snapshot must be retained even when eligibility RPC is slow or
+  // temporarily unavailable.
   const accepted = await client.waitForAppealWindow(hash, kind);
   retain(accepted);
-  const finalized = client.wait(hash, kind).then((snapshot) => {
-    retain(snapshot);
-    return snapshot;
-  });
-  return { accepted, finalized };
+  trace(hash, "accepted", accepted, options, { reason: "accepted receipt retained before eligibility read" });
+  const monitoring = monitorAppealWindow(client, accepted, retain, options);
+  return { accepted, finalized: monitoring, monitoring };
+}
+
+export async function submitAndTrackAppealableTransaction(
+  action: () => Promise<string>,
+  client: AppealTrackingClient,
+  kind: TxSnapshot["kind"],
+  retain: (snapshot: TxSnapshot) => void,
+  options: AppealMonitorOptions = {},
+  startMonitor?: (
+    hash: string,
+    retain: (snapshot: TxSnapshot) => void,
+    options: AppealMonitorOptions,
+  ) => Promise<AppealTrackingResult>,
+) {
+  const hash = String(await action());
+  options.onSubmitted?.(hash);
+  const submitted: TxSnapshot = {
+    hash,
+    status: "SUBMITTED",
+    execution: "PENDING",
+    appealable: false,
+    appealEligibility: "unknown",
+    success: false,
+    kind,
+    updatedAt: Date.now(),
+  };
+  retain(submitted);
+  trace(hash, "submitted", submitted, options, { reason: "wallet transaction hash retained" });
+  const tracked = await (startMonitor
+    ? startMonitor(hash, retain, options)
+    : trackAppealableTransaction(client, hash, kind, retain, options));
+  return { hash, submitted, ...tracked };
 }

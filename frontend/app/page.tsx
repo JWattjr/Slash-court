@@ -27,10 +27,13 @@ import { toast } from "sonner";
 
 import { useWallet, formatAddress } from "@/lib/genlayer/WalletProvider";
 import { AppealAction } from "@/lib/slashcourt/AppealAction";
+import { appendAppealTrace, appealTraceStorageKey, exportAppealTrace } from "@/lib/slashcourt/appealDiagnostics";
 import { deploymentConfiguration, formatGenAmount, missingConfigurationKeys, SlashCourtClient } from "@/lib/slashcourt/client";
 import { historicalArtifactBundle } from "@/lib/slashcourt/historical";
 import { MAX_AUTOMATIC_REFRESHES, nextRefreshDelay } from "@/lib/slashcourt/refresh";
-import { appealEligibility, findAppealableAdjudication, findLatestAdjudication, findRefreshableAdjudications, mergeTransaction, trackAppealableTransaction, transactionStorageKey } from "@/lib/slashcourt/transactions";
+import { appealEligibility, findAppealableAdjudication, findLatestAdjudication, findRefreshableAdjudications, isTerminalTransaction, mergeTransaction, submitAndTrackAppealableTransaction, trackAppealableTransaction, transactionStorageKey } from "@/lib/slashcourt/transactions";
+import type { AppealMonitorOptions } from "@/lib/slashcourt/transactions";
+import type { AppealTraceObservation } from "@/lib/slashcourt/appealDiagnostics";
 import type { CaseBundle, CourtCase, Dashboard, ReadSlice, TxSnapshot } from "@/lib/slashcourt/types";
 
 const EMPTY_FORM = {
@@ -337,7 +340,7 @@ function OperatorActions({ configured, writeReady, rulebookVersion, walletConnec
   </div>;
 }
 
-function CaseModal({ item, application, source, adjudicationTransaction, tx, onClose, onAction, busy, onGenLayer, writeReady }: { item: CourtCase; application: CaseBundle["application"]; source: CaseSource; adjudicationTransaction?: string; tx?: TxSnapshot[]; onClose: () => void; onAction: (action: "respond" | "ready" | "adjudicate" | "retry" | "appeal" | "recheckAppeal", values?: { response?: string; exemption?: string; mitigation?: string; rules?: string[]; counterEvidence?: { evidenceId: string; url: string; domain: string; fact: string; contentHash: string } }) => Promise<void>; busy: boolean; onGenLayer: boolean; writeReady: boolean }) {
+function CaseModal({ item, application, source, adjudicationTransaction, tx, appealTrace, onExportAppealTrace, onClose, onAction, busy, onGenLayer, writeReady }: { item: CourtCase; application: CaseBundle["application"]; source: CaseSource; adjudicationTransaction?: string; tx?: TxSnapshot[]; appealTrace?: AppealTraceObservation[]; onExportAppealTrace?: () => void; onClose: () => void; onAction: (action: "respond" | "ready" | "adjudicate" | "retry" | "appeal" | "recheckAppeal", values?: { response?: string; exemption?: string; mitigation?: string; rules?: string[]; counterEvidence?: { evidenceId: string; url: string; domain: string; fact: string; contentHash: string } }) => Promise<void>; busy: boolean; onGenLayer: boolean; writeReady: boolean }) {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const onCloseRef = useRef(onClose);
@@ -423,7 +426,7 @@ function CaseModal({ item, application, source, adjudicationTransaction, tx, onC
         <div className="section-heading" style={{ marginTop: 20 }}><div><h2>Evidence and response</h2><p>{evidence.length} cited records · evidence frozen: {item.evidence_frozen ? "yes" : "no"}</p></div></div>
         <div className="activity">{evidence.map((entry) => <div className="activity-row" key={entry.evidence_id}><div className="activity-track"><div className="activity-dot" /></div><div className="activity-copy"><strong>{entry.submission_party || entry.party || "party"}</strong><span>{entry.claimed_fact || entry.fact} · <a href={entry.url} target="_blank" rel="noreferrer" style={{ color: "var(--cyan)" }}>open evidence <ArrowUpRight size={10} style={{ verticalAlign: "-1px" }} /></a></span><details className="advanced-fields"><summary>Technical evidence metadata</summary><code>ID {entry.evidence_id}</code><code>domain {entry.source_domain || new URL(entry.url).hostname}</code><code>{entry.content_hash}</code></details></div></div>)}</div>
         <details className="technical-record"><summary>Advanced case metadata</summary><div>Claimant <code>{formatAddress(item.claimant, 18)}</code> · respondent <code>{formatAddress(item.respondent, 18)}</code> · exposure <code>{amount(item.commitment_exposure)} GEN</code></div>{duty ? <code>{duty.commitment_digest}</code> : null}</details>
-        <div className="proof-links"><a href={`https://explorer-studio.genlayer.com/address/${historical ? HISTORICAL_DEPLOYMENT.courtAddress : deploymentConfiguration().courtAddress}`} target="_blank" rel="noreferrer">Court contract <ArrowUpRight size={11} /></a>{adjudicationHash ? <a href={`https://explorer-studio.genlayer.com/tx/${adjudicationHash}`} target="_blank" rel="noreferrer">Adjudication transaction <ArrowUpRight size={11} /></a> : <span>Adjudication transaction unavailable</span>}</div>
+        <div className="proof-links"><a href={`https://explorer-studio.genlayer.com/address/${historical ? HISTORICAL_DEPLOYMENT.courtAddress : deploymentConfiguration().courtAddress}`} target="_blank" rel="noreferrer">Court contract <ArrowUpRight size={11} /></a>{adjudicationHash ? <a href={`https://explorer-studio.genlayer.com/tx/${adjudicationHash}`} target="_blank" rel="noreferrer">Adjudication transaction <ArrowUpRight size={11} /></a> : <span>Adjudication transaction unavailable</span>}{!historical && appealTrace?.length && onExportAppealTrace ? <button className="text-button" onClick={onExportAppealTrace}>Export appeal trace</button> : null}</div>
         {!historical && canRespond && !showResponse ? <button className="ghost-button" style={{ marginTop: 13 }} disabled={!writeReady} onClick={() => setShowResponse(true)}>Add operator response</button> : null}
         {!historical && showResponse ? <div className="intake-grid" style={{ marginTop: 13 }}><label className="form-label"><span>Response</span><textarea className="textarea" value={response} onChange={(event) => setResponse(event.target.value)} /></label><label className="form-label"><span>Claimed exemption</span><input className="input" value={exemption} onChange={(event) => setExemption(event.target.value)} /></label><label className="form-label"><span>Mitigation attempts</span><input className="input" value={mitigation} onChange={(event) => setMitigation(event.target.value)} /></label><label className="form-label"><span>Counterevidence URL</span><input className="input" value={counterEvidenceUrl} onChange={(event) => setCounterEvidenceUrl(event.target.value)} /></label><label className="form-label"><span>Counterevidence fact</span><textarea className="textarea" value={counterEvidenceFact} onChange={(event) => setCounterEvidenceFact(event.target.value)} /></label><details className="advanced-fields"><summary>Optional evidence metadata</summary><label className="form-label"><span>Evidence ID</span><input className="input" value={counterEvidenceId} onChange={(event) => setCounterEvidenceId(event.target.value)} /></label><label className="form-label"><span>Approved domain</span><input className="input" value={counterEvidenceDomain} onChange={(event) => setCounterEvidenceDomain(event.target.value)} /></label><label className="form-label"><span>Content SHA-256</span><input className="input" value={counterEvidenceHash} onChange={(event) => setCounterEvidenceHash(event.target.value)} placeholder="Derived from the evidence body when blank" /></label></details><button className="primary-button" disabled={busy || !onGenLayer || !writeReady} onClick={() => void onAction("respond", { response, exemption, mitigation, counterEvidence: counterEvidenceUrl.trim() ? { evidenceId: counterEvidenceId, url: counterEvidenceUrl, domain: counterEvidenceDomain, fact: counterEvidenceFact, contentHash: counterEvidenceHash } : undefined })}>Submit response</button></div> : null}
         {!historical ? <><div className="form-help" style={{ marginTop: 14 }}>{!writeReady ? "Writes are locked until current Court, Vault, rulebook, and evidence-policy reads succeed." : !onGenLayer ? "Switch MetaMask to GenLayer Studio Network before writing." : deadlinePassed ? "The response deadline has passed; a claimant may mark this case ready even if the operator stayed silent." : `Response deadline: ${dateLabel(item.response_deadline)}. Evidence becomes frozen when consensus starts.`}</div>{latestAdjudication?.status.toUpperCase() === "ACCEPTED" && adjudicationEligibility === "unknown" ? <div className="form-help">The ACCEPTED adjudication is retained, but appeal eligibility could not be verified. Recheck before attempting an appeal; an RPC failure never counts as ineligible.</div> : null}<div className="modal-actions" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 18 }}>{canReady ? <label className="form-label" style={{ width: 170 }}><span>Alleged rule IDs</span><input className="input" value={rules} onChange={(event) => setRules(event.target.value)} aria-label="Rule IDs" placeholder="e.g. R1,R4" aria-invalid={rules.length > 0 && !validReadyRules} /></label> : null}<button className="ghost-button" disabled={busy || !onGenLayer || !writeReady || !canReady || !validReadyRules} onClick={() => void onAction("ready", { rules: parsedRules })}>Mark ready · rules</button><button className="ghost-button" disabled={busy || !onGenLayer || !writeReady || !canAdjudicate} onClick={() => void onAction("adjudicate")}>Run consensus</button><button className="ghost-button" disabled={busy || !onGenLayer || !writeReady || !canRetry} onClick={() => void onAction("retry")}>Retry finalized message</button>{latestAdjudication?.status.toUpperCase() === "ACCEPTED" && adjudicationEligibility === "unknown" ? <button className="ghost-button" disabled={busy} onClick={() => void onAction("recheckAppeal")}>Recheck appeal window</button> : null}<AppealAction transaction={appealableAdjudication} busy={busy} enabled={Boolean(onGenLayer && writeReady)} onAppeal={() => void onAction("appeal")} /></div></> : null}
@@ -448,15 +451,20 @@ export default function SlashCourtConsole() {
   const [automaticRefreshes, setAutomaticRefreshes] = useState(0);
   const [transactions, setTransactions] = useState<Record<string, TxSnapshot[]>>({});
   const [transactionsReady, setTransactionsReady] = useState(false);
+  const [appealTraces, setAppealTraces] = useState<Record<string, AppealTraceObservation[]>>({});
   const busyOperation = useRef(0);
   const refreshInFlight = useRef<Promise<void> | null>(null);
   const failureCount = useRef(0);
   const lastAttemptAt = useRef(0);
-  const transactionRefreshStarted = useRef(false);
+  const appealMonitors = useRef(new Map<string, { controller: AbortController; task: ReturnType<typeof trackAppealableTransaction> }>());
   const configured = missingConfigurationKeys().length === 0;
   const transactionKey = useMemo(() => {
     const configuration = deploymentConfiguration();
     return transactionStorageKey(configuration.network, configuration.courtAddress, configuration.vaultAddress);
+  }, []);
+  const appealTraceKey = useMemo(() => {
+    const configuration = deploymentConfiguration();
+    return appealTraceStorageKey(configuration.network, configuration.courtAddress, configuration.vaultAddress);
   }, []);
   const selectedKey = selectedCase ? `${selectedCase.source}:${selectedCase.caseId}` : null;
   const selectedBundle = selectedKey ? caseBundles[selectedKey] || null : null;
@@ -488,6 +496,27 @@ export default function SlashCourtConsole() {
   useEffect(() => {
     if (typeof window !== "undefined" && transactionsReady) window.localStorage.setItem(transactionKey, JSON.stringify(transactions));
   }, [transactionKey, transactions, transactionsReady]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(appealTraceKey);
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (parsed && typeof parsed === "object") setAppealTraces(parsed as Record<string, AppealTraceObservation[]>);
+    } catch {
+      // A malformed diagnostic cache must never prevent the public console from loading.
+    }
+  }, [appealTraceKey]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(appealTraceKey, JSON.stringify(appealTraces));
+      } catch {
+        // Diagnostics are best effort and must never block contract reads or writes.
+      }
+    }
+  }, [appealTraceKey, appealTraces]);
 
   const refresh = useCallback(async (manual = false) => {
     if (!configured) return;
@@ -617,30 +646,87 @@ export default function SlashCourtConsole() {
     }));
   }, []);
 
+  const rememberAppealObservation = useCallback((caseId: string | null, observation: AppealTraceObservation) => {
+    const key = caseId || "__operator__";
+    setAppealTraces((current) => ({
+      ...current,
+      [key]: appendAppealTrace(current[key], observation),
+    }));
+  }, []);
+
+  const startAppealMonitor = useCallback((caseId: string | null, hash: string, kind: TxSnapshot["kind"], client: SlashCourtClient, monitorOptions: AppealMonitorOptions = {}) => {
+    const existing = appealMonitors.current.get(hash);
+    if (existing) return existing.task;
+    const controller = new AbortController();
+    const configuration = deploymentConfiguration();
+    const task = trackAppealableTransaction(
+      client,
+      hash,
+      kind,
+      (snapshot) => rememberTransaction(caseId, snapshot),
+      {
+        ...monitorOptions,
+        network: configuration.network,
+        courtAddress: configuration.courtAddress,
+        vaultAddress: configuration.vaultAddress,
+        signal: controller.signal,
+        onObservation: (observation) => {
+          monitorOptions.onObservation?.(observation);
+          rememberAppealObservation(caseId, observation);
+        },
+      },
+    );
+    appealMonitors.current.set(hash, { controller, task });
+    void task.catch((error) => {
+      rememberAppealObservation(caseId, {
+        observedAt: new Date().toISOString(),
+        network: configuration.network,
+        courtAddress: configuration.courtAddress,
+        vaultAddress: configuration.vaultAddress,
+        transactionHash: hash,
+        phase: "stopped",
+        receiptStatus: "UNKNOWN",
+        eligibility: "unknown",
+        error: error instanceof Error ? error.message : "Appeal monitor failed.",
+        reason: "monitor promise rejected",
+      });
+    });
+    return task;
+  }, [rememberAppealObservation, rememberTransaction]);
+
+  useEffect(() => () => {
+    for (const { controller } of appealMonitors.current.values()) controller.abort();
+    appealMonitors.current.clear();
+  }, [transactionKey, wallet.address]);
+
   useEffect(() => {
-    if (!configured || !transactionsReady || transactionRefreshStarted.current) return;
-    transactionRefreshStarted.current = true;
+    if (!configured || !transactionsReady) return;
     const client = new SlashCourtClient(wallet.address || undefined);
     for (const [caseId, history] of Object.entries(transactions)) {
       for (const entry of findRefreshableAdjudications(history)) {
-        void client.snapshot(entry.hash, entry.kind).then((snapshot) => rememberTransaction(caseId, snapshot));
+        void startAppealMonitor(caseId === "__operator__" ? null : caseId, entry.hash, entry.kind, client).catch(() => undefined);
       }
     }
-  }, [configured, transactionsReady, transactions, wallet.address, rememberTransaction]);
+  }, [configured, transactionsReady, transactions, wallet.address, startAppealMonitor]);
 
   const runTransaction = useCallback(async (caseId: string | null, kind: TxSnapshot["kind"], action: () => Promise<string>, label: string, mode: "finalized" | "appealable" = "finalized") => {
     const operation = beginBusy();
     try {
       const client = new SlashCourtClient(wallet.address || undefined);
-      const hash = await action();
-      toast.success(`${label} submitted`, { description: hash, className: "toast-copy" });
-      rememberTransaction(caseId, { hash, status: "SUBMITTED", execution: "PENDING", appealable: false, appealEligibility: "unknown", success: false, kind, updatedAt: Date.now() });
       if (mode === "appealable") {
-        const { accepted, finalized } = await trackAppealableTransaction(
+        const configuration = deploymentConfiguration();
+        const { accepted, finalized } = await submitAndTrackAppealableTransaction(
+          action,
           client,
-          hash,
           kind,
           (snapshot) => rememberTransaction(caseId, snapshot),
+          {
+            network: configuration.network,
+            courtAddress: configuration.courtAddress,
+            vaultAddress: configuration.vaultAddress,
+            onSubmitted: (hash) => toast.success(`${label} submitted`, { description: hash, className: "toast-copy" }),
+          },
+          (hash, retain, monitorOptions) => startAppealMonitor(caseId, hash, kind, client, monitorOptions),
         );
         // Release the blocking UI state as soon as the exact ACCEPTED
         // adjudication is retained. Refresh and finality continue in the
@@ -648,10 +734,13 @@ export default function SlashCourtConsole() {
         endBusy(operation);
         const eligibility = appealEligibility(accepted);
         if (eligibility === "eligible") toast.success(`${label} accepted`, { description: "Adjudication retained; appeal window is open.", className: "toast-copy" });
-        else if (eligibility === "unknown") toast.warning(`${label} status retained`, { description: accepted.appealEligibilityError || accepted.error || "Appeal eligibility is temporarily unavailable. Use Recheck appeal window before appealing.", className: "toast-copy" });
-        else toast.error(`${label} is not appealable`, { description: accepted.error || `${accepted.status} · ${accepted.execution}`, className: "toast-copy" });
+        else toast.warning(`${label} accepted`, { description: "Adjudication retained. Eligibility is being checked separately; appeal only when the console verifies it.", className: "toast-copy" });
         void finalized
-          .then(async () => {
+          .then(async (terminal) => {
+            if (!isTerminalTransaction(terminal)) {
+              toast.warning(`${label} appeal monitor stopped`, { description: terminal.error || "The bounded monitor ended before finality; retry the read later." });
+              return;
+            }
             try {
               await refresh(true);
             } catch (error) {
@@ -670,6 +759,9 @@ export default function SlashCourtConsole() {
           });
         return;
       }
+      const hash = await action();
+      toast.success(`${label} submitted`, { description: hash, className: "toast-copy" });
+      rememberTransaction(caseId, { hash, status: "SUBMITTED", execution: "PENDING", appealable: false, appealEligibility: "unknown", success: false, kind, updatedAt: Date.now() });
       const provisional = await client.snapshot(hash, kind).catch(() => null);
       if (provisional) rememberTransaction(caseId, provisional);
       const snapshot = await client.wait(hash, kind);
@@ -682,7 +774,7 @@ export default function SlashCourtConsole() {
     } finally {
       endBusy(operation);
     }
-  }, [wallet.address, loadCase, refresh, rememberTransaction]);
+  }, [wallet.address, loadCase, refresh, rememberAppealObservation, rememberTransaction, startAppealMonitor]);
 
   const submitCase = async (form: typeof EMPTY_FORM) => {
     try {
@@ -794,7 +886,7 @@ export default function SlashCourtConsole() {
         <p className="footer-note">SlashCourt is an application-layer settlement protocol, separate from GenLayer’s native validator staking and slashing. Financial application is designed as a finality-safe child message; see the public test and deployment notes for what is and is not proven. <a href="https://docs.genlayer.com" target="_blank" rel="noreferrer" style={{ color: "var(--cyan)" }}>Read the GenLayer docs <ArrowUpRight size={10} style={{ verticalAlign: "-1px" }} /></a></p>
       </div></main>
     </div>
-    {selectedCase && selectedBundle?.caseRecord.data ? <CaseModal item={selectedBundle.caseRecord.data} application={selectedBundle.application} source={selectedCase.source} adjudicationTransaction={selectedCase.source === "historical" ? HISTORICAL_CASES.find((entry) => entry.caseId === selectedCase.caseId)?.transaction : CURRENT_CASE_PROVENANCE[selectedCase.caseId]?.transaction} tx={selectedCase.source === "current" ? transactions[selectedCase.caseId] : undefined} onClose={closeCase} onAction={caseAction} busy={busy} onGenLayer={wallet.onGenLayer} writeReady={writesSafe} /> : null}
+    {selectedCase && selectedBundle?.caseRecord.data ? <CaseModal item={selectedBundle.caseRecord.data} application={selectedBundle.application} source={selectedCase.source} adjudicationTransaction={selectedCase.source === "historical" ? HISTORICAL_CASES.find((entry) => entry.caseId === selectedCase.caseId)?.transaction : CURRENT_CASE_PROVENANCE[selectedCase.caseId]?.transaction} tx={selectedCase.source === "current" ? transactions[selectedCase.caseId] : undefined} appealTrace={selectedCase.source === "current" ? appealTraces[selectedCase.caseId] : undefined} onExportAppealTrace={selectedCase.source === "current" ? () => { if (exportAppealTrace(appealTraces[selectedCase.caseId] || [])) toast.success("Appeal trace exported", { className: "toast-copy" }); } : undefined} onClose={closeCase} onAction={caseAction} busy={busy} onGenLayer={wallet.onGenLayer} writeReady={writesSafe} /> : null}
     {selectedCase && caseLoading === selectedKey ? <div className="modal-backdrop"><div className="modal loading-modal"><LoaderCircle className="spin" /><h2>Loading {selectedCase.caseId}</h2><p>Reading the case and Vault application independently.</p><button className="ghost-button" onClick={closeCase}>Close</button></div></div> : null}
     {selectedCase && !selectedBundle?.caseRecord.data && caseLoadError ? <div className="modal-backdrop"><div className="modal loading-modal"><AlertTriangle /><h2>Case file unavailable</h2><p>{caseLoadError}</p><div className="modal-actions"><button className="ghost-button" onClick={() => void loadCase(selectedCase.source, selectedCase.caseId, true)}>Retry</button><button className="ghost-button" onClick={closeCase}>Close</button></div></div></div> : null}
   </div>;

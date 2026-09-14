@@ -2,7 +2,6 @@
 
 import {
   ExecutionResult,
-  TransactionStatus,
   executionResultNumberToName,
   transactionsStatusNumberToName,
   type GenLayerTransaction,
@@ -315,57 +314,50 @@ export class SlashCourtClient {
   }
 
   async waitForAppealWindow(hash: string, kind: TxSnapshot["kind"] = "adjudication"): Promise<TxSnapshot> {
-    try {
-      const receipt = await this.client.waitForTransactionReceipt({
-        hash,
-        status: TransactionStatus.ACCEPTED,
-        interval: 1500,
-        retries: 100,
-        fullTransaction: false,
-      });
-      const snapshot = snapshotFromReceipt(hash, receipt, kind);
-      return this.withAppealEligibility(snapshot);
-    } catch (error) {
-      return {
-        hash,
-        status: "UNKNOWN",
-        execution: "UNKNOWN",
-        success: false,
-        appealable: false,
-        appealEligibility: "unknown",
-        appealEligibilityError:
-          error instanceof Error ? error.message : "Appeal-window polling failed.",
-        kind,
-        error: error instanceof Error ? error.message : "Appeal-window polling failed.",
-        updatedAt: Date.now(),
-      };
-    }
+    return this.waitForStatus(hash, kind, (snapshot) =>
+      snapshot.status.toUpperCase() === "ACCEPTED" || isTerminalTransaction(snapshot),
+      "Appeal-window polling failed.",
+    ).then((snapshot) => ({
+      ...snapshot,
+      appealable: false,
+      appealEligibility: isTerminalTransaction(snapshot) ? "ineligible" : "unknown",
+      appealEligibilityError: undefined,
+    }));
   }
 
   async wait(hash: string, kind: TxSnapshot["kind"] = "operator"): Promise<TxSnapshot> {
-    try {
-      const receipt = await this.client.waitForTransactionReceipt({
-        hash,
-        status: TransactionStatus.FINALIZED,
-        interval: 3000,
-        retries: 100,
-        fullTransaction: false,
-      });
-      const snapshot = snapshotFromReceipt(hash, receipt, kind);
-      return this.withAppealEligibility(snapshot);
-    } catch (error) {
-      return {
-        hash,
-        status: "UNKNOWN",
-        execution: "UNKNOWN",
-        success: false,
-        appealable: false,
-        appealEligibility: "unknown",
-        kind,
-        error: error instanceof Error ? error.message : "Finality polling failed.",
-        updatedAt: Date.now(),
-      };
+    return this.waitForStatus(hash, kind, (snapshot) => isTerminalTransaction(snapshot), "Finality polling failed.");
+  }
+
+  private async waitForStatus(
+    hash: string,
+    kind: TxSnapshot["kind"],
+    done: (snapshot: TxSnapshot) => boolean,
+    failureMessage: string,
+  ): Promise<TxSnapshot> {
+    let lastError = "";
+    for (let attempt = 0; attempt < 100; attempt += 1) {
+      try {
+        const receipt = await this.client.getTransaction({ hash });
+        const snapshot = snapshotFromReceipt(hash, receipt, kind);
+        if (done(snapshot)) return snapshot;
+      } catch (error) {
+        lastError = error instanceof Error ? error.message : failureMessage;
+      }
+      await new Promise((resolve) => setTimeout(resolve, attempt < 3 ? 1500 : 3000));
     }
+    return {
+      hash,
+      status: "UNKNOWN",
+      execution: "UNKNOWN",
+      success: false,
+      appealable: false,
+      appealEligibility: "unknown",
+      appealEligibilityError: lastError || failureMessage,
+      kind,
+      error: lastError || failureMessage,
+      updatedAt: Date.now(),
+    };
   }
 }
 
