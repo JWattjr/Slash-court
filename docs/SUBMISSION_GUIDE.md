@@ -4,7 +4,7 @@
 
 **Do not submit yet: RESUBMIT-READY = NO.** The current Court/Vault pair and
 frontend are deployed, with finalized negligence and external-outage/no-slash
-proofs plus the final bounded case-3 attempt. Three bounded ACCEPTED-window
+proofs plus the bounded case-3 and case-4 attempts. Four bounded ACCEPTED-window
 captures were missed before finality. No appeal was submitted. See
 [docs/DEMO_READINESS.md](DEMO_READINESS.md) for the evidence boundary.
 
@@ -24,7 +24,7 @@ The optional demo-video field should remain blank.
 
 ## Description
 
-> SlashCourt settles bonded-automation disputes. Each case is hash-bound to its vault duty, trigger, deadlines, expected action, parties, exposure, rulebook, and alleged rules. GenLayer validators fetch allowlisted evidence and preserve every citation's party, hash, type, domain, and rule metadata. Deterministic contracts map responsibility to fixed, capped penalties; the vault applies each result once, only after finality. The current StudioNet deployment proves finalized synthetic negligence cases plus a finalized R4 external-outage case with no slash; the final case-3 run records a 0.25 GEN penalty and a 0.2/0.05 GEN beneficiary/safety split. Historical predecessor deployments provide clearly labelled misconduct and insufficient-evidence contrasts. The console exposes case facts, evidence, response, adjudication transaction, finality, and actual Vault accounting wallet-free. This is demo bond accounting, not real incidents, real TVL, or native validator stake.
+> SlashCourt settles bonded-automation disputes. Each case is hash-bound to its vault duty, trigger, deadlines, expected action, parties, exposure, rulebook, and alleged rules. GenLayer validators fetch allowlisted evidence and preserve every citation's party, hash, type, domain, and rule metadata. Deterministic contracts map responsibility to fixed, capped penalties; the vault applies each result once, only after finality. The current StudioNet deployment proves three finalized synthetic negligence cases plus a finalized R4 external-outage case with no slash. Historical predecessor deployments provide clearly labelled misconduct and insufficient-evidence contrasts. The console exposes case facts, evidence, response, adjudication transaction, finality, and actual Vault accounting wallet-free. This is demo bond accounting, not real incidents, real TVL, or native validator stake.
 
 ## Demo video
 
@@ -37,14 +37,15 @@ Leave blank unless a polished recording is available.
 Visit [https://slash-court.vercel.app](https://slash-court.vercel.app). Confirm
 the header identifies Court `0x56e2…e955a` and Vault `0xb1fD…9Aa7`, StudioNet
 chain `61999`, rulebook v1, and the current deployment status. The current
-release contains three synthetic current cases. If an RPC read
+release contains four synthetic current cases. If an RPC read
 fails, the UI labels it unavailable or partial and keeps writes locked.
 
 ### 2. Open the current cases
 
 Open [case-1](https://slash-court.vercel.app/#case/current/case-1),
 [case-2](https://slash-court.vercel.app/#case/current/case-2), and
-[case-3](https://slash-court.vercel.app/#case/current/case-3). Confirm each
+[case-3](https://slash-court.vercel.app/#case/current/case-3), and
+[case-4](https://slash-court.vercel.app/#case/current/case-4). Confirm each
 synthetic claim's canonical duty, trigger, deadlines, expected action, alleged
 rules, fetched evidence, and operator response before opening technical
 metadata.
@@ -70,6 +71,14 @@ beneficiary compensation and `0.05 GEN` safety-pool allocation. The linked
 [capture](evidence/case-3-finalized-no-appeal-window.png) is finality evidence
 only; it is not an ACCEPTED-window capture.
 
+For case-4, confirm `NEGLIGENT_FAILURE`, `PARTIAL_SLASH`, `0.125 GEN`, and the
+finalized adjudication
+[`0x492d…1ede`](https://explorer-studio.genlayer.com/tx/0x492d5254686ae2155465ac180b794f889ec5b17570ef1c4192df028b69fb1ede).
+The console shows **Applied once**, with `0.1 GEN` beneficiary compensation
+and `0.025 GEN` safety-pool allocation. Its
+[capture](evidence/case-4-finalized-no-appeal-window.png) proves finality only,
+not the ACCEPTED window.
+
 ### 4. Inspect the proof
 
 Open each evidence link, Court address, adjudication transaction, and available
@@ -83,11 +92,11 @@ protocol reserve, not platform revenue.
 Use the console's explicitly labelled historical section for synthetic
 predecessor examples of provable misconduct and insufficient evidence. Do not
 describe those case IDs as belonging to the fresh Court. The fresh release has
-three current cases: two negligence proofs and an excusable external outage.
+four current cases: three negligence proofs and an excusable external outage.
 
 ## Expected verification outcome
 
-> The steward should see fresh Court `0x56e26ec256afe37199fe9845e039f5DEdd9e955a`, Vault `0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7`, rulebook v1, and three current synthetic cases. Case-1 shows finalized NEGLIGENT_FAILURE, PARTIAL_SLASH, a 0.5 GEN penalty, and a 0.4/0.1 beneficiary/safety split. Case-2 shows finalized EXTERNAL_OUTAGE, supported R4, NO_SLASH, and zero movement. Case-3 shows finalized NEGLIGENT_FAILURE, PARTIAL_SLASH, a 0.25 GEN penalty, and a 0.2/0.05 beneficiary/safety split. Historical predecessor cases are labelled historical. The ACCEPTED appeal-window screenshot remains unverified; RPC failures never appear as empty state.
+> The steward should see fresh Court `0x56e26ec256afe37199fe9845e039f5DEdd9e955a`, Vault `0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7`, rulebook v1, and four current synthetic cases. Case-1 shows a finalized 0.5 GEN negligence penalty; case-2 shows finalized R4 external outage with no slash; case-3 shows a finalized 0.25 GEN negligence penalty; and case-4 shows a finalized 0.125 GEN negligence penalty with a 0.1/0.025 beneficiary/safety split. Aggregate bond accounting is 1.125 GEN available, zero locked, 0.875 GEN penalties, and 0.175 GEN in the safety pool. Historical cases are labelled historical. The ACCEPTED appeal-window screenshot remains unverified.
 
 ## Contract links
 
@@ -100,7 +109,8 @@ three current cases: two negligence proofs and an excusable external outage.
 - **GitHub:** [https://github.com/JWattjr/Slash-court](https://github.com/JWattjr/Slash-court)
 - **Current case:** [https://slash-court.vercel.app/#case/current/case-1](https://slash-court.vercel.app/#case/current/case-1)
 - **Current outage contrast:** [https://slash-court.vercel.app/#case/current/case-2](https://slash-court.vercel.app/#case/current/case-2)
-- **Final bounded case:** [https://slash-court.vercel.app/#case/current/case-3](https://slash-court.vercel.app/#case/current/case-3)
+- **Additional bounded case:** [https://slash-court.vercel.app/#case/current/case-4](https://slash-court.vercel.app/#case/current/case-4)
+- **Case-4 adjudication:** [https://explorer-studio.genlayer.com/tx/0x492d5254686ae2155465ac180b794f889ec5b17570ef1c4192df028b69fb1ede](https://explorer-studio.genlayer.com/tx/0x492d5254686ae2155465ac180b794f889ec5b17570ef1c4192df028b69fb1ede)
 - **Adjudication:** [https://explorer-studio.genlayer.com/tx/0x003e75129584a8a044f86a50b79f1f34cc8e48de5c5ad91daeb52c47eed550c2](https://explorer-studio.genlayer.com/tx/0x003e75129584a8a044f86a50b79f1f34cc8e48de5c5ad91daeb52c47eed550c2)
 - **Vault application:** [https://explorer-studio.genlayer.com/tx/0xb317a13f944b9165d5b851cd889050ea06bf39ed9fd0233513de7d95403c915c](https://explorer-studio.genlayer.com/tx/0xb317a13f944b9165d5b851cd889050ea06bf39ed9fd0233513de7d95403c915c)
 - **Outage adjudication:** [https://explorer-studio.genlayer.com/tx/0x27350a2b64cd0dce7c505678787c9e6d7085b064446e224ea03d591b8fa06d3b](https://explorer-studio.genlayer.com/tx/0x27350a2b64cd0dce7c505678787c9e6d7085b064446e224ea03d591b8fa06d3b)
@@ -110,17 +120,18 @@ three current cases: two negligence proofs and an excusable external outage.
 
 | Requirement | Local implementation | Current evidence |
 | --- | --- | --- |
-| Canonical duty binding | `contracts/slash_court.py` and `contracts/operator_bond_vault.py` | Current Court/Vault reads for case-1, case-2, and case-3 carry the commitment digest and duty-bound application |
-| Fetched citation metadata | `_authoritative_citation`, `_canonicalize_adjudication_result`, `_consensus_bound_result` | Finalized case-1, case-2, and case-3 console records preserve evidence ID, party, type, domain, hash, and rule metadata |
+| Canonical duty binding | `contracts/slash_court.py` and `contracts/operator_bond_vault.py` | Current Court/Vault reads for case-1 through case-4 carry the commitment digest and duty-bound application |
+| Fetched citation metadata | `_authoritative_citation`, `_canonicalize_adjudication_result`, `_consensus_bound_result` | Current finalized records preserve evidence ID, party, type, domain, hash, and rule metadata; case-4 independently proves both parties |
 | Appealable ACCEPTED retention | `frontend/app/page.tsx`, `frontend/lib/slashcourt/client.ts`, `frontend/lib/slashcourt/transactions.ts` | Tests pass; live hash retained, but enabled-control capture remains a blocker |
-| Finality-safe one-time penalty | `acknowledge_adjudication_finalized` and `apply_resolution` | Finalized case-1/case-2 receipts plus case-3 `Applied once` read; deterministic accounting is 0.75 GEN total after three current applications |
-| Wallet-free public review | Case hash route, Explorer links, advanced metadata section | Production case-1/case-2/case-3 links and public captures |
+| Finality-safe one-time penalty | `acknowledge_adjudication_finalized` and `apply_resolution` | Four finalized applications; case-4 reads `APPLIED_FINALIZED` and aggregate penalties are 0.875 GEN |
+| Wallet-free public review | Case hash route, Explorer links, advanced metadata section | Production case-1 through case-4 links and public captures |
 
 ## Evidence links
 
 - [Pre-adjudication capture](evidence/pre-adjudication-case-1.png)
 - [Finalized production capture](evidence/finalized-case-1.png)
 - [Finalized case-3 capture](evidence/case-3-finalized-no-appeal-window.png) (not ACCEPTED-window proof)
+- [Finalized case-4 capture](evidence/case-4-finalized-no-appeal-window.png) (not ACCEPTED-window proof)
 - No ACCEPTED-window capture or recording is available; do not present a finalized view as that proof.
 - [Full deployment and case record](../deploy/current-demo.json)
 - [Deployment provenance](../deploy/last-deployment.json)
@@ -131,5 +142,5 @@ three current cases: two negligence proofs and an excusable external outage.
 - Confirm exact portal taxonomy before submitting.
 - Confirm current Court/Vault links open on StudioNet.
 - Keep all predecessor cases labelled historical and all fixtures labelled synthetic.
-- Do not claim an enabled ACCEPTED appeal control; it was not captured in the final bounded run.
+- Do not claim an enabled ACCEPTED appeal control; it was not captured in any of the four bounded runs.
 - Submit only after replacing the gate with **YES** following a bounded live capture.

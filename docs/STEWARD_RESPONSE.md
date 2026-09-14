@@ -62,13 +62,29 @@ shows `1.25 GEN` available, `0 GEN` locked exposure, and `0.75 GEN` penalties.
 The public UI does not expose the child application hash, so no child hash is
 invented or presented.
 
+An additional authorized capture attempt created case-4,
+`demo-appeal-capture-negligence-20260914`, bound to duty
+`scheduled-accepted-capture` / `maintenance-action-accepted-capture`, exposure
+`0.25 GEN`, and alleged rules R1/R3. Both fetched citations preserve their
+claimant/operator party, evidence type, domain, hash, and rule metadata. It
+finalized at
+`0x492d5254686ae2155465ac180b794f889ec5b17570ef1c4192df028b69fb1ede`
+as `NEGLIGENT_FAILURE` / `PARTIAL_SLASH`. The Court read reports
+`APPLIED_FINALIZED`; the console shows **Applied once**, `0.1 GEN` beneficiary
+compensation, and `0.025 GEN` safety-pool allocation. The direct Vault read
+after case-4 shows `1.125 GEN` available, zero locked exposure, `0.875 GEN`
+total penalties, and `0.175 GEN` in the safety pool across four applications.
+No child application hash is exposed, so none is claimed.
+
 The console retains the exact adjudication hash after ACCEPTED and releases
-its busy state while finality continues in the background. Across three
+its busy state while finality continues in the background. Across four
 bounded runs, the eligibility/control capture was not completed before
 finality: the first eligibility read was unavailable for case-1, the browser
 connection reset during the case-2 Appeal window, and the next poll for the
-final case-3 run observed FINALIZED. The appeal control was not captured
-enabled. No appeal was clicked or submitted. Historical predecessor cases
+case-3 run observed FINALIZED. For case-4, the real MetaMask confirmation was
+inspected and explicitly confirmed, but the console was already FINALIZED
+when control returned. The appeal control was not captured enabled. No appeal
+was clicked or submitted. Historical predecessor cases
 remain clearly labelled synthetic and historical; they are not claimed as
 cases of the fresh deployment.
 
@@ -79,5 +95,5 @@ binary is not installed.
 
 **Resubmit-ready: NO.** Exact blocker: one live screenshot/recording proving
 an ACCEPTED adjudication with the appeal control enabled before finality. The
-current record must not substitute the finalized case-3 screenshot or
-transaction for that proof.
+current record must not substitute either finalized case-3/case-4 screenshot
+or transaction for that proof.

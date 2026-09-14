@@ -7,8 +7,8 @@ console at https://slash-court.vercel.app.
 
 **Resubmit-ready: NO.** The hardened Court/Vault pair and production console
 are live, and the finalized negligence and external-outage paths are evidenced.
-The remaining blocker is live ACCEPTED-window proof: three bounded authorized
-synthetic attempts are recorded, including the final case-3 run, but no enabled
+The remaining blocker is live ACCEPTED-window proof: four bounded authorized
+synthetic attempts are recorded, including the additional case-4 run, but no enabled
 appeal control was captured before finality. No appeal was submitted and no
 finalized screenshot is being presented as ACCEPTED proof.
 
@@ -34,7 +34,7 @@ the exact source revision is recorded from the deployment run.
 
 ## Verified current case
 
-The fresh deployment has three cases, `case-1`, `case-2`, and `case-3`; all are
+The fresh deployment has four cases, `case-1` through `case-4`; all are
 synthetic release fixtures—not real incidents or real TVL.
 
 - Commitment: `demo-negligence-rc-20260913`
@@ -178,15 +178,60 @@ with one operator. The case read independently returned
 `network_status: FINALIZED`, `adjudication_finalized: true`, and
 `application_status: APPLIED_FINALIZED`.
 
+## Verified current case 4: additional bounded capture attempt
+
+`case-4` is the additional authorized synthetic negligence run. It is a
+release fixture, not a real incident.
+
+- Commitment: `demo-appeal-capture-negligence-20260914`
+- Classification/outcome: `NEGLIGENT_FAILURE` / `PARTIAL_SLASH`
+- Violated/alleged rules: `R1`, `R3`
+- Exposure: `0.25 GEN`; contract-determined penalty: `0.125 GEN` (`5000` bps)
+- Status: `PENALTY_APPLIED`, protocol `FINALIZED`
+- Canonical duty: Synthetic failover keeper duty for ACCEPTED capture
+- Trigger/action: `scheduled-accepted-capture` / `maintenance-action-accepted-capture`
+- Duty/dispute deadlines: `2026-09-15T04:00:00Z` / `2026-09-16T04:00:00Z`
+- Commitment digest: `sha256:4c9082aff71c85850ea270182e2bcbe76d0bc5ea476ff23b4883682f0f3d35d0`
+- Evidence: claimant `negligence-appeal-rc-02` and operator
+  `operator-appeal-rc-02`, with party, type, domain, SHA-256 hash, and R1/R3
+  metadata preserved.
+
+### Case 4 receipts and accounting
+
+| Action | Finalized transaction |
+| --- | --- |
+| Create commitment | `0xbf1878da691b8b9342471f54e94a835c66f255f0de9adf7d54536c9a577f6650` |
+| Accept commitment | `0x0b5209a9ad0a39d08ceb440f60c93e05de70d4a2e671be9310313ad400bcd738` |
+| Record duty | `0x9e4536d0945e5f7429821e0250ed37fd28ac912ac1a76f9575c3c8383838bf8e` |
+| Open case | `0x13613f10a2682187c4bf46f79086f1c70e210da9ba9891eed578cc73079d28e6` |
+| Operator response | `0x7480493bf4cffddf073180c1c202e23e3ad043424bd902a18539d3478b3b0d3d` |
+| Freeze evidence / rules | `0x330b6e9081764179026dd523f8486d9fc37574148a15f7b9f246e09b0c598777` |
+| Adjudication | [`0x492d…1ede`](https://explorer-studio.genlayer.com/tx/0x492d5254686ae2155465ac180b794f889ec5b17570ef1c4192df028b69fb1ede) |
+
+The adjudication receipt and direct Court read are FINALIZED. The case read
+independently confirms `adjudication_finalized: true`,
+`application_status: APPLIED_FINALIZED`, the canonical commitment, and both
+party/rule-bound citations. The console reports **Applied once**, `0.1 GEN`
+beneficiary compensation, and `0.025 GEN` safety-pool allocation. No child
+application hash is exposed, so none is inferred. A direct Vault read after
+case-4 returned `1.125 GEN` available, `0 GEN` locked, `0.875 GEN` total
+penalties, and `0.175 GEN` in the safety pool across four applications.
+
+One malformed evidence-freeze transaction was rejected before the corrected
+transaction. A direct read confirmed it made no state change; its hash and
+the read result are retained in `deploy/current-demo.json` for transparency.
+
 ## Appeal-window evidence
 
-The live console retained the exact adjudication hash for the final case-3
-attempt, but the next bounded browser poll observed FINALIZED. The prior
-case-1 and case-2 runs are also retained in the evidence index; case-2 reached
-the external-outage Appeal window before the browser connection reset. The UI
-release-after-ACCEPTED behavior remains covered by the workflow regression
-test. No enabled appeal control was captured in any bounded run, and the
-appeal button was never clicked.
+The live console retained the exact adjudication hashes for case-3 and case-4,
+but each next usable browser view was already FINALIZED. The real MetaMask
+confirmation for case-4 was inspected and explicitly confirmed; when control
+returned, finality had completed. The prior case-1 and case-2 runs are also
+retained in the evidence index; case-2 reached the external-outage Appeal
+window before the browser connection reset. The UI release-after-ACCEPTED
+behavior remains covered by the workflow regression test. No enabled appeal
+control was captured in any bounded run, and the appeal button was never
+clicked.
 
 This is recorded as `MISSED` in `deploy/current-demo.json`. Do not claim an
 enabled ACCEPTED appeal control until a future bounded run captures it.
@@ -196,6 +241,7 @@ enabled ACCEPTED appeal control until a future bounded run captures it.
 - [Pre-adjudication case capture](evidence/pre-adjudication-case-1.png): wallet-free case facts, canonical duty, evidence, and enabled Run consensus control.
 - [Finalized case capture](evidence/finalized-case-1.png): production console showing the finalized classification, penalty, citations, and actual Vault split.
 - [Finalized case-3 capture](evidence/case-3-finalized-no-appeal-window.png): the final bounded synthetic case showing finality, one-time Vault application, citation metadata, and accounting. It is not ACCEPTED-window proof.
+- [Finalized case-4 capture](evidence/case-4-finalized-no-appeal-window.png): the additional bounded case showing canonical facts, citations, deterministic accounting, and finality. It is not ACCEPTED-window proof.
 
 The captures are supporting artifacts, not substitutes for chain reads. No
 ACCEPTED-window capture or recording is available for any current case; leave
@@ -238,7 +284,7 @@ Court.
 | Steward requirement | Status |
 | --- | --- |
 | Bind canonical duty, trigger, deadlines, expected action, parties, exposure, rulebook, digest, and alleged rules | Satisfied in fresh Court/Vault source and current finalized case read |
-| Bind fetched-evidence citations with party and rule metadata | Satisfied in fresh source, finalized receipt payloads, and Vault application reads for both current cases |
+| Bind fetched-evidence citations with party and rule metadata | Satisfied in fresh source and current finalized Court/Vault records, including both case-4 parties |
 | Retain an ACCEPTED adjudication and expose an appeal control before finality | UI retention and background-finality fix deployed; live enabled-control capture remains unsatisfied |
 | Apply deterministic penalty only after finality and only once | Satisfied by current finalized receipts, `APPLIED_FINALIZED` read, accounting, and direct/integration tests |
 | Make public review wallet-free and easy to inspect | Satisfied; current case hash route, Explorer links, advanced metadata, and screenshots are public |
@@ -246,7 +292,7 @@ Court.
 ## Next exact action
 
 The exact remaining blocker is a live screenshot or recording of an ACCEPTED
-adjudication with the enabled appeal control before finality. No further
-on-chain run is authorized by this record; if the portal requires that proof,
-obtain fresh authorization before attempting another synthetic case. Until
-then, submit only with the gate marked NO.
+adjudication with the enabled appeal control before finality. The additional
+authorized attempt is complete and no further on-chain run is authorized by
+this record. Obtain fresh authorization before attempting another synthetic
+case; until the proof exists, keep the gate marked NO.
