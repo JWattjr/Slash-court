@@ -7,6 +7,10 @@
   "contractSourceRevision": "cdaba784931d4cd4020bb66bebe795c22f47efa5",
   "frontendSourceRevision": "6423dfb950468fd63f1c6f518fb3e85fb8fec82e",
   "frontendDeploymentId": "dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw",
+  "frontendSourceRevisionStatus": "LAST_VERIFIED_PRODUCTION_RELEASE",
+  "frontendCandidateSourceRevision": "3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f",
+  "frontendCandidateDeploymentStatus": "PENDING_VERIFIED_VERCEL_LINK",
+  "frontendCandidateDeploymentId": null,
   "rulebook": {
     "version": 1,
     "hash": "sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d"
@@ -325,6 +329,25 @@
       }
     ],
     "reason": "Four bounded synthetic attempts were made, including the additional authorized case-4 run. The console retained hashes, but no live enabled appeal control was captured before finality; no screenshot or finalized transaction is presented as ACCEPTED-window proof."
+  },
+  "releaseCandidateVerification": {
+    "sourceRevision": "3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f",
+    "sourceUrl": "https://github.com/JWattjr/Slash-court/commit/3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f",
+    "buildIdentityMarker": "data-source-revision populated from VERCEL_GIT_COMMIT_SHA",
+    "automatedChecks": {
+      "frontendTests": 14,
+      "directContractTests": 43,
+      "typecheck": "passed",
+      "lint": "passed",
+      "productionBuild": "passed",
+      "gitDiffCheck": "passed",
+      "genvmLint": "passed",
+      "contractSchema": "passed"
+    },
+    "evidenceClass": "LOCAL_AND_MOCKED_ONLY",
+    "productionDeploymentVerified": false,
+    "liveAttemptStarted": false,
+    "note": "The candidate preserves the exact ACCEPTED adjudication hash before background finality, retries eligibility serially, stops monitors on lifecycle changes, and exports a bounded diagnostic trace. No Vercel deployment ID or live ACCEPTED-window proof is claimed until the existing SlashCourt Vercel project is linked and verified."
   },
   "vault": {
     "initialBondWei": "2000000000000000000",

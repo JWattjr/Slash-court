@@ -3,8 +3,11 @@
 ## Submission gate
 
 **Do not submit yet: RESUBMIT-READY = NO.** The current Court/Vault pair and
-frontend are deployed, with finalized negligence and external-outage/no-slash
-proofs plus the bounded case-3 and case-4 attempts. Four bounded ACCEPTED-window
+the last verified frontend release are deployed, with finalized negligence and
+external-outage/no-slash proofs plus the bounded case-3 and case-4 attempts.
+The appeal-monitor fixes are pushed in candidate revision
+`3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`, but the Vercel production update
+is not independently verified from this checkout. Four bounded ACCEPTED-window
 captures were missed before finality. No appeal was submitted. See
 [docs/DEMO_READINESS.md](DEMO_READINESS.md) for the evidence boundary.
 
@@ -37,7 +40,9 @@ Leave blank unless a polished recording is available.
 Visit [https://slash-court.vercel.app](https://slash-court.vercel.app). Confirm
 the header identifies Court `0x56e2…e955a` and Vault `0xb1fD…9Aa7`, StudioNet
 chain `61999`, rulebook v1, and the current deployment status. The current
-release contains four synthetic current cases. If an RPC read
+release is expected to contain four synthetic current cases. After the
+candidate Vercel deployment, inspect the root element's `data-source-revision`
+and confirm it equals `3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`. If an RPC read
 fails, the UI labels it unavailable or partial and keeps writes locked.
 
 ### 2. Open the current cases
@@ -122,7 +127,7 @@ four current cases: three negligence proofs and an excusable external outage.
 | --- | --- | --- |
 | Canonical duty binding | `contracts/slash_court.py` and `contracts/operator_bond_vault.py` | Current Court/Vault reads for case-1 through case-4 carry the commitment digest and duty-bound application |
 | Fetched citation metadata | `_authoritative_citation`, `_canonicalize_adjudication_result`, `_consensus_bound_result` | Current finalized records preserve evidence ID, party, type, domain, hash, and rule metadata; case-4 independently proves both parties |
-| Appealable ACCEPTED retention | `frontend/app/page.tsx`, `frontend/lib/slashcourt/client.ts`, `frontend/lib/slashcourt/transactions.ts` | Tests pass; live hash retained, but enabled-control capture remains a blocker |
+| Appealable ACCEPTED retention | `frontend/app/page.tsx`, `frontend/lib/slashcourt/client.ts`, `frontend/lib/slashcourt/transactions.ts` | Candidate tests pass with immediate hash retention/background monitoring; Vercel deployment and live enabled-control capture remain blockers |
 | Finality-safe one-time penalty | `acknowledge_adjudication_finalized` and `apply_resolution` | Four finalized applications; case-4 reads `APPLIED_FINALIZED` and aggregate penalties are 0.875 GEN |
 | Wallet-free public review | Case hash route, Explorer links, advanced metadata section | Production case-1 through case-4 links and public captures |
 
@@ -135,12 +140,15 @@ four current cases: three negligence proofs and an excusable external outage.
 - No ACCEPTED-window capture or recording is available; do not present a finalized view as that proof.
 - [Full deployment and case record](../deploy/current-demo.json)
 - [Deployment provenance](../deploy/last-deployment.json)
+- [Candidate source revision](https://github.com/JWattjr/Slash-court/commit/3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f)
 
 ## Final check
 
 - Keep the YouTube field blank.
 - Confirm exact portal taxonomy before submitting.
-- Confirm current Court/Vault links open on StudioNet.
+- Confirm current Court/Vault links open on StudioNet and the candidate
+  `data-source-revision` is visible in the production DOM.
 - Keep all predecessor cases labelled historical and all fixtures labelled synthetic.
 - Do not claim an enabled ACCEPTED appeal control; it was not captured in any of the four bounded runs.
-- Submit only after replacing the gate with **YES** following a bounded live capture.
+- Submit only after replacing the gate with **YES** following a verified
+  candidate deployment and one bounded live ACCEPTED-window capture.

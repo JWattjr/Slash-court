@@ -1,16 +1,21 @@
 # SlashCourt demo readiness and release verification
 
-Verified 2026-09-14 against the fresh StudioNet deployment and the production
-console at https://slash-court.vercel.app.
+Verified 2026-09-14 against the fresh StudioNet deployment and a read-only
+production-console check at https://slash-court.vercel.app. The release
+candidate below is local/GitHub evidence until its Vercel deployment is
+independently verified.
 
 ## Gate
 
-**Resubmit-ready: NO.** The hardened Court/Vault pair and production console
-are live, and the finalized negligence and external-outage paths are evidenced.
-The remaining blocker is live ACCEPTED-window proof: four bounded authorized
-synthetic attempts are recorded, including the additional case-4 run, but no enabled
-appeal control was captured before finality. No appeal was submitted and no
-finalized screenshot is being presented as ACCEPTED proof.
+**Resubmit-ready: NO.** The hardened Court/Vault pair and the existing
+production console are live, and the finalized negligence and external-outage
+paths are evidenced. The appeal-monitor and trace fixes are pushed as a release
+candidate but are not yet proven in production because this checkout is not
+linked to the existing SlashCourt Vercel project in the current environment.
+After that deployment is verified, one bounded synthetic live attempt remains
+to capture the ACCEPTED appeal control. Four earlier attempts are historical;
+no appeal was submitted and no finalized screenshot is presented as ACCEPTED
+proof.
 
 ## Current deployment
 
@@ -20,8 +25,10 @@ finalized screenshot is being presented as ACCEPTED proof.
 - Rulebook: v1, hash `sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d`
 - Approved evidence domain: `slash-court.vercel.app`
 - Contract source revision: `cdaba784931d4cd4020bb66bebe795c22f47efa5`
-- Frontend source revision: `6423dfb950468fd63f1c6f518fb3e85fb8fec82e`
-- Vercel deployment: `dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw`
+- Last verified production frontend revision: `6423dfb950468fd63f1c6f518fb3e85fb8fec82e`
+- Last verified Vercel deployment: `dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw`
+- Release-candidate frontend revision: `3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`
+- Candidate Vercel deployment: **not verified**; no deployment ID is claimed.
 
 The deployment record is [deploy/last-deployment.json](../deploy/last-deployment.json).
 The full case and historical evidence index is
@@ -30,7 +37,34 @@ The full case and historical evidence index is
 The fresh Court and Vault were deployed as a new pair, bound reciprocally once,
 configured with the rulebook and evidence domain, and read back on StudioNet.
 The explorer cannot independently prove a Git commit-to-bytecode mapping here;
-the exact source revision is recorded from the deployment run.
+the exact contract source revision is recorded from the deployment run. The
+candidate frontend exposes `data-source-revision`; its Vercel build sets that
+value from `VERCEL_GIT_COMMIT_SHA`, so a browser check can verify the exact
+candidate revision after the project is linked and deployed.
+
+## Release-candidate verification
+
+The candidate changes are limited to the appeal workflow and its diagnostics:
+
+- retain the adjudication hash immediately after `ACCEPTED`, release the page
+  busy state while refresh/finality continue, and keep serial, bounded,
+  deployment-scoped monitoring with lifecycle cancellation and stale-response
+  protection;
+- preserve reload recovery, unknown/eligible/ineligible appeal states,
+  fresh eligibility checks, terminal ineligibility, and fail-closed financial
+  writes;
+- record a timestamped, deployment-scoped appeal trace and expose a wallet-free
+  export from the case modal without storing provider or private-wallet data;
+- add a rendered workflow regression covering `SUBMITTED -> ACCEPTED ->
+  eligibility failure -> eligible -> FINALIZED`, exact hash targeting, an
+  unrelated transaction, and busy-state release.
+
+Checks on revision `3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`: 14 frontend tests,
+43 direct contract tests, typecheck, lint, production build, `git diff --check`,
+GenVM lint, and contract schema checks passed. These are local/mock or direct
+test results, not production consensus evidence. No integration suite or
+transaction-producing test was run in this pass, and no new live case was
+started because the candidate Vercel deployment is not verified.
 
 ## Verified current case
 
@@ -264,13 +298,12 @@ Court.
 
 ## Checks completed
 
-- 13 frontend workflow tests passed, including the rendered appeal-action
+- 14 frontend workflow tests passed, including the rendered appeal-action
   regression, exact hash targeting, reload recovery, fail-closed reads, and
   terminal ineligibility.
 - Typecheck, lint, production build, and `git diff --check` passed.
-- Focused direct contract tests: 22 passed. The full local direct suite had 43
-  passes; the 8-test GLSim integration suite passed with the documented Windows
-  compatibility wrapper.
+- The full local direct contract suite passed: 43 tests. The prior 8-test GLSim
+  integration result is historical; no integration suite was run in this pass.
 - GenVM lint and contract schema checks passed. The optional GenVM pyright
   check remains unavailable because `pyright` is not installed.
 - Current on-chain reads prove no penalty before finality for this case because
@@ -285,14 +318,15 @@ Court.
 | --- | --- |
 | Bind canonical duty, trigger, deadlines, expected action, parties, exposure, rulebook, digest, and alleged rules | Satisfied in fresh Court/Vault source and current finalized case read |
 | Bind fetched-evidence citations with party and rule metadata | Satisfied in fresh source and current finalized Court/Vault records, including both case-4 parties |
-| Retain an ACCEPTED adjudication and expose an appeal control before finality | UI retention and background-finality fix deployed; live enabled-control capture remains unsatisfied |
+| Retain an ACCEPTED adjudication and expose an appeal control before finality | Candidate UI retention/background-finality fix is verified by the rendered workflow test; candidate Vercel deployment and live enabled-control capture remain unverified |
 | Apply deterministic penalty only after finality and only once | Satisfied by current finalized receipts, `APPLIED_FINALIZED` read, accounting, and direct/integration tests |
 | Make public review wallet-free and easy to inspect | Satisfied; current case hash route, Explorer links, advanced metadata, and screenshots are public |
 
 ## Next exact action
 
-The exact remaining blocker is a live screenshot or recording of an ACCEPTED
-adjudication with the enabled appeal control before finality. The additional
-authorized attempt is complete and no further on-chain run is authorized by
-this record. Obtain fresh authorization before attempting another synthetic
-case; until the proof exists, keep the gate marked NO.
+The exact remaining blockers are (1) link the existing SlashCourt Vercel
+project and verify production revision `3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`,
+then (2) use the one bounded synthetic attempt authorized in the release
+request to capture an ACCEPTED adjudication with its enabled appeal control
+before finality. Never click the appeal button. Until both proofs exist, keep
+the gate marked NO.

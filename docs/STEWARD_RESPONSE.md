@@ -1,11 +1,17 @@
 # Steward response draft
 
-Thank you. SlashCourt now runs a fresh mutually bound StudioNet Court/Vault
-pair at `0x56e26ec256afe37199fe9845e039f5DEdd9e955a` and
+Thank you. SlashCourt runs a fresh mutually bound StudioNet Court/Vault pair
+at `0x56e26ec256afe37199fe9845e039f5DEdd9e955a` and
 `0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7`. The deployed contract source is
-recorded at revision `cdaba784931d4cd4020bb66bebe795c22f47efa5`, and the
-production console is deployed as `dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw` from
-frontend revision `6423dfb950468fd63f1c6f518fb3e85fb8fec82e`.
+recorded at revision `cdaba784931d4cd4020bb66bebe795c22f47efa5`. The last
+verified production console is deployment `dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw`
+from frontend revision `6423dfb950468fd63f1c6f518fb3e85fb8fec82e`.
+
+The appeal-workflow candidate is pushed at frontend revision
+`3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`, but its Vercel deployment is not
+claimed yet: the current checkout is not linked to the existing SlashCourt
+Vercel project. The candidate exposes a `data-source-revision` marker populated
+from Vercel's Git commit SHA for post-deployment verification.
 
 Every adjudication rebinds the Vault's canonical duty, trigger, duty/dispute
 deadlines, expected action, parties, exposure, rulebook version, commitment
@@ -88,12 +94,17 @@ was clicked or submitted. Historical predecessor cases
 remain clearly labelled synthetic and historical; they are not claimed as
 cases of the fresh deployment.
 
-Checks: 13 frontend tests, focused direct contract tests, full local direct and
-GLSim integration suites, typecheck, lint, production build, GenVM lint, and
-schema checks passed. The optional pyright check was unavailable because the
-binary is not installed.
+Checks: 14 frontend workflow tests, 43 direct contract tests, typecheck, lint,
+production build, `git diff --check`, GenVM lint, and schema checks passed. The
+rendered frontend regression covers immediate busy-state release after
+ACCEPTED, delayed eligibility recovery, exact hash targeting, unrelated
+transactions, and terminal finality. No integration suite or
+transaction-producing test was run in this final pass. The optional pyright
+check was unavailable because the binary is not installed.
 
-**Resubmit-ready: NO.** Exact blocker: one live screenshot/recording proving
-an ACCEPTED adjudication with the appeal control enabled before finality. The
-current record must not substitute either finalized case-3/case-4 screenshot
-or transaction for that proof.
+**Resubmit-ready: NO.** Exact blockers: verify the candidate Vercel deployment
+at revision `3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`, then capture one
+bounded live ACCEPTED adjudication with the appeal control enabled before
+finality. The four finalized case attempts and their screenshots are not
+substitutes for that proof. No appeal was clicked or submitted, and no Portal
+submission was made.
