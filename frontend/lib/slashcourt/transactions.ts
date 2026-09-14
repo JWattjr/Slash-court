@@ -75,6 +75,10 @@ export function isTerminalTransaction(snapshot: Pick<TxSnapshot, "status">) {
   return TERMINAL_STATUSES.has(snapshot.status.toUpperCase());
 }
 
+export function isAcceptedAppealWindow(snapshot: Pick<TxSnapshot, "status">) {
+  return snapshot.status.toUpperCase() === "ACCEPTED";
+}
+
 export function appealEligibility(snapshot: TxSnapshot): AppealEligibility {
   if (isTerminalTransaction(snapshot)) return "ineligible";
   if (snapshot.appealEligibility) return snapshot.appealEligibility;

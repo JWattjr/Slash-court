@@ -8,6 +8,7 @@ import {
   appealEligibility,
   findAppealableAdjudication,
   findRefreshableAdjudications,
+  isAcceptedAppealWindow,
   mergeTransaction,
   requestVerifiedAppeal,
   submitAndTrackAppealableTransaction,
@@ -67,6 +68,12 @@ test("terminal status overrides stale browser eligibility", () => {
   });
   assert.equal(appealEligibility(finalized), "ineligible");
   assert.equal(findAppealableAdjudication([finalized]), undefined);
+});
+
+test("Studio appeal fallback treats only a fresh ACCEPTED receipt as appealable", () => {
+  assert.equal(isAcceptedAppealWindow({ status: "ACCEPTED" }), true);
+  assert.equal(isAcceptedAppealWindow({ status: "FINALIZED" }), false);
+  assert.equal(isAcceptedAppealWindow({ status: "PENDING" }), false);
 });
 
 test("a late nonterminal response cannot replace a finalized adjudication", () => {
@@ -155,6 +162,27 @@ test("appeal submission rechecks eligibility immediately before sending", async 
   };
   assert.equal(await requestVerifiedAppeal(eligibleSdk, "0xadjudication"), "0xappeal");
   assert.deepEqual(calls, ["canAppeal", "getMinAppealBond", "appealTransaction"]);
+});
+
+test("Studio appeal submission uses a verified ACCEPTED receipt and zero bond", async () => {
+  const calls: string[] = [];
+  const sdk = {
+    async canAppeal() {
+      calls.push("freshReceipt");
+      return isAcceptedAppealWindow({ status: "ACCEPTED" });
+    },
+    async getAppealCharge() {
+      calls.push("studioCharge");
+      return 0n;
+    },
+    async appealTransaction({ value }: { value: bigint }) {
+      calls.push(`appeal:${value}`);
+      return "0xappeal";
+    },
+  };
+
+  assert.equal(await requestVerifiedAppeal(sdk, "0xadjudication"), "0xappeal");
+  assert.deepEqual(calls, ["freshReceipt", "studioCharge", "appeal:0"]);
 });
 
 test("appealable tracking retains ACCEPTED before eligibility recovery and finality", async () => {

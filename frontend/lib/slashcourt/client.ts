@@ -10,7 +10,7 @@ import { formatUnits, parseUnits } from "viem";
 import { createGenLayerClient, GENLAYER_CHAIN_ID_HEX, getEthereumProvider, RPC_URL, chainForEndpoint } from "@/lib/genlayer/client";
 import type { CalldataEncodable } from "genlayer-js/types";
 import { classifyReadFailure } from "./refresh";
-import { isTerminalTransaction, requestVerifiedAppeal } from "./transactions";
+import { isAcceptedAppealWindow, isTerminalTransaction, requestVerifiedAppeal } from "./transactions";
 import type { AppealEligibility, CaseBundle, CaseIndex, CourtCase, CourtStatistics, Dashboard, ReadSlice, Rulebook, TxSnapshot, OperatorState, VaultApplication, VaultConfiguration, VaultStatistics } from "./types";
 
 const COURT_ADDRESS = (process.env.NEXT_PUBLIC_SLASH_COURT_ADDRESS || "").trim();
@@ -278,7 +278,39 @@ export class SlashCourtClient {
   }
 
   async appeal(txHash: string) {
-    return requestVerifiedAppeal(this.client, txHash);
+    return requestVerifiedAppeal({
+      canAppeal: ({ txId }) => this.canAppeal(txId),
+      getAppealCharge: ({ txId }) => this.getAppealCharge(txId),
+      appealTransaction: (args) => this.client.appealTransaction(args),
+    }, txHash);
+  }
+
+  private usesStudioAppealFallback() {
+    const chain = chainForEndpoint(RPC_URL) as any;
+    return Boolean(chain.isStudio && !chain.appealsContract?.address);
+  }
+
+  private async canAppeal(txId: `0x${string}`) {
+    if (!this.usesStudioAppealFallback()) {
+      return Boolean(await this.client.canAppeal({ txId }));
+    }
+
+    // StudioNet deliberately has no auxiliary Appeals contract in the official
+    // chain definition. Its consensus endpoint still accepts submitAppeal, so a
+    // fresh ACCEPTED receipt is the authoritative preflight for that backend.
+    const receipt = await this.client.getTransaction({ hash: txId });
+    return isAcceptedAppealWindow({ status: statusName(receipt) });
+  }
+
+  private async getAppealCharge(txId: `0x${string}`) {
+    if (this.usesStudioAppealFallback()) return 0n;
+    if (typeof this.client.getAppealCharge === "function") {
+      return BigInt(await this.client.getAppealCharge({ txId }));
+    }
+    if (typeof this.client.getMinAppealBond === "function") {
+      return BigInt(await this.client.getMinAppealBond({ txId }));
+    }
+    throw new Error("The connected GenLayer SDK cannot calculate the appeal bond.");
   }
 
   private async withAppealEligibility(snapshot: TxSnapshot): Promise<TxSnapshot> {
@@ -287,7 +319,7 @@ export class SlashCourtClient {
     }
     let eligibility: AppealEligibility;
     try {
-      eligibility = (await this.client.canAppeal({ txId: snapshot.hash }))
+      eligibility = (await this.canAppeal(snapshot.hash as `0x${string}`))
         ? "eligible"
         : "ineligible";
       return {
