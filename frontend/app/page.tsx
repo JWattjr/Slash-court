@@ -36,7 +36,7 @@ import type { AppealMonitorOptions } from "@/lib/slashcourt/transactions";
 import type { AppealTraceObservation } from "@/lib/slashcourt/appealDiagnostics";
 import type { CaseBundle, CourtCase, Dashboard, ReadSlice, TxSnapshot } from "@/lib/slashcourt/types";
 
-const FRONTEND_SOURCE_REVISION = "e4cf952c9a8503fe6cfb10d180c36e82672a0894";
+const FRONTEND_SOURCE_REVISION = process.env.NEXT_PUBLIC_SLASHCOURT_SOURCE_REVISION || "local-candidate";
 
 const EMPTY_FORM = {
   commitmentId: "",
