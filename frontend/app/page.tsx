@@ -36,6 +36,8 @@ import type { AppealMonitorOptions } from "@/lib/slashcourt/transactions";
 import type { AppealTraceObservation } from "@/lib/slashcourt/appealDiagnostics";
 import type { CaseBundle, CourtCase, Dashboard, ReadSlice, TxSnapshot } from "@/lib/slashcourt/types";
 
+const FRONTEND_SOURCE_REVISION = "e4cf952c9a8503fe6cfb10d180c36e82672a0894";
+
 const EMPTY_FORM = {
   commitmentId: "",
   claim: "",
@@ -869,7 +871,7 @@ export default function SlashCourtConsole() {
           ? { title: "Current deployment unavailable", body: "The app could not prove current contract state. It will not infer an empty case list, rulebook, or balance." }
           : null;
 
-  return <div className="app-shell">
+  return <div className="app-shell" data-source-revision={FRONTEND_SOURCE_REVISION}>
     <header className="topbar"><Brand /><div className="top-actions"><span className={`network-chip ${health === "fresh" ? "live" : "unavailable"}`}><span className="live-dot" /> {health === "fresh" ? `${network} live` : health === "partial" ? `${network} partial` : health === "stale" ? `${network} stale` : loading ? "Checking StudioNet" : `${network} unavailable`}</span>{wallet.connected ? <button className="wallet-button connected" onClick={wallet.disconnect}>{formatAddress(wallet.address)}</button> : <button className="wallet-button" disabled={wallet.connecting} onClick={() => void wallet.connect().catch((error) => toast.error("Wallet connection failed", { description: error instanceof Error ? error.message : "Please try again." }))}>{wallet.connecting ? "Connecting…" : "Connect wallet"}</button>}</div></header>
     <div className="body-grid">
       <aside className="sidebar"><nav className="side-nav" aria-label="Primary navigation">{(["Home", "Explorer", "Submit", "Operate"] as const).map((label) => <button className={`side-link ${activeView === label ? "active" : ""}`} aria-current={activeView === label ? "page" : undefined} key={label} onClick={() => navigate(label)}>{label}</button>)}</nav><div className="side-note"><span>{rulebook ? `Rulebook v${rulebook.version}` : "Rulebook unavailable"}</span><strong>Deterministic penalties. Appealable decisions.</strong></div></aside>
