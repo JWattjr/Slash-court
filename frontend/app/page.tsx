@@ -678,6 +678,7 @@ export default function SlashCourtConsole() {
     );
     appealMonitors.current.set(hash, { controller, task });
     void task.catch((error) => {
+      if (controller.signal.aborted) return;
       rememberAppealObservation(caseId, {
         observedAt: new Date().toISOString(),
         network: configuration.network,

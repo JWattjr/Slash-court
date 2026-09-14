@@ -18,6 +18,7 @@ type AppealTrackingClient = {
   waitForAppealWindow: (
     hash: string,
     kind: TxSnapshot["kind"],
+    signal?: AbortSignal,
   ) => Promise<TxSnapshot>;
 };
 
@@ -156,6 +157,7 @@ async function monitorAppealWindow(
       // loop is deliberately serial so transient eligibility failures do not
       // create overlapping RPC requests.
       const next = await client.snapshot(accepted.hash, accepted.kind);
+      if (options.signal?.aborted) break;
       latest = next;
       retain(next);
       if (isTerminalTransaction(next)) {
@@ -209,7 +211,8 @@ export async function trackAppealableTransaction(
   // Do not perform a canAppeal read before the ACCEPTED receipt. The exact
   // ACCEPTED snapshot must be retained even when eligibility RPC is slow or
   // temporarily unavailable.
-  const accepted = await client.waitForAppealWindow(hash, kind);
+  const accepted = await client.waitForAppealWindow(hash, kind, options.signal);
+  if (options.signal?.aborted) throw new Error("Appeal monitor aborted by lifecycle change.");
   retain(accepted);
   trace(hash, "accepted", accepted, options, { reason: "accepted receipt retained before eligibility read" });
   const monitoring = monitorAppealWindow(client, accepted, retain, options);

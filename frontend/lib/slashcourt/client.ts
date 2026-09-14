@@ -313,10 +313,11 @@ export class SlashCourtClient {
     return this.withAppealEligibility(snapshot);
   }
 
-  async waitForAppealWindow(hash: string, kind: TxSnapshot["kind"] = "adjudication"): Promise<TxSnapshot> {
+  async waitForAppealWindow(hash: string, kind: TxSnapshot["kind"] = "adjudication", signal?: AbortSignal): Promise<TxSnapshot> {
     return this.waitForStatus(hash, kind, (snapshot) =>
       snapshot.status.toUpperCase() === "ACCEPTED" || isTerminalTransaction(snapshot),
       "Appeal-window polling failed.",
+      signal,
     ).then((snapshot) => ({
       ...snapshot,
       appealable: false,
@@ -325,8 +326,8 @@ export class SlashCourtClient {
     }));
   }
 
-  async wait(hash: string, kind: TxSnapshot["kind"] = "operator"): Promise<TxSnapshot> {
-    return this.waitForStatus(hash, kind, (snapshot) => isTerminalTransaction(snapshot), "Finality polling failed.");
+  async wait(hash: string, kind: TxSnapshot["kind"] = "operator", signal?: AbortSignal): Promise<TxSnapshot> {
+    return this.waitForStatus(hash, kind, (snapshot) => isTerminalTransaction(snapshot), "Finality polling failed.", signal);
   }
 
   private async waitForStatus(
@@ -334,9 +335,14 @@ export class SlashCourtClient {
     kind: TxSnapshot["kind"],
     done: (snapshot: TxSnapshot) => boolean,
     failureMessage: string,
+    signal?: AbortSignal,
   ): Promise<TxSnapshot> {
     let lastError = "";
     for (let attempt = 0; attempt < 100; attempt += 1) {
+      if (signal?.aborted) {
+        lastError = "Polling stopped because the deployment or wallet context changed.";
+        break;
+      }
       try {
         const receipt = await this.client.getTransaction({ hash });
         const snapshot = snapshotFromReceipt(hash, receipt, kind);
@@ -344,7 +350,19 @@ export class SlashCourtClient {
       } catch (error) {
         lastError = error instanceof Error ? error.message : failureMessage;
       }
-      await new Promise((resolve) => setTimeout(resolve, attempt < 3 ? 1500 : 3000));
+      await new Promise<void>((resolve) => {
+        const delay = attempt < 3 ? 1500 : 3000;
+        const timer = setTimeout(() => {
+          signal?.removeEventListener("abort", onAbort);
+          resolve();
+        }, delay);
+        const onAbort = () => {
+          clearTimeout(timer);
+          signal?.removeEventListener("abort", onAbort);
+          resolve();
+        };
+        signal?.addEventListener("abort", onAbort, { once: true });
+      });
     }
     return {
       hash,
