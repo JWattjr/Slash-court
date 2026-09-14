@@ -1,23 +1,29 @@
 {
   "network": "Genlayer Studio Network",
   "chainId": 61999,
-  "verifiedAt": "2026-09-14T15:27:00Z",
+  "verifiedAt": "2026-09-14T18:44:13Z",
   "slashCourtAddress": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
   "operatorBondVaultAddress": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
   "contractSourceRevision": "cdaba784931d4cd4020bb66bebe795c22f47efa5",
-  "frontendSourceRevision": "6423dfb950468fd63f1c6f518fb3e85fb8fec82e",
-  "frontendDeploymentId": "dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw",
-  "frontendSourceRevisionStatus": "LAST_VERIFIED_PRODUCTION_RELEASE",
-  "frontendCandidateSourceRevision": "3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f",
-  "frontendCandidateDeploymentStatus": "PENDING_VERIFIED_VERCEL_LINK",
-  "frontendCandidateDeploymentId": null,
+  "frontendSourceRevision": "c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376",
+  "frontendDeploymentId": "dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU",
+  "frontendSourceRevisionStatus": "VERIFIED_PRODUCTION_RELEASE",
+  "frontendCandidateSourceRevision": "c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376",
+  "frontendCandidateDeploymentStatus": "VERIFIED_PRODUCTION",
+  "frontendCandidateDeploymentId": "dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU",
+  "frontendDeploymentUrl": "https://slash-court.vercel.app",
+  "frontendPreviewDeploymentUrl": "https://slash-court-8i1shn6p0-wattxs-projects.vercel.app",
+  "previousVerifiedFrontendRelease": {
+    "sourceRevision": "6423dfb950468fd63f1c6f518fb3e85fb8fec82e",
+    "deploymentId": "dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw"
+  },
   "rulebook": {
     "version": 1,
     "hash": "sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d"
   },
   "approvedEvidenceDomains": ["slash-court.vercel.app"],
   "evidenceNote": "All incident evidence is explicitly synthetic. The current cases, adjudications, Court-to-Vault messages, and Vault applications are real finalized StudioNet transactions. This is demo bond accounting, not real TVL or native validator stake.",
-  "caseIndexNote": "This fresh mutually bound deployment contains four current synthetic cases: case-1 is the verified negligence example, case-2 is the verified R4 external-outage/no-slash contrast, and case-3/case-4 are bounded negligence attempts used to test the ACCEPTED-window workflow. The predecessor deployments retain the misconduct and insufficient-evidence examples and are labelled historical in the console.",
+  "caseIndexNote": "This fresh mutually bound deployment contains five current synthetic cases: case-1 is the verified negligence example, case-2 is the verified R4 external-outage/no-slash contrast, and case-3/case-4/case-5 are bounded negligence attempts used to test the ACCEPTED-window workflow. The predecessor deployments retain the misconduct and insufficient-evidence examples and are labelled historical in the console.",
   "deploymentTransactions": [
     {"label": "1/7 Operator Bond Vault", "hash": "0x8a438d6bdabe02447c3e318f4761fe3d41cbfde41a20b0e0a42032b609bff00f"},
     {"label": "2/7 SlashCourt", "hash": "0x4a51e10ba44a29b7b9a81e7ee4d20538c2bd7f8a6a86a4fb22ecf91c40fffc88"},
@@ -288,6 +294,96 @@
       },
       "finalizedScreenshot": "docs/evidence/case-4-finalized-no-appeal-window.png",
       "verificationNote": "The finalized receipt check passed. A direct StudioNet get_case read independently confirmed network_status FINALIZED, adjudication_finalized true, application_status APPLIED_FINALIZED, canonical duty binding, and both party/rule-bound citations. The production console shows Applied once, 0.1 GEN beneficiary compensation, and 0.025 GEN safety-pool allocation. No appeal was submitted."
+    },
+    {
+      "caseId": "case-5",
+      "commitmentId": "demo-final-accepted-window-20260914",
+      "classification": "NEGLIGENT_FAILURE",
+      "outcome": "PARTIAL_SLASH",
+      "allegedRuleIds": ["R1", "R3"],
+      "violatedRuleIds": ["R1", "R3"],
+      "penaltyBps": 5000,
+      "penaltyWei": "125000000000000000",
+      "beneficiaryAwardWei": "100000000000000000",
+      "safetyPoolWei": "25000000000000000",
+      "status": "PENALTY_APPLIED",
+      "networkStatus": "FINALIZED",
+      "applicationStatus": "APPLIED_FINALIZED",
+      "adjudicationFinalized": true,
+      "canonicalCommitment": {
+        "duty": "Synthetic failover keeper duty for final ACCEPTED-window proof",
+        "dutyTrigger": "scheduled-final-accepted-window",
+        "dutyDeadline": "2026-09-16T00:00:00Z",
+        "disputeDeadline": "2026-09-17T00:00:00Z",
+        "expectedActionId": "maintenance-action-final-accepted-window",
+        "commitmentDigest": "sha256:bb4a91a51dc4ec9127d20afab3e771846475c08144a37663f174ba133db93376",
+        "operator": "0xdB433ff614bDD1ecE21Aa97221C3E0a7ecf79c92",
+        "beneficiary": "0x2C8EB5dB1105A85BE66BadafeD88D10cF393CDD8",
+        "lockedExposureWei": "250000000000000000",
+        "rulebookVersion": 1
+      },
+      "evidenceCitations": [
+        {
+          "evidenceId": "negligence-final-accepted-01",
+          "evidenceType": "PUBLIC_STATUS_REPORT",
+          "submissionParty": "CLAIMANT",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
+          "relevantRuleIds": ["R1", "R3"],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
+        },
+        {
+          "evidenceId": "operator-final-accepted-01",
+          "evidenceType": "OPERATOR_STATUS_REPORT",
+          "submissionParty": "OPERATOR",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
+          "relevantRuleIds": ["R3"],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
+        }
+      ],
+      "operatorResponse": {
+        "summary": "The primary provider reported an RPC incident during the duty window. The configured secondary path remained available, but I did not complete the maintenance action before the deadline.",
+        "claimedExemption": "No exemption claimed.",
+        "mitigation": "Checked the secondary provider and reviewed the release path; no completed maintenance transaction was available before the deadline."
+      },
+      "createCommitmentTransaction": "0xea214370bb18e50f2e7052dd6db4b5e7fa4156f1e13598a155b1ec64819cffdd",
+      "acceptCommitmentTransaction": "0xaeed334d61e6f91e8027c74a1068029823050e8c00371b2934770a347b0efb6f",
+      "failedOpenCaseTransactions": [
+        {
+          "hash": "0x4b608bb76df5ae9978d7c9977c0380f093a802bb4808a92f0250711216b2ecaa",
+          "status": "FINALIZED_EXECUTION_FAILED",
+          "reason": "CLI passed the evidence manifest as a native list; the contract rejected it before creating a case."
+        },
+        {
+          "hash": "0x8affd9b0fe5f0b678c5753b0edc04923a4535367f1b18b15f4a28ff878fa9a93",
+          "status": "FINALIZED_EXECUTION_FAILED",
+          "reason": "Windows wrapper quoting removed manifest key quotes; the contract rejected the malformed JSON before creating a case."
+        }
+      ],
+      "openCaseTransaction": "0x2bf5718beaa41c5624811e45635b98ea940830a353580abe287918d23b1e1234",
+      "responseTransaction": "0xf9176d44b49bbaaa4b2bc658acc967285e12e4a7863b436de49a20f32736f82f",
+      "readyTransaction": "0xccfde07bcfa02010b0fcf363955ccd508e8352b46d15af6b936531b124b3d3d0",
+      "adjudicationTransaction": "0xf9a3bca4fd27533252a28cefed0f82aa1ae556b9c7bfcf509ce67b7129e906d2",
+      "adjudicationReceiptStatus": "FINALIZED",
+      "adjudicationConsensusResult": "MAJORITY_AGREE",
+      "finalityTriggeredTransactions": [
+        "0x5531989db9a2d133a970e5f94d2f5046fab37471c3f5326bffd10eba9e863d3d",
+        "0x23d99e6c3848f6bbd0d2e741100650b5c66f449265e32903e240dd453573c21f"
+      ],
+      "finalityTriggeredReceiptStatus": "FINALIZED",
+      "applicationTransaction": "0x23d99e6c3848f6bbd0d2e741100650b5c66f449265e32903e240dd453573c21f",
+      "applicationReceiptStatus": "APPLIED_FINALIZED",
+      "acceptedWindowAttempt": {
+        "status": "MISSED",
+        "hashRetained": true,
+        "appealControlEnabled": false,
+        "appealSubmitted": false,
+        "reason": "The adjudication was submitted from the prepared live console, but the next usable browser state was already FINALIZED. The exact hash was retained and the finality/accounting screenshot was captured; no enabled ACCEPTED-window appeal control was observed and Appeal was never clicked."
+      },
+      "readyScreenshot": "docs/evidence/case-5-ready-before-consensus.png",
+      "finalizedScreenshot": "docs/evidence/case-5-finalized.png",
+      "verificationNote": "Direct StudioNet reads confirmed status READY_FOR_ADJUDICATION before consensus, then PENALTY_APPLIED with network_status FINALIZED, adjudication_finalized true, and evidence_frozen true. The finalized adjudication receipt has status code 7, execution success, and MAJORITY_AGREE. Both finality-triggered Vault child receipts are FINALIZED; the apply_resolution child preserves the canonical commitment digest, alleged R1/R3 rules, claimant/operator citation metadata, and applies exactly once. The operator read shows 1.0 GEN available, zero locked exposure, and zero active commitments after the 0.125 GEN penalty. All evidence is synthetic."
     }
   ],
   "acceptedWindowProof": {
@@ -326,13 +422,24 @@
         "appealControlEnabled": false,
         "appealSubmitted": false,
         "reason": "The additional authorized MetaMask transaction was confirmed, but the console was already FINALIZED when control returned. No ACCEPTED-window screenshot or enabled appeal control was captured."
+      },
+      {
+        "caseId": "case-5",
+        "adjudicationTransaction": "0xf9a3bca4fd27533252a28cefed0f82aa1ae556b9c7bfcf509ce67b7129e906d2",
+        "hashRetained": true,
+        "appealControlEnabled": false,
+        "appealSubmitted": false,
+        "reason": "The final authorized bounded capture reached the prepared live console, but the next usable browser state was already FINALIZED. The exact hash and finality-triggered Vault receipts were retained; no enabled ACCEPTED-window control was captured and no appeal was clicked."
       }
     ],
-    "reason": "Four bounded synthetic attempts were made, including the additional authorized case-4 run. The console retained hashes, but no live enabled appeal control was captured before finality; no screenshot or finalized transaction is presented as ACCEPTED-window proof."
+    "reason": "Five bounded synthetic attempts are now recorded, including the final case-5 run. The console retained the exact adjudication hash, but no live enabled appeal control was captured before finality; the ready and finalized screenshots are not presented as ACCEPTED-window proof."
   },
   "releaseCandidateVerification": {
-    "sourceRevision": "3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f",
-    "sourceUrl": "https://github.com/JWattjr/Slash-court/commit/3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f",
+    "sourceRevision": "c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376",
+    "sourceUrl": "https://github.com/JWattjr/Slash-court/commit/c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376",
+    "deploymentId": "dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU",
+    "deploymentUrl": "https://slash-court.vercel.app",
+    "deploymentStatus": "READY",
     "buildIdentityMarker": "data-source-revision populated from VERCEL_GIT_COMMIT_SHA",
     "automatedChecks": {
       "frontendTests": 14,
@@ -344,20 +451,23 @@
       "genvmLint": "passed",
       "contractSchema": "passed"
     },
-    "evidenceClass": "LOCAL_AND_MOCKED_ONLY",
-    "productionDeploymentVerified": false,
-    "liveAttemptStarted": false,
-    "note": "The candidate preserves the exact ACCEPTED adjudication hash before background finality, retries eligibility serially, stops monitors on lifecycle changes, and exports a bounded diagnostic trace. No Vercel deployment ID or live ACCEPTED-window proof is claimed until the existing SlashCourt Vercel project is linked and verified."
+    "evidenceClass": "PRODUCTION_DEPLOYMENT_AND_FINALIZED_LIVE_CASE",
+    "productionDeploymentVerified": true,
+    "liveAttemptStarted": true,
+    "liveCaseId": "case-5",
+    "liveAdjudicationTransaction": "0xf9a3bca4fd27533252a28cefed0f82aa1ae556b9c7bfcf509ce67b7129e906d2",
+    "acceptedWindowProof": "MISSED",
+    "note": "The production deployment at the exact source marker c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376 was verified in the browser. The candidate retains the exact ACCEPTED adjudication hash before background finality, retries eligibility serially, stops monitors on lifecycle changes, and exports a bounded diagnostic trace. The final bounded live case finalized before an enabled ACCEPTED-window appeal control could be captured; no appeal was clicked or submitted."
   },
   "vault": {
     "initialBondWei": "2000000000000000000",
-    "remainingOperatorBondWei": "1125000000000000000",
+    "remainingOperatorBondWei": "1000000000000000000",
     "lockedExposureWei": "0",
-    "totalPenaltiesWei": "875000000000000000",
-    "beneficiaryAwardsWei": "700000000000000000",
-    "safetyPoolWei": "175000000000000000",
-    "applicationCount": 4,
-    "readNote": "A direct StudioNet get_vault_statistics read after case-4 finality returned available_bond 1125000000000000000, locked_exposure 0, total_penalties_applied 875000000000000000, safety_pool_balance 175000000000000000, and total_operators 1."
+    "totalPenaltiesWei": "1000000000000000000",
+    "beneficiaryAwardsWei": "800000000000000000",
+    "safetyPoolWei": "200000000000000000",
+    "applicationCount": 5,
+    "readNote": "Direct StudioNet reads after case-5 finality returned 1.0 GEN available bond, 0 locked exposure, 1.0 GEN total penalties, 0.8 GEN beneficiary awards, and 0.2 GEN safety-pool balance across five applications. The case-5 operator read independently confirmed zero locked exposure and zero active commitments; the Vault application read confirmed applied=true once."
   },
   "historical": {
     "predecessorCurrentDeployment": {

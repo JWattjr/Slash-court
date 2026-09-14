@@ -1,21 +1,16 @@
 # SlashCourt demo readiness and release verification
 
-Verified 2026-09-14 against the fresh StudioNet deployment and a read-only
-production-console check at https://slash-court.vercel.app. The release
-candidate below is local/GitHub evidence until its Vercel deployment is
-independently verified.
+Verified 2026-09-14 against the fresh StudioNet deployment, the production
+Vercel console at https://slash-court.vercel.app, and the bounded live case-5
+run. All incident records are synthetic.
 
 ## Gate
 
-**Resubmit-ready: NO.** The hardened Court/Vault pair and the existing
-production console are live, and the finalized negligence and external-outage
-paths are evidenced. The appeal-monitor and trace fixes are pushed as a release
-candidate but are not yet proven in production because this checkout is not
-linked to the existing SlashCourt Vercel project in the current environment.
-After that deployment is verified, one bounded synthetic live attempt remains
-to capture the ACCEPTED appeal control. Four earlier attempts are historical;
-no appeal was submitted and no finalized screenshot is presented as ACCEPTED
-proof.
+**Resubmit-ready: NO.** The hardened frontend is deployed and source-verified,
+and case-5 proves the current Court/Vault finality and accounting path. The
+remaining blocker is narrow: the live console reached finality before an
+enabled ACCEPTED-window appeal control could be captured. No appeal was
+submitted, and no finalized screenshot is presented as ACCEPTED proof.
 
 ## Current deployment
 
@@ -25,10 +20,12 @@ proof.
 - Rulebook: v1, hash `sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d`
 - Approved evidence domain: `slash-court.vercel.app`
 - Contract source revision: `cdaba784931d4cd4020bb66bebe795c22f47efa5`
-- Last verified production frontend revision: `6423dfb950468fd63f1c6f518fb3e85fb8fec82e`
-- Last verified Vercel deployment: `dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw`
-- Release-candidate frontend revision: `3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`
-- Candidate Vercel deployment: **not verified**; no deployment ID is claimed.
+- Verified production frontend revision: `c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376`
+- Verified Vercel deployment: `dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU`
+- Deployment alias: [slash-court.vercel.app](https://slash-court.vercel.app)
+- Vercel preview: [slash-court-8i1shn6p0-wattxs-projects.vercel.app](https://slash-court-8i1shn6p0-wattxs-projects.vercel.app)
+- Browser verification: the root `data-source-revision` matched the exact
+  deployed revision above; Vercel status was `READY`.
 
 The deployment record is [deploy/last-deployment.json](../deploy/last-deployment.json).
 The full case and historical evidence index is
@@ -38,9 +35,8 @@ The fresh Court and Vault were deployed as a new pair, bound reciprocally once,
 configured with the rulebook and evidence domain, and read back on StudioNet.
 The explorer cannot independently prove a Git commit-to-bytecode mapping here;
 the exact contract source revision is recorded from the deployment run. The
-candidate frontend exposes `data-source-revision`; its Vercel build sets that
-value from `VERCEL_GIT_COMMIT_SHA`, so a browser check can verify the exact
-candidate revision after the project is linked and deployed.
+frontend exposes `data-source-revision`; this production browser check matched
+the exact revision used for the Vercel build.
 
 ## Release-candidate verification
 
@@ -59,16 +55,16 @@ The candidate changes are limited to the appeal workflow and its diagnostics:
   eligibility failure -> eligible -> FINALIZED`, exact hash targeting, an
   unrelated transaction, and busy-state release.
 
-Checks on revision `3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`: 14 frontend tests,
+Checks on revision `c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376`: 14 frontend tests,
 43 direct contract tests, typecheck, lint, production build, `git diff --check`,
 GenVM lint, and contract schema checks passed. These are local/mock or direct
 test results, not production consensus evidence. No integration suite or
-transaction-producing test was run in this pass, and no new live case was
-started because the candidate Vercel deployment is not verified.
+transaction-producing test was run as a test suite; the separately authorized
+bounded live case-5 workflow is recorded below.
 
 ## Verified current case
 
-The fresh deployment has four cases, `case-1` through `case-4`; all are
+The fresh deployment has five cases, `case-1` through `case-5`; all are
 synthetic release fixtures—not real incidents or real TVL.
 
 - Commitment: `demo-negligence-rc-20260913`
@@ -247,22 +243,64 @@ independently confirms `adjudication_finalized: true`,
 `application_status: APPLIED_FINALIZED`, the canonical commitment, and both
 party/rule-bound citations. The console reports **Applied once**, `0.1 GEN`
 beneficiary compensation, and `0.025 GEN` safety-pool allocation. No child
-application hash is exposed, so none is inferred. A direct Vault read after
-case-4 returned `1.125 GEN` available, `0 GEN` locked, `0.875 GEN` total
-penalties, and `0.175 GEN` in the safety pool across four applications.
+application hash is exposed, so none is inferred. The historical case-4
+checkpoint returned `1.125 GEN` available, `0 GEN` locked, `0.875 GEN` total
+penalties, and `0.175 GEN` in the safety pool across four applications; the
+current five-application totals are recorded in the case-5 section below.
 
 One malformed evidence-freeze transaction was rejected before the corrected
 transaction. A direct read confirmed it made no state change; its hash and
 the read result are retained in `deploy/current-demo.json` for transparency.
 
+## Verified current case 5: final bounded ACCEPTED-window attempt
+
+`case-5` is the final authorized synthetic negligence run. It is a release
+fixture, not a real incident. The browser was prepared on the production
+deployment before consensus; the next usable state after submission was already
+FINALIZED, so this case is finality/accounting evidence only.
+
+- Commitment: `demo-final-accepted-window-20260914`
+- Classification/outcome: `NEGLIGENT_FAILURE` / `PARTIAL_SLASH`
+- Violated/alleged rules: `R1`, `R3`
+- Exposure: `0.25 GEN`; contract-determined penalty: `0.125 GEN` (`5000` bps)
+- Beneficiary/safety-pool split: `0.1 GEN` / `0.025 GEN`
+- Status: `PENALTY_APPLIED`, protocol `FINALIZED`
+- Canonical duty: Synthetic failover keeper duty for final ACCEPTED-window proof
+- Trigger/action: `scheduled-final-accepted-window` /
+  `maintenance-action-final-accepted-window`
+- Duty/dispute deadlines: `2026-09-16T00:00:00Z` /
+  `2026-09-17T00:00:00Z`
+- Commitment digest: `sha256:bb4a91a51dc4ec9127d20afab3e771846475c08144a37663f174ba133db93376`
+- Evidence: claimant `negligence-final-accepted-01` and operator
+  `operator-final-accepted-01`; both preserve party, type, approved domain,
+  SHA-256 hash, and rule metadata. The evidence body is the public synthetic
+  fixture at [negligent-failure.txt](https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt).
+
+### Case 5 receipts and accounting
+
+| Action | Finalized transaction |
+| --- | --- |
+| Create commitment | `0xea214370bb18e50f2e7052dd6db4b5e7fa4156f1e13598a155b1ec64819cffdd` |
+| Accept commitment | `0xaeed334d61e6f91e8027c74a1068029823050e8c00371b2934770a347b0efb6f` |
+| Open case | `0x2bf5718beaa41c5624811e45635b98ea940830a353580abe287918d23b1e1234` |
+| Operator response | `0xf9176d44b49bbaaa4b2bc658acc967285e12e4a7863b436de49a20f32736f82f` |
+| Freeze evidence / rules | `0xccfde07bcfa02010b0fcf363955ccd508e8352b46d15af6b936531b124b3d3d0` |
+| Adjudication | [`0xf9a3…06d2`](https://explorer-studio.genlayer.com/tx/0xf9a3bca4fd27533252a28cefed0f82aa1ae556b9c7bfcf509ce67b7129e906d2) |
+| Finality acknowledgement | [`0x5531…3d3d`](https://explorer-studio.genlayer.com/tx/0x5531989db9a2d133a970e5f94d2f5046fab37471c3f5326bffd10eba9e863d3d) |
+| Finality-triggered Vault application | [`0x23d9…c21f`](https://explorer-studio.genlayer.com/tx/0x23d99e6c3848f6bbd0d2e741100650b5c66f449265e32903e240dd453573c21f) |
+
+The adjudication receipt is FINALIZED with execution success and
+`MAJORITY_AGREE`. Both finality-triggered child receipts are FINALIZED. The
+Vault read confirms `applied: true` once, the canonical commitment digest, R1/R3,
+both claimant/operator citations, and the 0.1/0.025 GEN accounting split. The
+operator read confirms 1.0 GEN available, zero locked exposure, and zero active
+commitments after settlement. Two earlier malformed `open_case` attempts were
+rejected before case creation and are retained in `deploy/current-demo.json`.
+
 ## Appeal-window evidence
 
-The live console retained the exact adjudication hashes for case-3 and case-4,
-but each next usable browser view was already FINALIZED. The real MetaMask
-confirmation for case-4 was inspected and explicitly confirmed; when control
-returned, finality had completed. The prior case-1 and case-2 runs are also
-retained in the evidence index; case-2 reached the external-outage Appeal
-window before the browser connection reset. The UI release-after-ACCEPTED
+The live console retained the exact adjudication hash for case-5, but the next
+usable browser view was already FINALIZED. The UI release-after-ACCEPTED
 behavior remains covered by the workflow regression test. No enabled appeal
 control was captured in any bounded run, and the appeal button was never
 clicked.
@@ -276,6 +314,8 @@ enabled ACCEPTED appeal control until a future bounded run captures it.
 - [Finalized case capture](evidence/finalized-case-1.png): production console showing the finalized classification, penalty, citations, and actual Vault split.
 - [Finalized case-3 capture](evidence/case-3-finalized-no-appeal-window.png): the final bounded synthetic case showing finality, one-time Vault application, citation metadata, and accounting. It is not ACCEPTED-window proof.
 - [Finalized case-4 capture](evidence/case-4-finalized-no-appeal-window.png): the additional bounded case showing canonical facts, citations, deterministic accounting, and finality. It is not ACCEPTED-window proof.
+- [Case-5 ready-state capture](evidence/case-5-ready-before-consensus.png): production wallet-free case facts and evidence before consensus.
+- [Finalized case-5 capture](evidence/case-5-finalized.png): production console showing the finalized negligence result, finality, citation metadata, and one-time Vault split. It is not ACCEPTED-window proof.
 
 The captures are supporting artifacts, not substitutes for chain reads. No
 ACCEPTED-window capture or recording is available for any current case; leave
@@ -306,10 +346,10 @@ Court.
   integration result is historical; no integration suite was run in this pass.
 - GenVM lint and contract schema checks passed. The optional GenVM pyright
   check remains unavailable because `pyright` is not installed.
-- Current on-chain reads prove no penalty before finality for this case because
-  the application was triggered on `finalized`; direct tests prove replay
-  rejection and finality gating. No duplicate application attempt was sent in
-  production.
+- The pre-consensus case-5 read showed `READY_FOR_ADJUDICATION`, no penalty,
+  and `evidence_frozen: false`; the finalized read showed the application was
+  triggered on `finalized`. Direct tests prove replay rejection and finality
+  gating. No duplicate application attempt was sent in production.
 - No appeal was submitted and no Portal submission was made.
 
 ## Requirement status
@@ -317,16 +357,15 @@ Court.
 | Steward requirement | Status |
 | --- | --- |
 | Bind canonical duty, trigger, deadlines, expected action, parties, exposure, rulebook, digest, and alleged rules | Satisfied in fresh Court/Vault source and current finalized case read |
-| Bind fetched-evidence citations with party and rule metadata | Satisfied in fresh source and current finalized Court/Vault records, including both case-4 parties |
-| Retain an ACCEPTED adjudication and expose an appeal control before finality | Candidate UI retention/background-finality fix is verified by the rendered workflow test; candidate Vercel deployment and live enabled-control capture remain unverified |
-| Apply deterministic penalty only after finality and only once | Satisfied by current finalized receipts, `APPLIED_FINALIZED` read, accounting, and direct/integration tests |
+| Bind fetched-evidence citations with party and rule metadata | Satisfied in fresh source and current finalized Court/Vault records, including both case-5 parties |
+| Retain an ACCEPTED adjudication and expose an appeal control before finality | Production source and deployment are verified; the live case-5 run retained the hash but reached FINALIZED before an enabled control could be captured. The live proof remains unsatisfied. |
+| Apply deterministic penalty only after finality and only once | Satisfied by case-5 finalized receipts, `APPLIED_FINALIZED` read, one-time application, accounting, and direct tests |
 | Make public review wallet-free and easy to inspect | Satisfied; current case hash route, Explorer links, advanced metadata, and screenshots are public |
 
 ## Next exact action
 
-The exact remaining blockers are (1) link the existing SlashCourt Vercel
-project and verify production revision `3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`,
-then (2) use the one bounded synthetic attempt authorized in the release
-request to capture an ACCEPTED adjudication with its enabled appeal control
-before finality. Never click the appeal button. Until both proofs exist, keep
-the gate marked NO.
+No further transaction is authorized or required in this pass. The exact
+remaining submission blocker is a live ACCEPTED-window capture with the
+enabled appeal control. If another attempt is authorized later, keep it
+synthetic, capture the retained hash and enabled control immediately, and never
+click Appeal. Until that proof exists, keep the gate marked NO.

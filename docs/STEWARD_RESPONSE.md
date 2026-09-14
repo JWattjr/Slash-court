@@ -3,15 +3,13 @@
 Thank you. SlashCourt runs a fresh mutually bound StudioNet Court/Vault pair
 at `0x56e26ec256afe37199fe9845e039f5DEdd9e955a` and
 `0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7`. The deployed contract source is
-recorded at revision `cdaba784931d4cd4020bb66bebe795c22f47efa5`. The last
-verified production console is deployment `dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw`
-from frontend revision `6423dfb950468fd63f1c6f518fb3e85fb8fec82e`.
+recorded at revision `cdaba784931d4cd4020bb66bebe795c22f47efa5`. The verified
+production console is deployment `dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU` from
+frontend revision `c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376`; the browser root
+marker matched that exact revision.
 
-The appeal-workflow candidate is pushed at frontend revision
-`3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`, but its Vercel deployment is not
-claimed yet: the current checkout is not linked to the existing SlashCourt
-Vercel project. The candidate exposes a `data-source-revision` marker populated
-from Vercel's Git commit SHA for post-deployment verification.
+The appeal-workflow fix is therefore deployed, not merely a local candidate.
+The production alias is [slash-court.vercel.app](https://slash-court.vercel.app).
 
 Every adjudication rebinds the Vault's canonical duty, trigger, duty/dispute
 deadlines, expected action, parties, exposure, rulebook version, commitment
@@ -21,7 +19,7 @@ content hash, and relevant rules. The fresh live case proves this with
 `negligence-rc-01`, `CLAIMANT`, `slash-court.vercel.app`, the recorded SHA-256
 hash, and R1/R3 metadata in both Court and Vault records.
 
-The authorized synthetic case finalized as `NEGLIGENT_FAILURE` /
+The first authorized synthetic case finalized as `NEGLIGENT_FAILURE` /
 `PARTIAL_SLASH`. The adjudication is
 `0x003e75129584a8a044f86a50b79f1f34cc8e48de5c5ad91daeb52c47eed550c2`; the
 finality acknowledgement is
@@ -82,15 +80,30 @@ after case-4 shows `1.125 GEN` available, zero locked exposure, `0.875 GEN`
 total penalties, and `0.175 GEN` in the safety pool across four applications.
 No child application hash is exposed, so none is claimed.
 
+The final bounded synthetic capture attempt created case-5,
+`demo-final-accepted-window-20260914`, bound to
+`scheduled-final-accepted-window` / `maintenance-action-final-accepted-window`,
+with `0.25 GEN` exposure and alleged rules R1/R3. The finalized adjudication
+is
+`0xf9a3bca4fd27533252a28cefed0f82aa1ae556b9c7bfcf509ce67b7129e906d2`,
+`NEGLIGENT_FAILURE` / `PARTIAL_SLASH`, with a deterministic `0.125 GEN`
+penalty. The finality acknowledgement is
+`0x5531989db9a2d133a970e5f94d2f5046fab37471c3f5326bffd10eba9e863d3d`, and
+the finality-triggered Vault application is
+`0x23d99e6c3848f6bbd0d2e741100650b5c66f449265e32903e240dd453573c21f`.
+Both child receipts are FINALIZED. The Vault read preserves the canonical
+commitment digest, R1/R3, claimant citation `negligence-final-accepted-01`,
+operator citation `operator-final-accepted-01`, their party/type/domain/hash
+metadata, and applies `0.1 GEN` to the beneficiary plus `0.025 GEN` to the
+safety pool exactly once. The operator read shows `1.0 GEN` available and zero
+locked exposure.
+
 The console retains the exact adjudication hash after ACCEPTED and releases
-its busy state while finality continues in the background. Across four
-bounded runs, the eligibility/control capture was not completed before
-finality: the first eligibility read was unavailable for case-1, the browser
-connection reset during the case-2 Appeal window, and the next poll for the
-case-3 run observed FINALIZED. For case-4, the real MetaMask confirmation was
-inspected and explicitly confirmed, but the console was already FINALIZED
-when control returned. The appeal control was not captured enabled. No appeal
-was clicked or submitted. Historical predecessor cases
+its busy state while finality continues in the background. Across five bounded
+runs, the eligibility/control capture was not completed before finality: the
+earlier runs are retained as historical attempts, and case-5's next usable
+browser state was already FINALIZED. The appeal control was not captured
+enabled. No appeal was clicked or submitted. Historical predecessor cases
 remain clearly labelled synthetic and historical; they are not claimed as
 cases of the fresh deployment.
 
@@ -98,13 +111,14 @@ Checks: 14 frontend workflow tests, 43 direct contract tests, typecheck, lint,
 production build, `git diff --check`, GenVM lint, and schema checks passed. The
 rendered frontend regression covers immediate busy-state release after
 ACCEPTED, delayed eligibility recovery, exact hash targeting, unrelated
-transactions, and terminal finality. No integration suite or
-transaction-producing test was run in this final pass. The optional pyright
-check was unavailable because the binary is not installed.
+transactions, and terminal finality. The production deployment is READY and
+its source marker was verified in the browser. No integration suite or
+transaction-producing test was run as a test suite; the separately authorized
+case-5 live workflow is recorded above. The optional pyright check was
+unavailable because the binary is not installed.
 
-**Resubmit-ready: NO.** Exact blockers: verify the candidate Vercel deployment
-at revision `3aea5dbd1f42a473b9b8aa3c5f699ead579b8f0f`, then capture one
-bounded live ACCEPTED adjudication with the appeal control enabled before
-finality. The four finalized case attempts and their screenshots are not
-substitutes for that proof. No appeal was clicked or submitted, and no Portal
-submission was made.
+**Resubmit-ready: NO.** Exact blocker: the live case-5 attempt reached
+FINALIZED before an enabled ACCEPTED-window appeal control could be captured.
+The deployed source, finality-safe penalty, canonical duty, citations, and
+one-time accounting are verified, but the live appeal-window proof remains
+missing. No appeal was clicked or submitted, and no Portal submission was made.
