@@ -2,12 +2,18 @@
 
 ## Submission gate
 
-**Do not submit yet: RESUBMIT-READY = NO.** The hardened frontend is deployed
-and source-verified at revision `c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376`,
-with finalized current-deployment negligence and external-outage/no-slash
-proofs plus the final case-5 accounting proof. The live case-5 run retained its
-adjudication hash but reached finality before an enabled ACCEPTED-window appeal
-control could be captured. No appeal was submitted. See
+**Do not submit yet: RESUBMIT-READY = NO.** Verified on 2026-09-19:
+
+- The deployed Court and Vault source is byte-identical to `068ac47`.
+- Production runs `dpl_rWzPfcYssEurAPw1PmG1xNkECHF2`, created one minute
+  after `068ac47`. Its marker reads `local-candidate` because it was a CLI
+  deploy.
+- Seven finalized current cases prove canonical binding, citation metadata,
+  and one-time accounting.
+
+The newest case-7, adjudication `0x093fcb32…d170fcdd`, went from ACCEPTED to
+finality in about 30 seconds on 2026-09-14. No enabled ACCEPTED-window appeal
+control was captured in any run. No appeal was submitted. See
 [docs/DEMO_READINESS.md](DEMO_READINESS.md) for the evidence boundary.
 
 The optional demo-video field should remain blank.
@@ -39,9 +45,10 @@ Leave blank unless a polished recording is available.
 Visit [https://slash-court.vercel.app](https://slash-court.vercel.app). Confirm
 the header identifies Court `0x56e2…e955a` and Vault `0xb1fD…9Aa7`, StudioNet
 chain `61999`, rulebook v1, and the current deployment status. The current
-release contains five synthetic current cases. Inspect the root element's
-`data-source-revision` and confirm it equals
-`c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376`. If an RPC read
+release contains seven synthetic current cases. The root element's
+`data-source-revision` currently reads `local-candidate` because production was
+a CLI deploy of `068ac47`. The deployed contract source can be checked with
+`gen_getContractCode`. If an RPC read
 fails, the UI labels it unavailable or partial and keeps writes locked.
 
 ### 2. Open the current cases
@@ -110,7 +117,7 @@ five current cases: four negligence proofs and an excusable external outage.
 
 ## Expected verification outcome
 
-> The steward should see fresh Court `0x56e26ec256afe37199fe9845e039f5DEdd9e955a`, Vault `0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7`, rulebook v1, and five current synthetic cases. Case-1 shows a finalized 0.5 GEN negligence penalty; case-2 shows finalized R4 external outage with no slash; case-3 shows a finalized 0.25 GEN negligence penalty; case-4 and case-5 each show a finalized 0.125 GEN negligence penalty with a 0.1/0.025 beneficiary/safety split. Aggregate bond accounting is 1.0 GEN available, zero locked, 1.0 GEN penalties, and 0.2 GEN in the safety pool across five applications. Historical cases are labelled historical. The ACCEPTED appeal-window screenshot remains unverified.
+> The steward should see fresh Court `0x56e26ec256afe37199fe9845e039f5DEdd9e955a`, Vault `0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7`, rulebook v1, and seven current synthetic cases. Case-1 shows a finalized 0.5 GEN negligence penalty; case-2 shows finalized R4 external outage with no slash; case-3 shows a finalized 0.25 GEN negligence penalty; case-4 and case-5 each show a finalized 0.125 GEN negligence penalty with a 0.1/0.025 beneficiary/safety split; case-6 and case-7 each show a finalized 0.05 GEN negligence penalty with a 0.04/0.01 split. Aggregate bond accounting is 0.9 GEN available, zero locked, 1.1 GEN penalties, and 0.22 GEN in the safety pool across seven applications. Historical cases are labelled historical. The ACCEPTED appeal-window screenshot remains unverified.
 
 ## Contract links
 
@@ -125,7 +132,11 @@ five current cases: four negligence proofs and an excusable external outage.
 - **Current outage contrast:** [https://slash-court.vercel.app/#case/current/case-2](https://slash-court.vercel.app/#case/current/case-2)
 - **Additional bounded case:** [https://slash-court.vercel.app/#case/current/case-4](https://slash-court.vercel.app/#case/current/case-4)
 - **Final bounded case:** [https://slash-court.vercel.app/#case/current/case-5](https://slash-court.vercel.app/#case/current/case-5)
-- **Verified Vercel deployment:** [dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU](https://vercel.com/wattxs-projects/slash-court/FLyQqLt8AJkpJ5ecj7XMqpNAaPzU)
+- **Case-7 (steward appeal-window run):** [https://slash-court.vercel.app/#case/current/case-7](https://slash-court.vercel.app/#case/current/case-7)
+- **Case-7 adjudication:** [0x093fcb32c4c2d4a751ad0cdff969f89ac3d85974ff34d9971071d046d170fcdd](https://explorer-studio.genlayer.com/tx/0x093fcb32c4c2d4a751ad0cdff969f89ac3d85974ff34d9971071d046d170fcdd)
+- **Case-7 Vault application:** [0xc9237058af58cb64b03fb0393993e82b1e44db579d6048e1d4efb700c83a5a78](https://explorer-studio.genlayer.com/tx/0xc9237058af58cb64b03fb0393993e82b1e44db579d6048e1d4efb700c83a5a78)
+- **Current Vercel deployment:** [dpl_rWzPfcYssEurAPw1PmG1xNkECHF2](https://vercel.com/wattxs-projects/slash-court/rWzPfcYssEurAPw1PmG1xNkECHF2)
+- **Historical Vercel deployment (superseded):** [dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU](https://vercel.com/wattxs-projects/slash-court/FLyQqLt8AJkpJ5ecj7XMqpNAaPzU)
 - **Case-4 adjudication:** [https://explorer-studio.genlayer.com/tx/0x492d5254686ae2155465ac180b794f889ec5b17570ef1c4192df028b69fb1ede](https://explorer-studio.genlayer.com/tx/0x492d5254686ae2155465ac180b794f889ec5b17570ef1c4192df028b69fb1ede)
 - **Case-5 adjudication:** [https://explorer-studio.genlayer.com/tx/0xf9a3bca4fd27533252a28cefed0f82aa1ae556b9c7bfcf509ce67b7129e906d2](https://explorer-studio.genlayer.com/tx/0xf9a3bca4fd27533252a28cefed0f82aa1ae556b9c7bfcf509ce67b7129e906d2)
 - **Case-5 Vault application:** [https://explorer-studio.genlayer.com/tx/0x23d99e6c3848f6bbd0d2e741100650b5c66f449265e32903e240dd453573c21f](https://explorer-studio.genlayer.com/tx/0x23d99e6c3848f6bbd0d2e741100650b5c66f449265e32903e240dd453573c21f)
@@ -138,11 +149,11 @@ five current cases: four negligence proofs and an excusable external outage.
 
 | Requirement | Local implementation | Current evidence |
 | --- | --- | --- |
-| Canonical duty binding | `contracts/slash_court.py` and `contracts/operator_bond_vault.py` | Current Court/Vault reads for case-1 through case-5 carry the commitment digest and duty-bound application |
+| Canonical duty binding | `contracts/slash_court.py` and `contracts/operator_bond_vault.py` | Current Court/Vault reads for case-1 through case-7 carry the commitment digest and duty-bound application; case-7 shows the exact duty, trigger, deadlines, expected action, and R1/R3 |
 | Fetched citation metadata | `_authoritative_citation`, `_canonicalize_adjudication_result`, `_consensus_bound_result` | Current finalized records preserve evidence ID, party, type, domain, hash, and rule metadata; case-5 independently proves both parties |
-| Appealable ACCEPTED retention | `frontend/app/page.tsx`, `frontend/lib/slashcourt/client.ts`, `frontend/lib/slashcourt/transactions.ts` | Production revision `c9e97bd…` is verified and the rendered workflow test passes; the live enabled-control capture remains the only blocker |
-| Finality-safe one-time penalty | `acknowledge_adjudication_finalized` and `apply_resolution` | Five finalized applications; case-5 reads `APPLIED_FINALIZED`, both child receipts are FINALIZED, and aggregate penalties are 1.0 GEN |
-| Wallet-free public review | Case hash route, Explorer links, advanced metadata section | Production case-1 through case-5 links and public captures |
+| Appealable ACCEPTED retention | `frontend/app/page.tsx`, `frontend/lib/slashcourt/client.ts`, `frontend/lib/slashcourt/transactions.ts` | Production runs `068ac47`, supported by evidence as described above, and the rendered workflow test passes. No live capture of an enabled control exists across seven runs; this is the only blocker. |
+| Finality-safe one-time penalty | `acknowledge_adjudication_finalized` and `apply_resolution` | Seven finalized applications. Case-7 has one `apply_resolution`, created only after finality, and no retry. Aggregate penalties are 1.1 GEN |
+| Wallet-free public review | Case hash route, Explorer links, advanced metadata section | Production case-1 through case-7 links and public captures |
 
 ## Evidence links
 
@@ -155,17 +166,19 @@ five current cases: four negligence proofs and an excusable external outage.
 - No ACCEPTED-window capture or recording is available; do not present a finalized view as that proof.
 - [Full deployment and case record](../deploy/current-demo.json)
 - [Deployment provenance](../deploy/last-deployment.json)
-- [Verified production source revision](https://github.com/JWattjr/Slash-court/commit/c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376)
+- [Current source revision 068ac47](https://github.com/JWattjr/Slash-court/commit/068ac471bd365aee0a3c4a7a78ea334a90a7ed09)
+- [Historical production source revision c9e97bd](https://github.com/JWattjr/Slash-court/commit/c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376)
 
 ## Final check
 
 - Keep the YouTube field blank.
 - Confirm exact portal taxonomy before submitting.
-- Confirm current Court/Vault links open on StudioNet and the production
-  `data-source-revision` is visible in the DOM.
+- Confirm current Court/Vault links open on StudioNet. Note that the
+  production `data-source-revision` reads `local-candidate`.
+  Redeploy from Git if an exact SHA marker is required.
 - Keep all predecessor cases labelled historical and all fixtures labelled synthetic.
 - Do not claim an enabled ACCEPTED appeal control; it was not captured in any of
-  the five bounded runs.
+  the seven bounded runs.
 - Submit only after replacing the gate with **YES** following one bounded live
   ACCEPTED-window capture. Keep the YouTube field blank unless a polished
   recording exists.

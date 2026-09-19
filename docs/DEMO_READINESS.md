@@ -1,16 +1,18 @@
 # SlashCourt demo readiness and release verification
 
-Verified 2026-09-14 against the fresh StudioNet deployment, the production
-Vercel console at https://slash-court.vercel.app, and the bounded live case-5
-run. All incident records are synthetic.
+Re-verified 2026-09-19 against StudioNet RPC, the StudioNet explorer, and the
+production console at https://slash-court.vercel.app. All incident records are
+synthetic. Sections for cases 1–5 were first recorded 2026-09-14.
 
 ## Gate
 
-**Resubmit-ready: NO.** The hardened frontend is deployed and source-verified,
-and case-5 proves the current Court/Vault finality and accounting path. The
-remaining blocker is narrow: the live console reached finality before an
-enabled ACCEPTED-window appeal control could be captured. No appeal was
-submitted, and no finalized screenshot is presented as ACCEPTED proof.
+**Resubmit-ready: NO.** The deployed contracts are byte-identical to `068ac47`.
+Seven finalized current cases prove canonical binding, citation metadata,
+finality-gated penalties, and one-time accounting. The remaining blocker is
+narrow: no live capture exists of an enabled appeal control during ACCEPTED.
+The newest case-7 went from ACCEPTED to finality in about 30 seconds on
+2026-09-14. No appeal was submitted, and no finalized screenshot is presented
+as ACCEPTED proof.
 
 ## Current deployment
 
@@ -19,13 +21,19 @@ submitted, and no finalized screenshot is presented as ACCEPTED proof.
 - Vault: `0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7`
 - Rulebook: v1, hash `sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d`
 - Approved evidence domain: `slash-court.vercel.app`
-- Contract source revision: `cdaba784931d4cd4020bb66bebe795c22f47efa5`
-- Verified production frontend revision: `c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376`
-- Verified Vercel deployment: `dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU`
+- Contract source: `gen_getContractCode` returned source byte-identical to
+  `contracts/*.py` at `068ac471bd365aee0a3c4a7a78ea334a90a7ed09`. Hashes:
+  Court SHA-256 `e39b7c25…6bba`, Vault `2c51484e…54b3`. The contracts are
+  unchanged since `cdaba784931d4cd4020bb66bebe795c22f47efa5`.
+- Production frontend: `dpl_rWzPfcYssEurAPw1PmG1xNkECHF2` (READY), created
+  2026-09-14T20:14:20Z, one minute after commit `068ac47`.
 - Deployment alias: [slash-court.vercel.app](https://slash-court.vercel.app)
-- Vercel preview: [slash-court-8i1shn6p0-wattxs-projects.vercel.app](https://slash-court-8i1shn6p0-wattxs-projects.vercel.app)
-- Browser verification: the root `data-source-revision` matched the exact
-  deployed revision above; Vercel status was `READY`.
+- Revision marker: this was a CLI deploy, so `data-source-revision` reads
+  `local-candidate`. The live bundle does contain the `068ac47` StudioNet
+  appeal fallback. The revision is supported by evidence but not proven
+  cryptographically.
+- Historical, superseded: `dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU` at
+  `c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376`.
 
 The deployment record is [deploy/last-deployment.json](../deploy/last-deployment.json).
 The full case and historical evidence index is
@@ -297,13 +305,50 @@ operator read confirms 1.0 GEN available, zero locked exposure, and zero active
 commitments after settlement. Two earlier malformed `open_case` attempts were
 rejected before case creation and are retained in `deploy/current-demo.json`.
 
+## Verified current cases 6 and 7 (read 2026-09-19)
+
+| | Case-6 | Case-7 |
+| --- | --- | --- |
+| Commitment | `demo-accepted-window-final-20260914-v4` | `demo-steward-appeal-proof-v2-20260914` |
+| Trigger / action | `scheduled-accepted-window-v4` / `maintenance-action-accepted-window-v4` | `scheduled-steward-appeal-proof-v2` / `maintenance-action-steward-proof-v2` |
+| Deadlines | duty 2026-09-20T00:00Z, dispute 2026-09-21T00:00Z | duty 2026-09-20T00:00Z, dispute 2026-09-21T00:00Z |
+| Exposure / rules | 0.1 GEN, alleged R1/R3 | 0.1 GEN, alleged R1/R3 |
+| Citations | `negligence-accepted-window-v4` (CLAIMANT, R1/R3), `operator-accepted-window-v4` (OPERATOR, R3) | `claimant-steward-appeal-v2` (CLAIMANT, R1/R3), `operator-steward-appeal-v2` (OPERATOR, R3) |
+| Adjudication | [`0xffbcda1e…536e9ce4`](https://explorer-studio.genlayer.com/tx/0xffbcda1eebf887aa06621245dffb511370c334d2749953b7d0eceb39536e9ce4) | [`0x093fcb32…d170fcdd`](https://explorer-studio.genlayer.com/tx/0x093fcb32c4c2d4a751ad0cdff969f89ac3d85974ff34d9971071d046d170fcdd) |
+| Finality ack | [`0x80794219…a39c2544`](https://explorer-studio.genlayer.com/tx/0x807942190ee29cf46efa6f48ea91065b02ef288a241f7b6d424eca5ca39c2544) | [`0x03cebc88…2ca0166d`](https://explorer-studio.genlayer.com/tx/0x03cebc88875814bb3b487eaba3890b603e5fa16507b7536bba16bc3b2ca0166d) |
+| Vault application | [`0xe90f1f13…d175147a`](https://explorer-studio.genlayer.com/tx/0xe90f1f1376d25b55ae332a1808dbb6dda8c3e285062855fc48f0d872d175147a) | [`0xc9237058…c83a5a78`](https://explorer-studio.genlayer.com/tx/0xc9237058af58cb64b03fb0393993e82b1e44db579d6048e1d4efb700c83a5a78) |
+| Outcome | `NEGLIGENT_FAILURE` / `PARTIAL_SLASH`, 0.05 GEN | `NEGLIGENT_FAILURE` / `PARTIAL_SLASH`, 0.05 GEN |
+| Split | 0.04 beneficiary / 0.01 safety pool, applied once | 0.04 beneficiary / 0.01 safety pool, applied once |
+
+Case-7 adjudication details:
+
+- Full hash:
+  `0x093fcb32c4c2d4a751ad0cdff969f89ac3d85974ff34d9971071d046d170fcdd`
+- Calldata: `adjudicate_case("case-7")`
+- Consensus: 5 validators, `MAJORITY_AGREE`, `appealed: false`
+- Timeline on 2026-09-14: created 20:29:16Z, ACCEPTED 20:29:44.903Z,
+  finality-triggered children created 20:30:15Z
+
+The Court explorer listing shows one `adjudicate_case` and one
+`apply_resolution` for each case, and no `retry_resolution_application`.
+The Vault `get_case_application` payload has the same commitment digest,
+alleged rules, and citations as the Court record.
+
+Aggregate reads after case-7:
+
+- Vault: 0.9 GEN total and available bond, 0 locked exposure, 1.1 GEN total
+  penalties, 0.22 GEN safety pool.
+- Court: 7 total cases, 7 applied.
+
 ## Appeal-window evidence
 
-The live console retained the exact adjudication hash for case-5, but the next
-usable browser view was already FINALIZED. The UI release-after-ACCEPTED
-behavior remains covered by the workflow regression test. No enabled appeal
-control was captured in any bounded run, and the appeal button was never
-clicked.
+No enabled appeal control was captured in any of the seven bounded runs, and
+the appeal button was never clicked. For case-7, ACCEPTED lasted about 30
+seconds before finality (2026-09-14 20:29:44Z → 20:30:15Z). The submitting
+session recorded no hash or control inside that window. The 2026-09-19 pass
+found the case already FINALIZED. The UI release-after-ACCEPTED behavior
+remains covered only by the workflow regression test, which is local evidence
+and not live proof.
 
 This is recorded as `MISSED` in `deploy/current-demo.json`. Do not claim an
 enabled ACCEPTED appeal control until a future bounded run captures it.
@@ -338,6 +383,15 @@ Court.
 
 ## Checks completed
 
+Re-run at `068ac47` on 2026-09-19:
+
+- Passed: 16 frontend tests, 43 direct contract tests, typecheck/lint
+  (`tsc --noEmit`), production build, and `git diff --check`.
+- GenVM lint and schema checks were not re-run (`genvm-lint` is not
+  installed). No integration or transaction-producing tests were run.
+
+Earlier record (2026-09-14):
+
 - 14 frontend workflow tests passed, including the rendered appeal-action
   regression, exact hash targeting, reload recovery, fail-closed reads, and
   terminal ineligibility.
@@ -358,11 +412,16 @@ Court.
 | --- | --- |
 | Bind canonical duty, trigger, deadlines, expected action, parties, exposure, rulebook, digest, and alleged rules | Satisfied in fresh Court/Vault source and current finalized case read |
 | Bind fetched-evidence citations with party and rule metadata | Satisfied in fresh source and current finalized Court/Vault records, including both case-5 parties |
-| Retain an ACCEPTED adjudication and expose an appeal control before finality | Production source and deployment are verified; the live case-5 run retained the hash but reached FINALIZED before an enabled control could be captured. The live proof remains unsatisfied. |
+| Retain an ACCEPTED adjudication and expose an appeal control before finality | Implemented and covered by the local regression test. No live capture exists: cases 1–7 all finalized without a capture of an enabled control. For case-7 the window was about 30 s. **Not proven live.** |
 | Apply deterministic penalty only after finality and only once | Satisfied by case-5 finalized receipts, `APPLIED_FINALIZED` read, one-time application, accounting, and direct tests |
 | Make public review wallet-free and easy to inspect | Satisfied; current case hash route, Explorer links, advanced metadata, and screenshots are public |
 
 ## Next exact action
+
+Case-7 cannot be used any more because it is FINALIZED. A new synthetic case
+needs explicit authorization. A capture would have to happen within about 30
+seconds of ACCEPTED, so the browser must already be watching the case when
+the wallet confirmation completes.
 
 No further transaction is authorized or required in this pass. The exact
 remaining submission blocker is a live ACCEPTED-window capture with the

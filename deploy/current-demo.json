@@ -1,36 +1,57 @@
 {
   "network": "Genlayer Studio Network",
   "chainId": 61999,
-  "verifiedAt": "2026-09-14T18:44:13Z",
+  "verifiedAt": "2026-09-19T19:45:00Z",
   "slashCourtAddress": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
   "operatorBondVaultAddress": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
-  "contractSourceRevision": "cdaba784931d4cd4020bb66bebe795c22f47efa5",
-  "frontendSourceRevision": "c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376",
-  "frontendDeploymentId": "dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU",
-  "frontendSourceRevisionStatus": "VERIFIED_PRODUCTION_RELEASE",
-  "frontendCandidateSourceRevision": "c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376",
-  "frontendCandidateDeploymentStatus": "VERIFIED_PRODUCTION",
-  "frontendCandidateDeploymentId": "dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU",
+  "contractSourceRevision": "068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
+  "frontendSourceRevision": "068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
+  "frontendDeploymentId": "dpl_rWzPfcYssEurAPw1PmG1xNkECHF2",
+  "frontendSourceRevisionStatus": "PRODUCTION_CLI_DEPLOY_MARKER_LOCAL_CANDIDATE",
+  "frontendCandidateSourceRevision": "068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
+  "frontendCandidateDeploymentStatus": "PRODUCTION",
+  "frontendCandidateDeploymentId": "dpl_rWzPfcYssEurAPw1PmG1xNkECHF2",
   "frontendDeploymentUrl": "https://slash-court.vercel.app",
   "frontendPreviewDeploymentUrl": "https://slash-court-8i1shn6p0-wattxs-projects.vercel.app",
   "previousVerifiedFrontendRelease": {
-    "sourceRevision": "6423dfb950468fd63f1c6f518fb3e85fb8fec82e",
-    "deploymentId": "dpl_BfjU5sgnRCD7iBZYwxwHf4WKdiDw"
+    "sourceRevision": "c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376",
+    "deploymentId": "dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU",
+    "note": "Historical: superseded by dpl_rWzPfcYssEurAPw1PmG1xNkECHF2."
   },
   "rulebook": {
     "version": 1,
     "hash": "sha256:348b2debe2571df5f0bf482ec15b1c78299b17b79c05797d91fbbd572fb1233d"
   },
-  "approvedEvidenceDomains": ["slash-court.vercel.app"],
+  "approvedEvidenceDomains": [
+    "slash-court.vercel.app"
+  ],
   "evidenceNote": "All incident evidence is explicitly synthetic. The current cases, adjudications, Court-to-Vault messages, and Vault applications are real finalized StudioNet transactions. This is demo bond accounting, not real TVL or native validator stake.",
-  "caseIndexNote": "This fresh mutually bound deployment contains five current synthetic cases: case-1 is the verified negligence example, case-2 is the verified R4 external-outage/no-slash contrast, and case-3/case-4/case-5 are bounded negligence attempts used to test the ACCEPTED-window workflow. The predecessor deployments retain the misconduct and insufficient-evidence examples and are labelled historical in the console.",
+  "caseIndexNote": "This deployment contains seven synthetic cases: case-1 negligence, case-2 R4 external-outage/no-slash contrast, and case-3 through case-7 bounded negligence runs used to attempt an ACCEPTED-window appeal-control capture. All seven are FINALIZED and APPLIED_FINALIZED. Predecessor deployments are historical.",
   "deploymentTransactions": [
-    {"label": "1/7 Operator Bond Vault", "hash": "0x8a438d6bdabe02447c3e318f4761fe3d41cbfde41a20b0e0a42032b609bff00f"},
-    {"label": "2/7 SlashCourt", "hash": "0x4a51e10ba44a29b7b9a81e7ee4d20538c2bd7f8a6a86a4fb22ecf91c40fffc88"},
-    {"label": "3/7 Bind vault to Court", "hash": "0x0f9b4a8bcadb5f82eb11127defc8682da5bf8a753a9eb2004aadcd4c3af46007"},
-    {"label": "4/7 Bind Court to Vault", "hash": "0x9afa99ff5ad0415d3d4f9b1829d548705281a0f60f0ae5fb511a42cea082b318"},
-    {"label": "5/7 Publish immutable rulebook v1", "hash": "0x4e7aba1894f3d857ae5ccf7e467ab18c8571c4b2896dbc6dbb4c51d4b0ea0e08"},
-    {"label": "6/7 Configure evidence domains", "hash": "0x819a3dd53ce34db197e239532617a1a741704075da127f1a956ad5191eb5bbb9"}
+    {
+      "label": "1/7 Operator Bond Vault",
+      "hash": "0x8a438d6bdabe02447c3e318f4761fe3d41cbfde41a20b0e0a42032b609bff00f"
+    },
+    {
+      "label": "2/7 SlashCourt",
+      "hash": "0x4a51e10ba44a29b7b9a81e7ee4d20538c2bd7f8a6a86a4fb22ecf91c40fffc88"
+    },
+    {
+      "label": "3/7 Bind vault to Court",
+      "hash": "0x0f9b4a8bcadb5f82eb11127defc8682da5bf8a753a9eb2004aadcd4c3af46007"
+    },
+    {
+      "label": "4/7 Bind Court to Vault",
+      "hash": "0x9afa99ff5ad0415d3d4f9b1829d548705281a0f60f0ae5fb511a42cea082b318"
+    },
+    {
+      "label": "5/7 Publish immutable rulebook v1",
+      "hash": "0x4e7aba1894f3d857ae5ccf7e467ab18c8571c4b2896dbc6dbb4c51d4b0ea0e08"
+    },
+    {
+      "label": "6/7 Configure evidence domains",
+      "hash": "0x819a3dd53ce34db197e239532617a1a741704075da127f1a956ad5191eb5bbb9"
+    }
   ],
   "cases": [
     {
@@ -38,8 +59,14 @@
       "commitmentId": "demo-negligence-rc-20260913",
       "classification": "NEGLIGENT_FAILURE",
       "outcome": "PARTIAL_SLASH",
-      "allegedRuleIds": ["R1", "R3"],
-      "violatedRuleIds": ["R1", "R3"],
+      "allegedRuleIds": [
+        "R1",
+        "R3"
+      ],
+      "violatedRuleIds": [
+        "R1",
+        "R3"
+      ],
       "penaltyBps": 5000,
       "penaltyWei": "500000000000000000",
       "beneficiaryAwardWei": "400000000000000000",
@@ -67,7 +94,10 @@
           "submissionParty": "CLAIMANT",
           "sourceDomain": "slash-court.vercel.app",
           "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
-          "relevantRuleIds": ["R1", "R3"],
+          "relevantRuleIds": [
+            "R1",
+            "R3"
+          ],
           "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
         }
       ],
@@ -88,9 +118,14 @@
       "commitmentId": "demo-appeal-window-outage-rc-20260913",
       "classification": "EXTERNAL_OUTAGE",
       "outcome": "NO_SLASH",
-      "allegedRuleIds": ["R1", "R4"],
+      "allegedRuleIds": [
+        "R1",
+        "R4"
+      ],
       "violatedRuleIds": [],
-      "supportedExemptions": ["R4"],
+      "supportedExemptions": [
+        "R4"
+      ],
       "penaltyBps": 0,
       "penaltyWei": "0",
       "beneficiaryAwardWei": "0",
@@ -118,7 +153,10 @@
           "submissionParty": "CLAIMANT",
           "sourceDomain": "slash-court.vercel.app",
           "contentHash": "sha256:fbec80b52824fa1f69220403343462e0db60a4defe1d475105dcdaec1f82a97b",
-          "relevantRuleIds": ["R1", "R4"],
+          "relevantRuleIds": [
+            "R1",
+            "R4"
+          ],
           "url": "https://slash-court.vercel.app/evidence-fixtures/external-outage.txt"
         },
         {
@@ -127,7 +165,10 @@
           "submissionParty": "OPERATOR",
           "sourceDomain": "slash-court.vercel.app",
           "contentHash": "sha256:fbec80b52824fa1f69220403343462e0db60a4defe1d475105dcdaec1f82a97b",
-          "relevantRuleIds": ["R1", "R4"],
+          "relevantRuleIds": [
+            "R1",
+            "R4"
+          ],
           "url": "https://slash-court.vercel.app/evidence-fixtures/external-outage.txt"
         }
       ],
@@ -154,8 +195,14 @@
       "commitmentId": "demo-appeal-window-negligence-rc-20260914",
       "classification": "NEGLIGENT_FAILURE",
       "outcome": "PARTIAL_SLASH",
-      "allegedRuleIds": ["R1", "R3"],
-      "violatedRuleIds": ["R1", "R3"],
+      "allegedRuleIds": [
+        "R1",
+        "R3"
+      ],
+      "violatedRuleIds": [
+        "R1",
+        "R3"
+      ],
       "penaltyBps": 5000,
       "penaltyWei": "250000000000000000",
       "beneficiaryAwardWei": "200000000000000000",
@@ -183,7 +230,10 @@
           "submissionParty": "CLAIMANT",
           "sourceDomain": "slash-court.vercel.app",
           "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
-          "relevantRuleIds": ["R1", "R3"],
+          "relevantRuleIds": [
+            "R1",
+            "R3"
+          ],
           "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
         },
         {
@@ -192,7 +242,9 @@
           "submissionParty": "OPERATOR",
           "sourceDomain": "slash-court.vercel.app",
           "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
-          "relevantRuleIds": ["R3"],
+          "relevantRuleIds": [
+            "R3"
+          ],
           "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
         }
       ],
@@ -226,8 +278,14 @@
       "commitmentId": "demo-appeal-capture-negligence-20260914",
       "classification": "NEGLIGENT_FAILURE",
       "outcome": "PARTIAL_SLASH",
-      "allegedRuleIds": ["R1", "R3"],
-      "violatedRuleIds": ["R1", "R3"],
+      "allegedRuleIds": [
+        "R1",
+        "R3"
+      ],
+      "violatedRuleIds": [
+        "R1",
+        "R3"
+      ],
       "penaltyBps": 5000,
       "penaltyWei": "125000000000000000",
       "beneficiaryAwardWei": "100000000000000000",
@@ -255,7 +313,10 @@
           "submissionParty": "CLAIMANT",
           "sourceDomain": "slash-court.vercel.app",
           "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
-          "relevantRuleIds": ["R1", "R3"],
+          "relevantRuleIds": [
+            "R1",
+            "R3"
+          ],
           "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
         },
         {
@@ -264,7 +325,9 @@
           "submissionParty": "OPERATOR",
           "sourceDomain": "slash-court.vercel.app",
           "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
-          "relevantRuleIds": ["R3"],
+          "relevantRuleIds": [
+            "R3"
+          ],
           "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
         }
       ],
@@ -300,8 +363,14 @@
       "commitmentId": "demo-final-accepted-window-20260914",
       "classification": "NEGLIGENT_FAILURE",
       "outcome": "PARTIAL_SLASH",
-      "allegedRuleIds": ["R1", "R3"],
-      "violatedRuleIds": ["R1", "R3"],
+      "allegedRuleIds": [
+        "R1",
+        "R3"
+      ],
+      "violatedRuleIds": [
+        "R1",
+        "R3"
+      ],
       "penaltyBps": 5000,
       "penaltyWei": "125000000000000000",
       "beneficiaryAwardWei": "100000000000000000",
@@ -329,7 +398,10 @@
           "submissionParty": "CLAIMANT",
           "sourceDomain": "slash-court.vercel.app",
           "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
-          "relevantRuleIds": ["R1", "R3"],
+          "relevantRuleIds": [
+            "R1",
+            "R3"
+          ],
           "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
         },
         {
@@ -338,7 +410,9 @@
           "submissionParty": "OPERATOR",
           "sourceDomain": "slash-court.vercel.app",
           "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
-          "relevantRuleIds": ["R3"],
+          "relevantRuleIds": [
+            "R3"
+          ],
           "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
         }
       ],
@@ -384,6 +458,177 @@
       "readyScreenshot": "docs/evidence/case-5-ready-before-consensus.png",
       "finalizedScreenshot": "docs/evidence/case-5-finalized.png",
       "verificationNote": "Direct StudioNet reads confirmed status READY_FOR_ADJUDICATION before consensus, then PENALTY_APPLIED with network_status FINALIZED, adjudication_finalized true, and evidence_frozen true. The finalized adjudication receipt has status code 7, execution success, and MAJORITY_AGREE. Both finality-triggered Vault child receipts are FINALIZED; the apply_resolution child preserves the canonical commitment digest, alleged R1/R3 rules, claimant/operator citation metadata, and applies exactly once. The operator read shows 1.0 GEN available, zero locked exposure, and zero active commitments after the 0.125 GEN penalty. All evidence is synthetic."
+    },
+    {
+      "caseId": "case-6",
+      "commitmentId": "demo-accepted-window-final-20260914-v4",
+      "classification": "NEGLIGENT_FAILURE",
+      "outcome": "PARTIAL_SLASH",
+      "allegedRuleIds": [
+        "R1",
+        "R3"
+      ],
+      "violatedRuleIds": [
+        "R1",
+        "R3"
+      ],
+      "penaltyBps": 5000,
+      "penaltyWei": "50000000000000000",
+      "beneficiaryAwardWei": "40000000000000000",
+      "safetyPoolWei": "10000000000000000",
+      "status": "PENALTY_APPLIED",
+      "networkStatus": "FINALIZED",
+      "applicationStatus": "APPLIED_FINALIZED",
+      "adjudicationFinalized": true,
+      "canonicalCommitment": {
+        "duty": "Synthetic keeper duty for ACCEPTED appeal-window capture v4",
+        "dutyTrigger": "scheduled-accepted-window-v4",
+        "dutyDeadline": "2026-09-20T00:00:00Z",
+        "disputeDeadline": "2026-09-21T00:00:00Z",
+        "expectedActionId": "maintenance-action-accepted-window-v4",
+        "commitmentDigest": "sha256:c35af4f1259827558bc98ae26bbfdd26462d46f0d8fbf1badceaedb085ead0d0",
+        "operator": "0xdB433ff614bDD1ecE21Aa97221C3E0a7ecf79c92",
+        "beneficiary": "0x2C8EB5dB1105A85BE66BadafeD88D10cF393CDD8",
+        "lockedExposureWei": "100000000000000000",
+        "rulebookVersion": 1
+      },
+      "evidenceCitations": [
+        {
+          "evidenceId": "negligence-accepted-window-v4",
+          "evidenceType": "PUBLIC_STATUS_REPORT",
+          "submissionParty": "CLAIMANT",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
+          "relevantRuleIds": [
+            "R1",
+            "R3"
+          ],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
+        },
+        {
+          "evidenceId": "operator-accepted-window-v4",
+          "evidenceType": "OPERATOR_STATUS_REPORT",
+          "submissionParty": "OPERATOR",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
+          "relevantRuleIds": [
+            "R3"
+          ],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
+        }
+      ],
+      "openCaseTransaction": "0x71beec67a1cdc480acfabe9e6ebb4be958331237d4ea0d29c60c2100d3f1aa14",
+      "bindCaseTransaction": "0xfd252e28dbdc9e9817ee6a4c2c9f8bd0273b0540c7002540f61bdfeb2bf63cdb",
+      "responseTransaction": "0xd59b0356c4bd2269d51fc0f4d355004435ad8f1fe0714ebe5cd9a5cddf065bec",
+      "readyTransaction": "0x4d765e2e53ed69d3742ef0a2fd364676e65c9d1768be1a8a83fdcf08e9f897e6",
+      "adjudicationTransaction": "0xffbcda1eebf887aa06621245dffb511370c334d2749953b7d0eceb39536e9ce4",
+      "adjudicationReceiptStatus": "FINALIZED",
+      "finalityAcknowledgementTransaction": "0x807942190ee29cf46efa6f48ea91065b02ef288a241f7b6d424eca5ca39c2544",
+      "applicationTransaction": "0xe90f1f1376d25b55ae332a1808dbb6dda8c3e285062855fc48f0d872d175147a",
+      "applicationReceiptStatus": "FINALIZED",
+      "acceptedWindowAttempt": {
+        "status": "MISSED",
+        "appealControlEnabled": false,
+        "appealSubmitted": false,
+        "reason": "Recorded retroactively from chain data on 2026-09-19. No ACCEPTED-window capture exists for this case."
+      },
+      "verificationNote": "2026-09-19 direct reads: Court get_case shows PENALTY_APPLIED, FINALIZED, adjudication_finalized true, the canonical commitment, and both party/rule-bound citations. Vault get_case_application shows applied=true, 0.05 GEN penalty, 0.04 GEN beneficiary, and 0.01 GEN safety pool. Hashes are from the StudioNet explorer listing for the Court."
+    },
+    {
+      "caseId": "case-7",
+      "commitmentId": "demo-steward-appeal-proof-v2-20260914",
+      "classification": "NEGLIGENT_FAILURE",
+      "outcome": "PARTIAL_SLASH",
+      "allegedRuleIds": [
+        "R1",
+        "R3"
+      ],
+      "violatedRuleIds": [
+        "R1",
+        "R3"
+      ],
+      "penaltyBps": 5000,
+      "penaltyWei": "50000000000000000",
+      "beneficiaryAwardWei": "40000000000000000",
+      "safetyPoolWei": "10000000000000000",
+      "status": "PENALTY_APPLIED",
+      "networkStatus": "FINALIZED",
+      "applicationStatus": "APPLIED_FINALIZED",
+      "adjudicationFinalized": true,
+      "canonicalCommitment": {
+        "duty": "Synthetic keeper duty for steward appeal-window proof v2",
+        "dutyTrigger": "scheduled-steward-appeal-proof-v2",
+        "dutyDeadline": "2026-09-20T00:00:00Z",
+        "disputeDeadline": "2026-09-21T00:00:00Z",
+        "expectedActionId": "maintenance-action-steward-proof-v2",
+        "commitmentDigest": "sha256:66e56ebd739a6261ccc6a9b2fb9a2f43e0431bc65afeacde6bdd7d8d189bcded",
+        "operator": "0xdB433ff614bDD1ecE21Aa97221C3E0a7ecf79c92",
+        "beneficiary": "0x2C8EB5dB1105A85BE66BadafeD88D10cF393CDD8",
+        "lockedExposureWei": "100000000000000000",
+        "rulebookVersion": 1
+      },
+      "evidenceCitations": [
+        {
+          "evidenceId": "claimant-steward-appeal-v2",
+          "evidenceType": "PUBLIC_STATUS_REPORT",
+          "submissionParty": "CLAIMANT",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
+          "relevantRuleIds": [
+            "R1",
+            "R3"
+          ],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
+        },
+        {
+          "evidenceId": "operator-steward-appeal-v2",
+          "evidenceType": "OPERATOR_STATUS_REPORT",
+          "submissionParty": "OPERATOR",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
+          "relevantRuleIds": [
+            "R3"
+          ],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
+        }
+      ],
+      "createCommitmentTransaction": "0xd229d5f12722b717c5c0adcc2beead4acbff4c6efedf296ecd2c35ffe9f2c577",
+      "acceptCommitmentTransaction": "0x7c1b9261cce534b5545174c721a82a98baf756c15ba70250a8fd2ee2195295cf",
+      "openCaseTransaction": "0x2ed2486f417d9d8d5c2580a17ffed94d8c989cf8b41d509528691b61568adfec",
+      "bindCaseTransaction": "0xd0418a404599f2805a474902efe5dcd18c4c49b766f650fe402baf92486d0aa3",
+      "responseTransaction": "0x3480ad4de3517b3f0e17543a27cf3489df084588c607cabb338eba6d92c04e68",
+      "readyTransaction": "0x8c80ffe9ffe0df1a513df870e2190dff6f7c2ed641ac263f60fb8c00497a80f4",
+      "adjudicationTransaction": "0x093fcb32c4c2d4a751ad0cdff969f89ac3d85974ff34d9971071d046d170fcdd",
+      "adjudicationExplorer": "https://explorer-studio.genlayer.com/tx/0x093fcb32c4c2d4a751ad0cdff969f89ac3d85974ff34d9971071d046d170fcdd",
+      "adjudicationCalldata": "adjudicate_case(\"case-7\")",
+      "adjudicationSender": "0x1eE3B827907429E5dF3DB7282446b6E065ff6199",
+      "adjudicationReceiptStatus": "FINALIZED",
+      "adjudicationConsensusResult": "MAJORITY_AGREE",
+      "adjudicationValidators": 5,
+      "adjudicationAppealed": false,
+      "adjudicationTimeline": {
+        "createdAt": "2026-09-14T20:29:16.976Z",
+        "pending": "2026-09-14T20:29:20.298Z",
+        "accepted": "2026-09-14T20:29:44.903Z",
+        "finalityTriggeredChildrenCreated": "2026-09-14T20:30:15.163Z",
+        "observedAppealWindowSeconds": 30
+      },
+      "finalityAcknowledgementTransaction": "0x03cebc88875814bb3b487eaba3890b603e5fa16507b7536bba16bc3b2ca0166d",
+      "applicationTransaction": "0xc9237058af58cb64b03fb0393993e82b1e44db579d6048e1d4efb700c83a5a78",
+      "applicationReceiptStatus": "FINALIZED",
+      "acknowledgementCallback": "0x7332454117f60343a1ccc8a6cac65278a0b261278bbb09fd167b4b39b4a189d9",
+      "applicationCallbacks": [
+        "0xaae3afbe695000e543362d188a11d0e2904de741965d589851ebd263e24a55cf",
+        "0x2ebe840987311e05d9dbcf60068e048d8aed22caf522b9b3ef4b11de6dbd90a2"
+      ],
+      "acceptedWindowAttempt": {
+        "status": "MISSED",
+        "hashRetained": "UNKNOWN",
+        "appealControlEnabled": false,
+        "appealSubmitted": false,
+        "reason": "The adjudication was submitted 2026-09-14T20:29:16Z, reached ACCEPTED at 20:29:44Z, and its finality-triggered children were created at 20:30:15Z. The submitting session saw no hash and no enabled appeal control; no ACCEPTED-window screenshot exists. The 2026-09-19 pass found the case already FINALIZED and did not reuse any finalized view as ACCEPTED proof."
+      },
+      "verificationNote": "2026-09-19 direct StudioNet reads: Court get_case shows PENALTY_APPLIED / FINALIZED / adjudication_finalized true / evidence_frozen true, the canonical commitment above, alleged R1/R3, violated R1/R3, and both citations with party, type, domain, hash, and rule metadata. Vault get_case_application shows applied=true with the same commitment digest, alleged rules, and citations; 0.05 GEN penalty = 0.1 GEN x 5000 bps; 0.04 GEN beneficiary (80%) + 0.01 GEN safety pool. Vault get_commitment shows RESOLVED. The Court explorer listing contains exactly one adjudicate_case and one apply_resolution for case-7 and no retry_resolution_application; apply_resolution was created only after the adjudication finalized."
     }
   ],
   "acceptedWindowProof": {
@@ -430,44 +675,59 @@
         "appealControlEnabled": false,
         "appealSubmitted": false,
         "reason": "The final authorized bounded capture reached the prepared live console, but the next usable browser state was already FINALIZED. The exact hash and finality-triggered Vault receipts were retained; no enabled ACCEPTED-window control was captured and no appeal was clicked."
+      },
+      {
+        "caseId": "case-6",
+        "adjudicationTransaction": "0xffbcda1eebf887aa06621245dffb511370c334d2749953b7d0eceb39536e9ce4",
+        "appealControlEnabled": false,
+        "appealSubmitted": false,
+        "reason": "Finalized with no ACCEPTED-window capture (recorded retroactively)."
+      },
+      {
+        "caseId": "case-7",
+        "adjudicationTransaction": "0x093fcb32c4c2d4a751ad0cdff969f89ac3d85974ff34d9971071d046d170fcdd",
+        "appealControlEnabled": false,
+        "appealSubmitted": false,
+        "reason": "ACCEPTED 20:29:44Z, finality children 20:30:15Z (about 30 s) on 2026-09-14; no capture was made. Found FINALIZED on 2026-09-19."
       }
     ],
-    "reason": "Five bounded synthetic attempts are now recorded, including the final case-5 run. The console retained the exact adjudication hash, but no live enabled appeal control was captured before finality; the ready and finalized screenshots are not presented as ACCEPTED-window proof."
+    "reason": "Seven bounded synthetic cases are recorded; none produced an ACCEPTED-window capture of an enabled appeal control. On StudioNet the observed ACCEPTED-to-finality window is about 30 seconds (case-7). No appeal was ever clicked or submitted, and no finalized screenshot is presented as ACCEPTED proof."
   },
   "releaseCandidateVerification": {
-    "sourceRevision": "c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376",
-    "sourceUrl": "https://github.com/JWattjr/Slash-court/commit/c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376",
-    "deploymentId": "dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU",
+    "sourceRevision": "068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
+    "sourceUrl": "https://github.com/JWattjr/Slash-court/commit/068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
+    "deploymentId": "dpl_rWzPfcYssEurAPw1PmG1xNkECHF2",
     "deploymentUrl": "https://slash-court.vercel.app",
     "deploymentStatus": "READY",
-    "buildIdentityMarker": "data-source-revision populated from VERCEL_GIT_COMMIT_SHA",
+    "buildIdentityMarker": "data-source-revision reads local-candidate (CLI deploy); 068ac47-only code confirmed in the live bundle",
     "automatedChecks": {
-      "frontendTests": 14,
+      "frontendTests": 16,
       "directContractTests": 43,
       "typecheck": "passed",
-      "lint": "passed",
+      "lint": "passed (tsc --noEmit)",
       "productionBuild": "passed",
       "gitDiffCheck": "passed",
-      "genvmLint": "passed",
-      "contractSchema": "passed"
+      "genvmLint": "not run on 2026-09-19 (genvm-lint not installed)",
+      "contractSchema": "not run on 2026-09-19",
+      "deployedContractSourceMatch": "byte-identical to HEAD"
     },
     "evidenceClass": "PRODUCTION_DEPLOYMENT_AND_FINALIZED_LIVE_CASE",
     "productionDeploymentVerified": true,
     "liveAttemptStarted": true,
-    "liveCaseId": "case-5",
-    "liveAdjudicationTransaction": "0xf9a3bca4fd27533252a28cefed0f82aa1ae556b9c7bfcf509ce67b7129e906d2",
+    "liveCaseId": "case-7",
+    "liveAdjudicationTransaction": "0x093fcb32c4c2d4a751ad0cdff969f89ac3d85974ff34d9971071d046d170fcdd",
     "acceptedWindowProof": "MISSED",
-    "note": "The production deployment at the exact source marker c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376 was verified in the browser. The candidate retains the exact ACCEPTED adjudication hash before background finality, retries eligibility serially, stops monitors on lifecycle changes, and exports a bounded diagnostic trace. The final bounded live case finalized before an enabled ACCEPTED-window appeal control could be captured; no appeal was clicked or submitted."
+    "note": "Checks re-run 2026-09-19 at 068ac47. Case-7 finalized on 2026-09-14 about 30 s after ACCEPTED; no enabled appeal control was captured. No appeal was clicked or submitted."
   },
   "vault": {
     "initialBondWei": "2000000000000000000",
-    "remainingOperatorBondWei": "1000000000000000000",
+    "remainingOperatorBondWei": "900000000000000000",
     "lockedExposureWei": "0",
-    "totalPenaltiesWei": "1000000000000000000",
-    "beneficiaryAwardsWei": "800000000000000000",
-    "safetyPoolWei": "200000000000000000",
-    "applicationCount": 5,
-    "readNote": "Direct StudioNet reads after case-5 finality returned 1.0 GEN available bond, 0 locked exposure, 1.0 GEN total penalties, 0.8 GEN beneficiary awards, and 0.2 GEN safety-pool balance across five applications. The case-5 operator read independently confirmed zero locked exposure and zero active commitments; the Vault application read confirmed applied=true once."
+    "totalPenaltiesWei": "1100000000000000000",
+    "beneficiaryAwardsWei": "880000000000000000",
+    "safetyPoolWei": "220000000000000000",
+    "applicationCount": 7,
+    "readNote": "Direct StudioNet reads on 2026-09-19: get_vault_statistics shows 0.9 GEN total/available bond, 0 locked exposure, 1.1 GEN total penalties, 0.22 GEN safety pool, and 1 operator; get_operator shows 7 resolved and 0 active commitments. This reconciles with 1.0 GEN after case-5 minus 0.05 GEN each for case-6 and case-7 (0.04 beneficiary + 0.01 safety pool each). Court get_statistics: 7 total, 7 applied, 6 negligent_failure, 1 external_outage."
   },
   "historical": {
     "predecessorCurrentDeployment": {
@@ -476,22 +736,109 @@
       "operatorBondVaultAddress": "0x5eAba41b27560505A45fD51a301f01f30832E7E4",
       "caseIndexNote": "Cases 1-3 were cancelled setup attempts; cases 4-5 were its canonical pair.",
       "cases": [
-        {"caseId": "case-4", "commitmentId": "demo-negligence-current-20260909", "classification": "NEGLIGENT_FAILURE", "outcome": "PARTIAL_SLASH", "allegedRuleIds": ["R1", "R3"], "penaltyWei": "500000000000000000", "beneficiaryAwardWei": "400000000000000000", "safetyPoolWei": "100000000000000000", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "responseTransaction": "0x091909c923387c8c702d77b65dbf3add0e2328fe41dfa95c754a9f7bb349eff4", "readyTransaction": "0x34d843338b681b17c1ff914834e2f18a02cf0fed96aaf7ad8887d14f72460ebd", "adjudicationTransaction": "0x4749fcc86e4e6bb07970ec3ff08f43ccb41bfebfa2531242ec51171c009844be", "applicationTransaction": "0x3695b16651c1666d55b51feefead47e5dc541cd3d3a3e404620581076819dd07"},
-        {"caseId": "case-5", "commitmentId": "demo-outage-current-20260909", "classification": "EXTERNAL_OUTAGE", "outcome": "NO_SLASH", "supportedExemptions": ["R4"], "allegedRuleIds": ["R1", "R4"], "penaltyWei": "0", "beneficiaryAwardWei": "0", "safetyPoolWei": "0", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "responseTransaction": "0x3292c615d4a8214e8ee76d5048189d719658d5b5aba087a5de55ce6ba3c53f50", "readyTransaction": "0x5da82f142ed2b542457deec38860081f60f2e5b034e02ce5aa8d17b32db9e160", "adjudicationTransaction": "0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d26c16d3ff4954b47cb5ff366", "applicationTransaction": "0x1f7e832d435be8f6d23066d3a68a5123fc58e7608ef37514036c50b5b191f396"}
+        {
+          "caseId": "case-4",
+          "commitmentId": "demo-negligence-current-20260909",
+          "classification": "NEGLIGENT_FAILURE",
+          "outcome": "PARTIAL_SLASH",
+          "allegedRuleIds": [
+            "R1",
+            "R3"
+          ],
+          "penaltyWei": "500000000000000000",
+          "beneficiaryAwardWei": "400000000000000000",
+          "safetyPoolWei": "100000000000000000",
+          "status": "PENALTY_APPLIED",
+          "applicationStatus": "APPLIED_FINALIZED",
+          "responseTransaction": "0x091909c923387c8c702d77b65dbf3add0e2328fe41dfa95c754a9f7bb349eff4",
+          "readyTransaction": "0x34d843338b681b17c1ff914834e2f18a02cf0fed96aaf7ad8887d14f72460ebd",
+          "adjudicationTransaction": "0x4749fcc86e4e6bb07970ec3ff08f43ccb41bfebfa2531242ec51171c009844be",
+          "applicationTransaction": "0x3695b16651c1666d55b51feefead47e5dc541cd3d3a3e404620581076819dd07"
+        },
+        {
+          "caseId": "case-5",
+          "commitmentId": "demo-outage-current-20260909",
+          "classification": "EXTERNAL_OUTAGE",
+          "outcome": "NO_SLASH",
+          "supportedExemptions": [
+            "R4"
+          ],
+          "allegedRuleIds": [
+            "R1",
+            "R4"
+          ],
+          "penaltyWei": "0",
+          "beneficiaryAwardWei": "0",
+          "safetyPoolWei": "0",
+          "status": "PENALTY_APPLIED",
+          "applicationStatus": "APPLIED_FINALIZED",
+          "responseTransaction": "0x3292c615d4a8214e8ee76d5048189d719658d5b5aba087a5de55ce6ba3c53f50",
+          "readyTransaction": "0x5da82f142ed2b542457deec38860081f60f2e5b034e02ce5aa8d17b32db9e160",
+          "adjudicationTransaction": "0x03b193ad13f8bee3f4dc855a5070c7a09c28f50d26c16d3ff4954b47cb5ff366",
+          "applicationTransaction": "0x1f7e832d435be8f6d23066d3a68a5123fc58e7608ef37514036c50b5b191f396"
+        }
       ],
-      "vault": {"initialBondWei": "2000000000000000000", "remainingOperatorBondWei": "1500000000000000000", "lockedExposureWei": "0", "totalPenaltiesWei": "500000000000000000", "beneficiaryAwardsWei": "400000000000000000", "safetyPoolWei": "100000000000000000"}
+      "vault": {
+        "initialBondWei": "2000000000000000000",
+        "remainingOperatorBondWei": "1500000000000000000",
+        "lockedExposureWei": "0",
+        "totalPenaltiesWei": "500000000000000000",
+        "beneficiaryAwardsWei": "400000000000000000",
+        "safetyPoolWei": "100000000000000000"
+      }
     },
     "predecessorFourCaseDemo": {
       "verifiedAt": "2026-09-07T07:53:02Z",
       "slashCourtAddress": "0x576Bef923bbDd6ACb6aA7b5D183FF277abeFbf8e",
       "operatorBondVaultAddress": "0x95E438A856c70a138824c37F937e0f436461625B",
       "cases": [
-        {"caseId": "case-1", "classification": "PROVABLE_MISCONDUCT", "outcome": "FULL_SLASH", "penaltyWei": "1000000000000000000", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "adjudicationTransaction": "0x690df6e61ba56a7aed60cfb5290969810d01bcac482b91c9928daedeff3f45e7"},
-        {"caseId": "case-2", "classification": "NEGLIGENT_FAILURE", "outcome": "PARTIAL_SLASH", "penaltyWei": "500000000000000000", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "adjudicationTransaction": "0x2fca7b681784f8281612b077dc2e2eb3c1dbdf8adc552d7f5014a1648480f19f"},
-        {"caseId": "case-3", "classification": "EXTERNAL_OUTAGE", "outcome": "NO_SLASH", "penaltyWei": "0", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "adjudicationTransaction": "0xcc9b9eb38a760491f401d16f66f2e8cda2986505e10d88d8827768062957b589"},
-        {"caseId": "case-4", "classification": "INSUFFICIENT_EVIDENCE", "outcome": "NO_SLASH", "penaltyWei": "0", "status": "PENALTY_APPLIED", "applicationStatus": "APPLIED_FINALIZED", "adjudicationTransaction": "0x52f11c2cbe1fef269be0e22d7892891395754e967066bed1453edc35002d4eb2"}
+        {
+          "caseId": "case-1",
+          "classification": "PROVABLE_MISCONDUCT",
+          "outcome": "FULL_SLASH",
+          "penaltyWei": "1000000000000000000",
+          "status": "PENALTY_APPLIED",
+          "applicationStatus": "APPLIED_FINALIZED",
+          "adjudicationTransaction": "0x690df6e61ba56a7aed60cfb5290969810d01bcac482b91c9928daedeff3f45e7"
+        },
+        {
+          "caseId": "case-2",
+          "classification": "NEGLIGENT_FAILURE",
+          "outcome": "PARTIAL_SLASH",
+          "penaltyWei": "500000000000000000",
+          "status": "PENALTY_APPLIED",
+          "applicationStatus": "APPLIED_FINALIZED",
+          "adjudicationTransaction": "0x2fca7b681784f8281612b077dc2e2eb3c1dbdf8adc552d7f5014a1648480f19f"
+        },
+        {
+          "caseId": "case-3",
+          "classification": "EXTERNAL_OUTAGE",
+          "outcome": "NO_SLASH",
+          "penaltyWei": "0",
+          "status": "PENALTY_APPLIED",
+          "applicationStatus": "APPLIED_FINALIZED",
+          "adjudicationTransaction": "0xcc9b9eb38a760491f401d16f66f2e8cda2986505e10d88d8827768062957b589"
+        },
+        {
+          "caseId": "case-4",
+          "classification": "INSUFFICIENT_EVIDENCE",
+          "outcome": "NO_SLASH",
+          "penaltyWei": "0",
+          "status": "PENALTY_APPLIED",
+          "applicationStatus": "APPLIED_FINALIZED",
+          "adjudicationTransaction": "0x52f11c2cbe1fef269be0e22d7892891395754e967066bed1453edc35002d4eb2"
+        }
       ],
-      "vault": {"initialBondWei": "4000000000000000000", "remainingOperatorBondWei": "2500000000000000000", "lockedExposureWei": "0", "totalPenaltiesWei": "1500000000000000000", "beneficiaryAwardsWei": "1200000000000000000", "safetyPoolWei": "300000000000000000"}
+      "vault": {
+        "initialBondWei": "4000000000000000000",
+        "remainingOperatorBondWei": "2500000000000000000",
+        "lockedExposureWei": "0",
+        "totalPenaltiesWei": "1500000000000000000",
+        "beneficiaryAwardsWei": "1200000000000000000",
+        "safetyPoolWei": "300000000000000000"
+      }
     }
-  }
+  },
+  "contractSourceVerification": "On 2026-09-19 gen_getContractCode for both addresses returned source byte-identical to contracts/slash_court.py (SHA-256 e39b7c25489bc3a54a83f40a6cc3f0219583e89d747274777eb21faaed616bba) and contracts/operator_bond_vault.py (SHA-256 2c51484e09c596c06f0264f98e5beb67e8c075fa02cc7024afb523f77e2554b3) at 068ac47. Contract files are unchanged since cdaba78.",
+  "frontendSourceRevisionNote": "Production alias slash-court.vercel.app resolves to dpl_rWzPfcYssEurAPw1PmG1xNkECHF2 (READY, created 2026-09-14T20:14:20Z, one minute after commit 068ac47). It was a CLI deploy, so the page's data-source-revision reads local-candidate rather than a Git SHA. The live bundle contains code introduced only in 068ac47 (the StudioNet appeal fallback). Revision attribution is evidenced, not cryptographically proven."
 }
