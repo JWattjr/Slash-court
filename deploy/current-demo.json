@@ -1,22 +1,22 @@
 {
   "network": "Genlayer Studio Network",
   "chainId": 61999,
-  "verifiedAt": "2026-09-19T19:45:00Z",
+  "verifiedAt": "2026-09-21T22:05:00Z",
   "slashCourtAddress": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
   "operatorBondVaultAddress": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
   "contractSourceRevision": "068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
-  "frontendSourceRevision": "068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
-  "frontendDeploymentId": "dpl_rWzPfcYssEurAPw1PmG1xNkECHF2",
-  "frontendSourceRevisionStatus": "PRODUCTION_CLI_DEPLOY_MARKER_LOCAL_CANDIDATE",
-  "frontendCandidateSourceRevision": "068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
-  "frontendCandidateDeploymentStatus": "PRODUCTION",
-  "frontendCandidateDeploymentId": "dpl_rWzPfcYssEurAPw1PmG1xNkECHF2",
+  "frontendSourceRevision": "f55f08379c436787f251fe1d11b998240bb48337",
+  "frontendDeploymentId": "dpl_9hjHjBeGb6PADjmNvDAotN9ynMGE",
+  "frontendSourceRevisionStatus": "VERIFIED_PRODUCTION_RELEASE",
+  "frontendCandidateSourceRevision": "f55f08379c436787f251fe1d11b998240bb48337",
+  "frontendCandidateDeploymentStatus": "VERIFIED_PRODUCTION",
+  "frontendCandidateDeploymentId": "dpl_9hjHjBeGb6PADjmNvDAotN9ynMGE",
   "frontendDeploymentUrl": "https://slash-court.vercel.app",
   "frontendPreviewDeploymentUrl": "https://slash-court-8i1shn6p0-wattxs-projects.vercel.app",
   "previousVerifiedFrontendRelease": {
-    "sourceRevision": "c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376",
-    "deploymentId": "dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU",
-    "note": "Historical: superseded by dpl_rWzPfcYssEurAPw1PmG1xNkECHF2."
+    "sourceRevision": "068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
+    "deploymentId": "dpl_rWzPfcYssEurAPw1PmG1xNkECHF2",
+    "note": "Historical: CLI deploy with local-candidate marker, superseded 2026-09-21 by dpl_9hjHjBeGb6PADjmNvDAotN9ynMGE."
   },
   "rulebook": {
     "version": 1,
@@ -26,7 +26,7 @@
     "slash-court.vercel.app"
   ],
   "evidenceNote": "All incident evidence is explicitly synthetic. The current cases, adjudications, Court-to-Vault messages, and Vault applications are real finalized StudioNet transactions. This is demo bond accounting, not real TVL or native validator stake.",
-  "caseIndexNote": "This deployment contains seven synthetic cases: case-1 negligence, case-2 R4 external-outage/no-slash contrast, and case-3 through case-7 bounded negligence runs used to attempt an ACCEPTED-window appeal-control capture. All seven are FINALIZED and APPLIED_FINALIZED. Predecessor deployments are historical.",
+  "caseIndexNote": "This deployment contains eight synthetic cases: case-1 negligence, case-2 R4 external-outage/no-slash contrast, case-3 through case-7 bounded negligence runs that missed the ACCEPTED-window capture, and case-8, whose enabled appeal control was captured inside the ACCEPTED window. All eight are FINALIZED and APPLIED_FINALIZED. Predecessor deployments are historical.",
   "deploymentTransactions": [
     {
       "label": "1/7 Operator Bond Vault",
@@ -629,12 +629,129 @@
         "reason": "The adjudication was submitted 2026-09-14T20:29:16Z, reached ACCEPTED at 20:29:44Z, and its finality-triggered children were created at 20:30:15Z. The submitting session saw no hash and no enabled appeal control; no ACCEPTED-window screenshot exists. The 2026-09-19 pass found the case already FINALIZED and did not reuse any finalized view as ACCEPTED proof."
       },
       "verificationNote": "2026-09-19 direct StudioNet reads: Court get_case shows PENALTY_APPLIED / FINALIZED / adjudication_finalized true / evidence_frozen true, the canonical commitment above, alleged R1/R3, violated R1/R3, and both citations with party, type, domain, hash, and rule metadata. Vault get_case_application shows applied=true with the same commitment digest, alleged rules, and citations; 0.05 GEN penalty = 0.1 GEN x 5000 bps; 0.04 GEN beneficiary (80%) + 0.01 GEN safety pool. Vault get_commitment shows RESOLVED. The Court explorer listing contains exactly one adjudicate_case and one apply_resolution for case-7 and no retry_resolution_application; apply_resolution was created only after the adjudication finalized."
+    },
+    {
+      "caseId": "case-8",
+      "commitmentId": "demo-steward-appeal-proof-v3-20260921",
+      "classification": "NEGLIGENT_FAILURE",
+      "outcome": "PARTIAL_SLASH",
+      "allegedRuleIds": [
+        "R1",
+        "R3"
+      ],
+      "violatedRuleIds": [
+        "R1",
+        "R3"
+      ],
+      "penaltyBps": 5000,
+      "penaltyWei": "50000000000000000",
+      "beneficiaryAwardWei": "40000000000000000",
+      "safetyPoolWei": "10000000000000000",
+      "status": "PENALTY_APPLIED",
+      "networkStatus": "FINALIZED",
+      "applicationStatus": "APPLIED_FINALIZED",
+      "adjudicationFinalized": true,
+      "canonicalCommitment": {
+        "duty": "Synthetic keeper duty for steward appeal-window proof v3",
+        "dutyTrigger": "scheduled-steward-appeal-proof-v3",
+        "dutyDeadline": "2026-09-24T00:00:00Z",
+        "disputeDeadline": "2026-09-25T00:00:00Z",
+        "expectedActionId": "maintenance-action-steward-proof-v3",
+        "commitmentDigest": "sha256:3acb6ad47c1e644c976784a2dd372d64c8f8aba64ba25801b24ca43ea75a1511",
+        "operator": "0xdB433ff614bDD1ecE21Aa97221C3E0a7ecf79c92",
+        "beneficiary": "0x2C8EB5dB1105A85BE66BadafeD88D10cF393CDD8",
+        "lockedExposureWei": "100000000000000000",
+        "rulebookVersion": 1
+      },
+      "evidenceCitations": [
+        {
+          "evidenceId": "claimant-steward-appeal-v3",
+          "evidenceType": "PUBLIC_STATUS_REPORT",
+          "submissionParty": "CLAIMANT",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
+          "relevantRuleIds": [
+            "R1",
+            "R3"
+          ],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
+        },
+        {
+          "evidenceId": "operator-steward-appeal-v3",
+          "evidenceType": "OPERATOR_STATUS_REPORT",
+          "submissionParty": "OPERATOR",
+          "sourceDomain": "slash-court.vercel.app",
+          "contentHash": "sha256:9e9220900a2c6f44d32fddb8e1ac208646fca106f216537f7f1a7b0300873b97",
+          "relevantRuleIds": [
+            "R3"
+          ],
+          "url": "https://slash-court.vercel.app/evidence-fixtures/negligent-failure.txt"
+        }
+      ],
+      "findings": [
+        [
+          "claimant-steward-appeal-v3",
+          "CLAIMANT",
+          "R1"
+        ],
+        [
+          "claimant-steward-appeal-v3",
+          "CLAIMANT",
+          "R3"
+        ],
+        [
+          "operator-steward-appeal-v3",
+          "OPERATOR",
+          "R3"
+        ]
+      ],
+      "createCommitmentTransaction": "0x5aa4606822e70ef2dcb83d507f8020f8e4b6166bd00d0569c2d9e0c474e8e2d5",
+      "acceptCommitmentTransaction": "0x3c26a0f068ac6c6cfbf296e17c5ab7acc004e4689221ab92fdb03e858ebcdb42",
+      "openCaseTransaction": "0x00b48d369a8bc3d39a1a9f1d920d4aaba7772fb4e97ef498fb9390aa4e38f8b9",
+      "bindCaseTransaction": "0x8a0d9e438f2d1434f3f138d89853695434202773cb3f2eee6df7771500f3b452",
+      "responseTransaction": "0xe59d76367f1b7f03f5cd39823513a3fa1e5ea57e965618e7e257771a4e0d43e4",
+      "readyTransaction": "0x40856dffa09f75f26cbc8dc9ac7f1b44ccddb1ec2e70247063d2cd5aea8e4ee4",
+      "adjudicationTransaction": "0x16991e322679b301b6e6d57e0eca621f029bd791650f6d60b5a5141aa24b1564",
+      "adjudicationExplorer": "https://explorer-studio.genlayer.com/tx/0x16991e322679b301b6e6d57e0eca621f029bd791650f6d60b5a5141aa24b1564",
+      "adjudicationCalldata": "adjudicate_case(\"case-8\")",
+      "adjudicationSender": "0x1eE3B827907429E5dF3DB7282446b6E065ff6199",
+      "adjudicationSubmittedVia": "production console Run consensus + MetaMask confirmation",
+      "adjudicationReceiptStatus": "FINALIZED",
+      "adjudicationConsensusResult": "MAJORITY_AGREE",
+      "adjudicationValidators": 5,
+      "adjudicationRounds": 1,
+      "adjudicationAppealed": false,
+      "adjudicationTimeline": {
+        "createdAt": "2026-09-21T21:54:45.322Z",
+        "accepted": "2026-09-21T21:55:00.962Z",
+        "screenshotSaved": "2026-09-21T21:55:13.238Z",
+        "finalityTriggeredChildrenCreated": "2026-09-21T21:55:34.047Z",
+        "observedAppealWindowSeconds": 33
+      },
+      "finalityAcknowledgementTransaction": "0x13bdc9cb01f98a2b640b0f42a320a96e5e832363c922c7f66b3f14cf8ea47d39",
+      "applicationTransaction": "0x54eea353b9bf788e1add183b54392ac2c88863cc6c5a5979365fb81508eeb187",
+      "applicationReceiptStatus": "FINALIZED",
+      "acknowledgementCallback": "0x7e4f7ccd9d22eb1c4fcaacc2ade6b646fb029328e37c4248ca64394941534a37",
+      "applicationCallbacks": [
+        "0x61776c981ea28c4a8c4295134fe3352fbb5554fd8aeabb874673d8c08cb33e32",
+        "0x324e80ede5507fd33ec49abdbce37f593bb6a0619439577a686ace6f1e4330c5"
+      ],
+      "acceptedWindowAttempt": {
+        "status": "CAPTURED",
+        "hashRetained": true,
+        "appealControlEnabled": true,
+        "appealSubmitted": false,
+        "screenshot": "docs/evidence/case-8-accepted-appeal-window.png",
+        "screenshotSha256": "e6eea793a2e9b922358fe540357ee927a3ede2fec623b73fa392246d05b7dff8",
+        "reason": "The production console showed 'Latest transaction 0x16991e32...24b1564 · ACCEPTED · SUCCESS · execution succeeded · appeal window open' with the primary 'Appeal accepted adjudication' button enabled. The Windows screenshot file was written 12.3 s after ACCEPTED and 20.8 s before the finality-triggered children were created. The button renders only for an ACCEPTED, eligible adjudication in the case's retained history and sets data-appeal-target to that entry's hash; case-8 has one adjudication, the displayed hash. The DOM attribute itself was not captured. The appeal was not clicked; the receipt shows appealed=false and a single consensus round."
+      },
+      "verificationNote": "2026-09-21 direct StudioNet reads after finality: Court get_case shows PENALTY_APPLIED / FINALIZED / adjudication_finalized true / evidence_frozen true, the canonical commitment above, alleged and violated R1/R3, and both citations with party, type, domain, hash, and rule metadata; findings cite claimant R1, claimant R3, and operator R3. Vault get_case_application shows applied=true with the same digest, alleged rules, and citations; 0.05 GEN = 0.1 GEN x 5000 bps; 0.04 GEN beneficiary + 0.01 GEN safety pool. Vault commitment RESOLVED. The Court explorer listing contains exactly one adjudicate_case and one apply_resolution for case-8 and no retry_resolution_application."
     }
   ],
   "acceptedWindowProof": {
-    "status": "MISSED",
+    "status": "CAPTURED",
     "observedAccepted": true,
-    "appealControlEnabled": false,
+    "appealControlEnabled": true,
     "appealSubmitted": false,
     "attempts": [
       {
@@ -689,17 +806,28 @@
         "appealControlEnabled": false,
         "appealSubmitted": false,
         "reason": "ACCEPTED 20:29:44Z, finality children 20:30:15Z (about 30 s) on 2026-09-14; no capture was made. Found FINALIZED on 2026-09-19."
+      },
+      {
+        "caseId": "case-8",
+        "adjudicationTransaction": "0x16991e322679b301b6e6d57e0eca621f029bd791650f6d60b5a5141aa24b1564",
+        "hashRetained": true,
+        "appealControlEnabled": true,
+        "appealSubmitted": false,
+        "reason": "Captured: enabled appeal control with ACCEPTED status and 'appeal window open', screenshot saved 12.3 s after ACCEPTED and 20.8 s before finality. Appeal not clicked."
       }
     ],
-    "reason": "Seven bounded synthetic cases are recorded; none produced an ACCEPTED-window capture of an enabled appeal control. On StudioNet the observed ACCEPTED-to-finality window is about 30 seconds (case-7). No appeal was ever clicked or submitted, and no finalized screenshot is presented as ACCEPTED proof."
+    "reason": "Case-1 through case-7 missed the roughly 30-second StudioNet ACCEPTED window. Case-8 captured the enabled appeal control for the retained ACCEPTED adjudication inside the window. No appeal was ever clicked or submitted.",
+    "capturedCaseId": "case-8",
+    "capturedAdjudicationTransaction": "0x16991e322679b301b6e6d57e0eca621f029bd791650f6d60b5a5141aa24b1564",
+    "screenshot": "docs/evidence/case-8-accepted-appeal-window.png"
   },
   "releaseCandidateVerification": {
-    "sourceRevision": "068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
-    "sourceUrl": "https://github.com/JWattjr/Slash-court/commit/068ac471bd365aee0a3c4a7a78ea334a90a7ed09",
-    "deploymentId": "dpl_rWzPfcYssEurAPw1PmG1xNkECHF2",
+    "sourceRevision": "f55f08379c436787f251fe1d11b998240bb48337",
+    "sourceUrl": "https://github.com/JWattjr/Slash-court/commit/f55f08379c436787f251fe1d11b998240bb48337",
+    "deploymentId": "dpl_9hjHjBeGb6PADjmNvDAotN9ynMGE",
     "deploymentUrl": "https://slash-court.vercel.app",
     "deploymentStatus": "READY",
-    "buildIdentityMarker": "data-source-revision reads local-candidate (CLI deploy); 068ac47-only code confirmed in the live bundle",
+    "buildIdentityMarker": "data-source-revision=\"f55f08379c436787f251fe1d11b998240bb48337\" verified on the production alias",
     "automatedChecks": {
       "frontendTests": 16,
       "directContractTests": 43,
@@ -714,20 +842,20 @@
     "evidenceClass": "PRODUCTION_DEPLOYMENT_AND_FINALIZED_LIVE_CASE",
     "productionDeploymentVerified": true,
     "liveAttemptStarted": true,
-    "liveCaseId": "case-7",
-    "liveAdjudicationTransaction": "0x093fcb32c4c2d4a751ad0cdff969f89ac3d85974ff34d9971071d046d170fcdd",
-    "acceptedWindowProof": "MISSED",
-    "note": "Checks re-run 2026-09-19 at 068ac47. Case-7 finalized on 2026-09-14 about 30 s after ACCEPTED; no enabled appeal control was captured. No appeal was clicked or submitted."
+    "liveCaseId": "case-8",
+    "liveAdjudicationTransaction": "0x16991e322679b301b6e6d57e0eca621f029bd791650f6d60b5a5141aa24b1564",
+    "acceptedWindowProof": "CAPTURED",
+    "note": "Local checks were run on 2026-09-19 at 068ac47; the frontend and contract code are unchanged in f55f083. Case-8 on the f55f083 production deployment captured the enabled appeal control inside the ACCEPTED window; it was not clicked."
   },
   "vault": {
     "initialBondWei": "2000000000000000000",
-    "remainingOperatorBondWei": "900000000000000000",
+    "remainingOperatorBondWei": "850000000000000000",
     "lockedExposureWei": "0",
-    "totalPenaltiesWei": "1100000000000000000",
-    "beneficiaryAwardsWei": "880000000000000000",
-    "safetyPoolWei": "220000000000000000",
-    "applicationCount": 7,
-    "readNote": "Direct StudioNet reads on 2026-09-19: get_vault_statistics shows 0.9 GEN total/available bond, 0 locked exposure, 1.1 GEN total penalties, 0.22 GEN safety pool, and 1 operator; get_operator shows 7 resolved and 0 active commitments. This reconciles with 1.0 GEN after case-5 minus 0.05 GEN each for case-6 and case-7 (0.04 beneficiary + 0.01 safety pool each). Court get_statistics: 7 total, 7 applied, 6 negligent_failure, 1 external_outage."
+    "totalPenaltiesWei": "1150000000000000000",
+    "beneficiaryAwardsWei": "920000000000000000",
+    "safetyPoolWei": "230000000000000000",
+    "applicationCount": 8,
+    "readNote": "Direct StudioNet reads on 2026-09-21 after case-8 finality: get_vault_statistics shows 0.85 GEN total/available bond, 0 locked exposure, 1.15 GEN total penalties, 0.23 GEN safety pool. This reconciles with 0.9 GEN after case-7 minus the 0.05 GEN case-8 penalty (0.04 beneficiary + 0.01 safety pool). Court get_statistics: 8 total, 8 applied, 7 negligent_failure, 1 external_outage."
   },
   "historical": {
     "predecessorCurrentDeployment": {
@@ -840,5 +968,5 @@
     }
   },
   "contractSourceVerification": "On 2026-09-19 gen_getContractCode for both addresses returned source byte-identical to contracts/slash_court.py (SHA-256 e39b7c25489bc3a54a83f40a6cc3f0219583e89d747274777eb21faaed616bba) and contracts/operator_bond_vault.py (SHA-256 2c51484e09c596c06f0264f98e5beb67e8c075fa02cc7024afb523f77e2554b3) at 068ac47. Contract files are unchanged since cdaba78.",
-  "frontendSourceRevisionNote": "Production alias slash-court.vercel.app resolves to dpl_rWzPfcYssEurAPw1PmG1xNkECHF2 (READY, created 2026-09-14T20:14:20Z, one minute after commit 068ac47). It was a CLI deploy, so the page's data-source-revision reads local-candidate rather than a Git SHA. The live bundle contains code introduced only in 068ac47 (the StudioNet appeal fallback). Revision attribution is evidenced, not cryptographically proven."
+  "frontendSourceRevisionNote": "Production alias slash-court.vercel.app resolves to dpl_9hjHjBeGb6PADjmNvDAotN9ynMGE (READY, created 2026-09-21T21:33:55Z), built from a clean git archive of f55f083 with NEXT_PUBLIC_SLASHCOURT_SOURCE_REVISION set. The page root reports data-source-revision=\"f55f08379c436787f251fe1d11b998240bb48337\". Frontend code is identical to 068ac47; f55f083 changed docs only. Later commits change docs/evidence only."
 }

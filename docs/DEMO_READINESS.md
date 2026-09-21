@@ -1,18 +1,18 @@
 # SlashCourt demo readiness and release verification
 
-Re-verified 2026-09-19 against StudioNet RPC, the StudioNet explorer, and the
+Re-verified 2026-09-21 against StudioNet RPC, the StudioNet explorer, and the
 production console at https://slash-court.vercel.app. All incident records are
-synthetic. Sections for cases 1–5 were first recorded 2026-09-14.
+synthetic. Sections for cases 1–5 were first recorded 2026-09-14, and cases 6–7
+on 2026-09-19.
 
 ## Gate
 
-**Resubmit-ready: NO.** The deployed contracts are byte-identical to `068ac47`.
-Seven finalized current cases prove canonical binding, citation metadata,
-finality-gated penalties, and one-time accounting. The remaining blocker is
-narrow: no live capture exists of an enabled appeal control during ACCEPTED.
-The newest case-7 went from ACCEPTED to finality in about 30 seconds on
-2026-09-14. No appeal was submitted, and no finalized screenshot is presented
-as ACCEPTED proof.
+**Resubmit-ready: YES.** The deployed contracts are byte-identical to the
+repository. Production is the verified `f55f083` build. Case-8 adds the missing
+live proof: an enabled appeal control for the retained ACCEPTED adjudication,
+captured 12.3 s after ACCEPTED and 20.8 s before finality. Eight finalized
+current cases prove canonical binding, citation metadata, finality-gated
+penalties, and one-time accounting. No appeal was submitted.
 
 ## Current deployment
 
@@ -25,15 +25,16 @@ as ACCEPTED proof.
   `contracts/*.py` at `068ac471bd365aee0a3c4a7a78ea334a90a7ed09`. Hashes:
   Court SHA-256 `e39b7c25…6bba`, Vault `2c51484e…54b3`. The contracts are
   unchanged since `cdaba784931d4cd4020bb66bebe795c22f47efa5`.
-- Production frontend: `dpl_rWzPfcYssEurAPw1PmG1xNkECHF2` (READY), created
-  2026-09-14T20:14:20Z, one minute after commit `068ac47`.
+- Production frontend: `dpl_9hjHjBeGb6PADjmNvDAotN9ynMGE` (READY), created
+  2026-09-21T21:33:55Z from a clean `git archive` of
+  `f55f08379c436787f251fe1d11b998240bb48337`.
 - Deployment alias: [slash-court.vercel.app](https://slash-court.vercel.app)
-- Revision marker: this was a CLI deploy, so `data-source-revision` reads
-  `local-candidate`. The live bundle does contain the `068ac47` StudioNet
-  appeal fallback. The revision is supported by evidence but not proven
-  cryptographically.
-- Historical, superseded: `dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU` at
-  `c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376`.
+- Revision marker: the page root reports
+  `data-source-revision="f55f08379c436787f251fe1d11b998240bb48337"`. Frontend
+  code is identical to `068ac47`; later commits change docs/evidence only.
+- Historical, superseded: `dpl_rWzPfcYssEurAPw1PmG1xNkECHF2` (CLI deploy of
+  `068ac47`, marker `local-candidate`) and `dpl_FLyQqLt8AJkpJ5ecj7XMqpNAaPzU`
+  at `c9e97bd6c1e50efa5eaf5b4b1ef74bfe4b97f376`.
 
 The deployment record is [deploy/last-deployment.json](../deploy/last-deployment.json).
 The full case and historical evidence index is
@@ -340,18 +341,65 @@ Aggregate reads after case-7:
   penalties, 0.22 GEN safety pool.
 - Court: 7 total cases, 7 applied.
 
+## Verified current case 8: live ACCEPTED-window capture (2026-09-21)
+
+- Commitment `demo-steward-appeal-proof-v3-20260921`: duty `Synthetic keeper
+  duty for steward appeal-window proof v3`, trigger
+  `scheduled-steward-appeal-proof-v3`, duty deadline `2026-09-24T00:00:00Z`,
+  dispute deadline `2026-09-25T00:00:00Z`, action
+  `maintenance-action-steward-proof-v3`, exposure 0.1 GEN, alleged R1/R3,
+  digest `sha256:3acb6ad47c1e644c976784a2dd372d64c8f8aba64ba25801b24ca43ea75a1511`.
+- Citations: `claimant-steward-appeal-v3` (CLAIMANT, R1/R3) and
+  `operator-steward-appeal-v3` (OPERATOR, R3), both from
+  `slash-court.vercel.app` with hash `sha256:9e922090…3b97`. They are identical
+  in the Court record and the Vault application.
+- Outcome: `NEGLIGENT_FAILURE` / `PARTIAL_SLASH`, 5000 bps, 0.05 GEN, split
+  0.04 GEN beneficiary and 0.01 GEN safety pool, applied once. The commitment
+  is `RESOLVED`.
+
+| Step | Transaction |
+| --- | --- |
+| Create commitment | [`0x5aa46068…e8e2d5`](https://explorer-studio.genlayer.com/tx/0x5aa4606822e70ef2dcb83d507f8020f8e4b6166bd00d0569c2d9e0c474e8e2d5) |
+| Accept | [`0x3c26a0f0…cdb42`](https://explorer-studio.genlayer.com/tx/0x3c26a0f068ac6c6cfbf296e17c5ab7acc004e4689221ab92fdb03e858ebcdb42) |
+| Open case | [`0x00b48d36…38f8b9`](https://explorer-studio.genlayer.com/tx/0x00b48d369a8bc3d39a1a9f1d920d4aaba7772fb4e97ef498fb9390aa4e38f8b9) |
+| Operator response | [`0xe59d7636…0d43e4`](https://explorer-studio.genlayer.com/tx/0xe59d76367f1b7f03f5cd39823513a3fa1e5ea57e965618e7e257771a4e0d43e4) |
+| Mark ready | [`0x40856dff…8e4ee4`](https://explorer-studio.genlayer.com/tx/0x40856dffa09f75f26cbc8dc9ac7f1b44ccddb1ec2e70247063d2cd5aea8e4ee4) |
+| **Adjudication** | [`0x16991e322679b301b6e6d57e0eca621f029bd791650f6d60b5a5141aa24b1564`](https://explorer-studio.genlayer.com/tx/0x16991e322679b301b6e6d57e0eca621f029bd791650f6d60b5a5141aa24b1564) |
+| Finality acknowledgement | [`0x13bdc9cb…a47d39`](https://explorer-studio.genlayer.com/tx/0x13bdc9cb01f98a2b640b0f42a320a96e5e832363c922c7f66b3f14cf8ea47d39) |
+| Vault application | [`0x54eea353…eb187`](https://explorer-studio.genlayer.com/tx/0x54eea353b9bf788e1add183b54392ac2c88863cc6c5a5979365fb81508eeb187) |
+
+The adjudication is `adjudicate_case("case-8")`, submitted from the production
+console with a MetaMask confirmation. It had 5 validators, `MAJORITY_AGREE`, a
+single round, and `appealed: false`. The Court explorer listing contains one
+`adjudicate_case`, one `apply_resolution`, and no retry for case-8.
+
+Aggregate reads after case-8:
+
+- Vault: 0.85 GEN available, 0 locked, 1.15 GEN total penalties, 0.23 GEN
+  safety pool.
+- Court: 8 total cases, 8 applied.
+
 ## Appeal-window evidence
 
-No enabled appeal control was captured in any of the seven bounded runs, and
-the appeal button was never clicked. For case-7, ACCEPTED lasted about 30
-seconds before finality (2026-09-14 20:29:44Z → 20:30:15Z). The submitting
-session recorded no hash or control inside that window. The 2026-09-19 pass
-found the case already FINALIZED. The UI release-after-ACCEPTED behavior
-remains covered only by the workflow regression test, which is local evidence
-and not live proof.
+![Case-8 during the ACCEPTED window](evidence/case-8-accepted-appeal-window.png)
 
-This is recorded as `MISSED` in `deploy/current-demo.json`. Do not claim an
-enabled ACCEPTED appeal control until a future bounded run captures it.
+| Event (2026-09-21, UTC) | Time |
+| --- | --- |
+| Adjudication created | 21:54:45.3 |
+| ACCEPTED | 21:55:00.96 |
+| Screenshot saved (Windows capture, SHA-256 `e6eea793…b7dff8`) | 21:55:13.24 |
+| Finality-triggered Vault messages created | 21:55:34.05 |
+
+The capture shows `ACCEPTED · SUCCESS · execution succeeded · appeal window
+open` for the retained adjudication hash, with **Appeal accepted adjudication**
+enabled. `AppealAction` renders only for an ACCEPTED, eligible adjudication in
+the case's retained history, and sets `data-appeal-target` to that entry's
+hash. Case-8 has exactly one adjudication, the hash shown on screen. The DOM
+attribute itself was not captured. Appeal was never clicked.
+
+Cases 1–7 missed the window; their records stay `MISSED` in
+`deploy/current-demo.json`, and their finalized screenshots are not ACCEPTED
+proof.
 
 ## Public captures
 
@@ -362,9 +410,10 @@ enabled ACCEPTED appeal control until a future bounded run captures it.
 - [Case-5 ready-state capture](evidence/case-5-ready-before-consensus.png): production wallet-free case facts and evidence before consensus.
 - [Finalized case-5 capture](evidence/case-5-finalized.png): production console showing the finalized negligence result, finality, citation metadata, and one-time Vault split. It is not ACCEPTED-window proof.
 
-The captures are supporting artifacts, not substitutes for chain reads. No
-ACCEPTED-window capture or recording is available for any current case; leave
-the portal video field blank.
+- [Case-8 ACCEPTED-window capture](evidence/case-8-accepted-appeal-window.png): production console during the ACCEPTED window with the enabled appeal control for adjudication `0x16991e32…24b1564`. This **is** the ACCEPTED-window proof.
+
+The captures are supporting artifacts, not substitutes for chain reads. There is
+no video recording; leave the portal video field blank.
 
 ## Historical examples
 
@@ -412,19 +461,13 @@ Earlier record (2026-09-14):
 | --- | --- |
 | Bind canonical duty, trigger, deadlines, expected action, parties, exposure, rulebook, digest, and alleged rules | Satisfied in fresh Court/Vault source and current finalized case read |
 | Bind fetched-evidence citations with party and rule metadata | Satisfied in fresh source and current finalized Court/Vault records, including both case-5 parties |
-| Retain an ACCEPTED adjudication and expose an appeal control before finality | Implemented and covered by the local regression test. No live capture exists: cases 1–7 all finalized without a capture of an enabled control. For case-7 the window was about 30 s. **Not proven live.** |
-| Apply deterministic penalty only after finality and only once | Satisfied by case-5 finalized receipts, `APPLIED_FINALIZED` read, one-time application, accounting, and direct tests |
+| Retain an ACCEPTED adjudication and expose an appeal control before finality | Satisfied live by the case-8 capture 12.3 s after ACCEPTED and 20.8 s before finality on the verified `f55f083` production build. Appeal not submitted. |
+| Apply deterministic penalty only after finality and only once | Satisfied by case-8 (and case-5) finalized receipts, `APPLIED_FINALIZED` read, one-time application, accounting, and direct tests |
 | Make public review wallet-free and easy to inspect | Satisfied; current case hash route, Explorer links, advanced metadata, and screenshots are public |
+
+
 
 ## Next exact action
 
-Case-7 cannot be used any more because it is FINALIZED. A new synthetic case
-needs explicit authorization. A capture would have to happen within about 30
-seconds of ACCEPTED, so the browser must already be watching the case when
-the wallet confirmation completes.
-
-No further transaction is authorized or required in this pass. The exact
-remaining submission blocker is a live ACCEPTED-window capture with the
-enabled appeal control. If another attempt is authorized later, keep it
-synthetic, capture the retained hash and enabled control immediately, and never
-click Appeal. Until that proof exists, keep the gate marked NO.
+No further transactions are needed. Keep the portal video field blank, do not
+click Appeal on any case, and submit only through the Portal when you choose to.

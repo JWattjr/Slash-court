@@ -1,6 +1,6 @@
 # Steward response draft
 
-## Current state (verified 2026-09-19)
+## Current state (verified 2026-09-21)
 
 **Current deployment (GenLayer Studio Network, chain 61999):**
 
@@ -8,25 +8,48 @@
   `0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7`.
 - Contract source: `gen_getContractCode` for both addresses returned source
   byte-identical to `contracts/slash_court.py` and
-  `contracts/operator_bond_vault.py` at
-  [`068ac47`](https://github.com/JWattjr/Slash-court/commit/068ac471bd365aee0a3c4a7a78ea334a90a7ed09).
-  The contract files have not changed since `cdaba78`.
+  `contracts/operator_bond_vault.py` in the current repository (unchanged
+  since `cdaba78`).
 - Production console: [slash-court.vercel.app](https://slash-court.vercel.app)
-  resolves to `dpl_rWzPfcYssEurAPw1PmG1xNkECHF2` (READY). It was created
-  2026-09-14T20:14:20Z, one minute after commit `068ac47`. This was a CLI
-  deploy, so the page's `data-source-revision` reads `local-candidate`, not a
-  Git SHA. The live bundle does contain the StudioNet appeal fallback, which
-  exists only from `068ac47` onward. The revision is supported by evidence
-  but not proven cryptographically.
+  resolves to `dpl_9hjHjBeGb6PADjmNvDAotN9ynMGE` (READY). It was built from a
+  clean `git archive` of
+  [`f55f083`](https://github.com/JWattjr/Slash-court/commit/f55f08379c436787f251fe1d11b998240bb48337),
+  and the page root reports
+  `data-source-revision="f55f08379c436787f251fe1d11b998240bb48337"`.
+  Frontend and contract code are identical to `068ac47`; later commits change
+  only documentation and evidence.
+
+### ACCEPTED-window appeal proof (case-8)
+
+![Case-8 console during the ACCEPTED window](evidence/case-8-accepted-appeal-window.png)
+
+The production console showed adjudication
+[`0x16991e322679b301b6e6d57e0eca621f029bd791650f6d60b5a5141aa24b1564`](https://explorer-studio.genlayer.com/tx/0x16991e322679b301b6e6d57e0eca621f029bd791650f6d60b5a5141aa24b1564)
+as `ACCEPTED · SUCCESS · appeal window open`, with **Appeal accepted
+adjudication** enabled.
+
+| Event (2026-09-21, UTC) | Time |
+| --- | --- |
+| Adjudication created (`adjudicate_case("case-8")`, via console + MetaMask) | 21:54:45.3 |
+| ACCEPTED | 21:55:00.96 |
+| Screenshot file written | 21:55:13.24 |
+| Finality-triggered Vault messages created | 21:55:34.05 |
+
+The screenshot is SHA-256 `e6eea793…b7dff8`, taken 12.3 s after ACCEPTED and
+20.8 s before finality. The button renders only for an ACCEPTED, eligible
+adjudication in the case's retained history, and its `data-appeal-target` is
+that entry's hash. Case-8 has one adjudication, the hash shown on screen. The
+DOM attribute itself was not captured. The appeal was **not** clicked: the
+receipt shows `appealed: false` and a single consensus round.
 
 ### Steward requirement proof table
 
 | Requirement | Evidence | Status |
 | --- | --- | --- |
-| Bind every adjudication to the canonical duty, trigger, deadlines, expected action, and alleged rules | `_require_adjudication_binding` re-reads the Vault commitment before consensus and rejects any mismatch with the case's canonical JSON. Case-7's `get_case` shows the exact duty, trigger, 2026-09-20/21 deadlines, expected action, digest `sha256:66e5…bcded`, and alleged R1/R3. The Vault payload repeats the same digest and rules. | Satisfied (live) |
-| Slash outcomes cite fetched evidence with party and rule metadata | `_canonicalize_adjudication_result` rebuilds each citation from fetched records. The validator compares `_consensus_bound_result`, which includes the evidence ID, party, type, domain, hash, and rules. Case-7 cites `claimant-steward-appeal-v2` (CLAIMANT, R1/R3) and `operator-steward-appeal-v2` (OPERATOR, R3) in both Court and Vault. | Satisfied (live) |
-| Deterministic penalty, only after finality, applied once | 0.1 GEN × 5000 bps = 0.05 GEN, split 0.04 GEN beneficiary and 0.01 GEN safety pool. `apply_resolution` is emitted `on="finalized"`. The Court has one `adjudicate_case`, one `apply_resolution`, and no retry for case-7. The Vault replay guard is covered by direct tests. | Satisfied (live) |
-| Console retains an ACCEPTED adjudication and exposes an appeal control before finality | Code and a 16-test frontend suite cover retention, busy release, reload recovery, fresh eligibility, and exact hash targeting. No live capture of an enabled appeal control during ACCEPTED exists. | **Not proven live** |
+| Bind every adjudication to the canonical duty, trigger, deadlines, expected action, and alleged rules | `_require_adjudication_binding` re-reads the Vault commitment before consensus and rejects any mismatch with the case's canonical JSON. Case-8's `get_case` shows duty `Synthetic keeper duty for steward appeal-window proof v3`, trigger `scheduled-steward-appeal-proof-v3`, deadlines 2026-09-24/25, action `maintenance-action-steward-proof-v3`, digest `sha256:3acb6ad4…1511`, and alleged R1/R3. The Vault payload repeats the same digest and rules. | Satisfied (live) |
+| Slash outcomes cite fetched evidence with party and rule metadata | `_canonicalize_adjudication_result` rebuilds each citation from fetched records. The validator compares `_consensus_bound_result`, which includes the evidence ID, party, type, domain, hash, and rules. Case-8 cites `claimant-steward-appeal-v3` (CLAIMANT, R1/R3) and `operator-steward-appeal-v3` (OPERATOR, R3) in both Court and Vault. | Satisfied (live) |
+| Deterministic penalty, only after finality, applied once | 0.1 GEN × 5000 bps = 0.05 GEN, split 0.04 GEN beneficiary and 0.01 GEN safety pool. `apply_resolution` ([`0x54eea353…eb187`](https://explorer-studio.genlayer.com/tx/0x54eea353b9bf788e1add183b54392ac2c88863cc6c5a5979365fb81508eeb187)) is emitted `on="finalized"` and was created 33 s after ACCEPTED. The Court has one `adjudicate_case`, one `apply_resolution`, and no retry for case-8. | Satisfied (live) |
+| Console retains an ACCEPTED adjudication and exposes an appeal control before finality | Case-8 screenshot above, inside the ACCEPTED window, on the verified `f55f083` production build. The appeal was not submitted. | Satisfied (live) |
 
 Every adjudication rebinds the Vault's canonical duty, trigger, duty/dispute
 deadlines, expected action, parties, exposure, rulebook version, commitment
@@ -179,10 +202,10 @@ transaction-producing test was run as a test suite; the separately authorized
 case-5 live workflow is recorded above. The optional pyright check was
 unavailable because the binary is not installed.
 
-**Resubmit-ready: NO.** Exact blocker: no live capture shows an enabled
-appeal control, targeting a retained ACCEPTED adjudication hash, before
-finality. Seven bounded synthetic cases (case-1 to case-7) all finalized
-without that capture. The StudioNet window is about 30 seconds. The deployed
-source, finality-safe penalty, canonical duty, citations, and one-time
-accounting are verified live. No appeal was clicked or submitted, and no
-Portal submission was made.
+**Resubmit-ready: YES.** The hardened Court and Vault source is live and
+byte-identical to the repository. Production runs the verified `f55f083` build.
+Case-8 shows canonical binding, party- and rule-tagged fetched-evidence
+citations, a deterministic finality-gated penalty applied once, and a live
+screenshot of the enabled appeal control for the retained ACCEPTED adjudication
+inside the StudioNet window. No appeal was clicked or submitted, and no Portal
+submission was made.
