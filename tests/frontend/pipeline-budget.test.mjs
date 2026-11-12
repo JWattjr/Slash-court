@@ -16,3 +16,10 @@ test("Explorer transaction identity reads the observed nested transaction record
   assert.equal((await verifyExplorer("transaction",hash,response({transaction:{hash,status:"FINALIZED"}}))).verified,true);
   await assert.rejects(()=>verifyExplorer("transaction",hash,response({transaction:{hash:"0x"+"b".repeat(64)}})),/identity mismatch/);
 });
+
+test("fresh deployment retains cumulative deposits from the previous attempt",()=>{
+  const m={priorDepositsUsedWei:(DEPOSIT_CAP-2n).toString(),transactions:[]};
+  const op={method:"deposit"};reserveDeposit(m,op,2n);m.transactions.push(op);
+  assert.equal(m.depositsUsedWei,DEPOSIT_CAP.toString());
+  assert.throws(()=>reserveDeposit(m,{method:"deposit"},1n),/cap/);
+});

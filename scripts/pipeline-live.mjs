@@ -10,7 +10,7 @@ import {reserveDeposit} from "./pipeline-budget.mjs";
 import {explorerContract,explorerTransaction} from "../frontend/lib/pipeline/explorer.mjs";
 import {prepareCapture} from "./pipeline-capture.mjs";
 
-const FILE=new URL("../deploy/pipeline-2026-11-11.json",import.meta.url);
+const FILE=new URL(process.env.PIPELINE_MANIFEST||"../deploy/pipeline-2026-11-12.json",import.meta.url);
 const ROOT=new URL("../",import.meta.url);
 const HELPER="C:/Users/User/Desktop/Intelligent Contracts/release/credential_key.mjs";
 const aliases={A:"moment-grid-studionet",B:"portal-five-release",C:"portal-five-release-new",claimant:"footnote-independent-studionet"};
@@ -34,7 +34,12 @@ const git=(...args)=>execFileSync("git",["-c","safe.directory=*",...args],{cwd:R
 const sourceBytes=path=>execFileSync("git",["-c","safe.directory=*","show",`${manifest.sourceRevision}:${path}`],{cwd:ROOT});
 let capture=null;
 if(Number(BigInt(await rpc("eth_chainId",[])))!==61999)throw new Error("StudioNet required");
-if(manifest.status==="STOPPED_UNEXPECTED")throw new Error("Saved failed live case requires owner review; never rerun it");
+if(manifest.status==="STOPPED_UNEXPECTED"&&!process.argv.includes("--recover-previous"))throw new Error("Saved failed live case requires owner review; never rerun it");
+if(manifest.previousAttempt){
+  const previous=JSON.parse(await readFile(new URL("../"+manifest.previousAttempt.manifest,import.meta.url),"utf8"));
+  const prior=(previous.transactions||[]).reduce((sum,t)=>sum+BigInt(t.reservedValueWei||0),BigInt(previous.priorDepositsUsedWei||0));
+  if(prior!==BigInt(manifest.priorDepositsUsedWei))throw new Error("Previous-attempt deposit total mismatch");
+}
 const clients={};
 for(const[role,alias]of Object.entries(aliases)){
   const secret=execFileSync("node",[HELPER,alias],{encoding:"utf8",stdio:["ignore","pipe","pipe"]}).trim();
@@ -110,7 +115,27 @@ async function until(readFn,predicate,label){
   while(Date.now()<end){const value=await readFn();if(predicate(value))return value;await sleep(6000);}
   throw new Error(`${label}: callback/readback timeout; do not repeat original write`);
 }
-if(process.argv.includes("--deploy")){
+if(process.argv.includes("--recover-previous")){
+  if(manifest.contracts.charter.address.toLowerCase()!=="0xa80aae4d2f3a7d57ccde588804d6bd44227cd3e0")throw new Error("Recovery is restricted to the approved previous attempt");
+  const id="pipeline-faithful-v2";
+  await operation("recovery-faithful:settle","claimant","charter","settle",[id]);
+  let job=await until(()=>read("charter","get_job",[id]),j=>j.status==="FINAL","timeout settlement finality");
+  if(job.outcome!=="VOID_TIMEOUT"||Object.values(job.credits).reduce((a,b)=>a+BigInt(b),0n)!==53n)throw new Error("Unexpected recovery allocation");
+  manifest.timeoutRecovery??={jobId:id,amountWei:"53",credits:job.credits,claims:{}};await save();
+  for(const role of ["A","B","C","claimant"]){
+    const recipient=actors[role].toLowerCase();
+    const {entry}=await operation(`recovery-faithful:claim-${role}`,"claimant","charter","claim",[id,recipient,1]);
+    const parent=await rpc("eth_getTransactionByHash",[entry.hash]);
+    if(parent.triggered_transactions?.length!==1)throw new Error("Recovery native child missing");
+    const child={hash:parent.triggered_transactions[0],label:"native-credit-child"};await wait(child);
+    if(child.receipt.value_credited!==true||child.receipt.to_address.toLowerCase()!==recipient||BigInt(child.receipt.value)!==BigInt(job.credits[recipient]))throw new Error("Recovery native credit mismatch");
+    const {entry:verification}=await operation(`recovery-faithful:verify-${role}`,"claimant","charter","verify_claim",[id,recipient,entry.hash]);
+    job=await until(()=>read("charter","get_job",[id]),j=>j.claims[recipient]?.status==="paid","recovery credit verification");
+    manifest.timeoutRecovery.claims[role]={recipient,claimHash:entry.hash,childHash:child.hash,verificationHash:verification.hash,amountWei:String(child.receipt.value),receipt:child.receipt};await save();
+  }
+  if(Object.values(job.paid).reduce((a,b)=>a+BigInt(b),0n)!==53n)throw new Error("Recovery total not paid");
+  manifest.timeoutRecovery={...manifest.timeoutRecovery,verified:true,final:job,settlementHash:manifest.transactions.find(t=>t.label==="recovery-faithful:settle").hash};await save();console.log("PREVIOUS_53_WEI_RECOVERED");
+}else if(process.argv.includes("--deploy")){
   manifest.sourceRevision??=git("rev-parse","HEAD");
   for(const[role,file,args]of[["record","operator_record",[]],["charter","pipeline_charter",[]],["court","pipeline_court",[manifest.contracts.charter?.address]]]){
     if(role==="court")args[0]=manifest.contracts.charter.address;
@@ -159,7 +184,7 @@ if(process.argv.includes("--deploy")){
   const rejected=plan("pipeline-subjective-v2","rejected");await save();await compile(rejected,true);
   for(const kind of["b-fault","a-fault","faithful","unclear"]){
     const p=plan(`pipeline-${kind}-v2`,kind);await save();const job=await compile(p);
-    if(p.final&&p.recordProfiles&&(kind!=="b-fault"||manifest.nativeCreditVerified))continue;
+    if(p.final&&p.recordProfiles)continue;
     for(const role of["A","B","C"]){const step=job.steps.find(s=>s.step_id===role);await operation(`${p.id}:deposit-${role}`,role,"charter","deposit",[p.id],BigInt(step.bond_units));}
     await until(()=>read("charter","get_job",[p.id]),j=>["ACTIVE","DISPUTED","SETTLING","FINAL"].includes(j.status),"all deposit finality callbacks");
     for(const role of["A","B","C"]){
@@ -184,7 +209,10 @@ if(process.argv.includes("--deploy")){
     p.final=await until(()=>read("charter","get_job",[p.id]),j=>j.status==="FINAL","settlement finality callback");p.outcome=p.final.outcome;
     await until(()=>read("record","has_record",[p.id]),v=>v===true,"finalized operator record");
     p.recordProfiles={};for(const role of["A","B","C"])p.recordProfiles[role]=await read("record","get_operator",[actors[role]]);
-    if(kind==="b-fault"){
+    await save();
+  }
+  {
+      const p=manifest.cases.find(c=>c.kind==="b-fault");
       const next=plan("pipeline-history-price-v2","pricing");await save();const priced=await compile(next);next.higherBondVerified=priced.steps.find(s=>s.step_id==="B").bond_units===20;
       if(!next.higherBondVerified)throw new Error("Fault history bond multiplier not applied");
       const {entry:claim}=await operation(`${p.id}:native-claim`,"claimant","charter","claim",[p.id,actors.claimant.toLowerCase(),1]);
@@ -196,7 +224,6 @@ if(process.argv.includes("--deploy")){
       const {entry:verification}=await operation(`${p.id}:verify-claim`,"claimant","charter","verify_claim",[p.id,actors.claimant.toLowerCase(),claim.hash]);
       await until(()=>read("charter","get_job",[p.id]),j=>j.claims[actors.claimant.toLowerCase()]?.status==="paid","native verification finality");
       manifest.nativeCreditVerified=true;manifest.nativeCredit={claimHash:claim.hash,verificationHash:verification.hash,childHash:child.hash,receipt:child.receipt,amountWei:child.receipt.value};await save();
-    }
     await save();
   }
   manifest.status="LIVE_CASES_COMPLETE_VERIFICATION_PENDING";await save();console.log("ALL_REQUIRED_CASES_FINALIZED");
@@ -223,4 +250,4 @@ if(process.argv.includes("--deploy")){
   const job=await until(()=>read("charter","get_job",[p.id]),j=>j.claims[recipient]?.status==="paid","refund verification callback");
   manifest.nativeRefundCredit={verified:true,recipient,claimHash:claim.hash,childHash:child.hash,verificationHash:verification.hash,amountWei:child.receipt.value,receipt:child.receipt,triggeredByNonRecipient:true};
   p.final=job;await save();console.log("NATIVE_REFUND_VERIFIED",claim.hash);
-}else throw new Error("Use --deploy, --cases or --refund-proof; no implicit writes");
+}else throw new Error("Use --deploy, --cases, --refund-proof or explicit --recover-previous; no implicit writes");

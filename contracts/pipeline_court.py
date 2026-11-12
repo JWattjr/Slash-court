@@ -142,15 +142,18 @@ def _row(step: dict, index: int, recorded: bool, input_obs: dict, output_obs: di
             "semantic_verdict": semantic, "effective_verdict": verdict, "basis": basis, "quote": quote}
 
 
-def _assess(snapshot: dict) -> dict:
+def _assess(snapshot: dict) -> tuple:
     rows = []
+    fetched = []
     for index, step in enumerate(snapshot["config"]["steps"]):
         record = snapshot["records"].get(step["step_id"])
         if record is None:
             rows.append(_row(step, index, False, _missing(), _missing(), "NOT_EVALUATED"))
+            fetched.append(("", ""))
             continue
         input_obs, input_text = _observe(record["input_url"], record["input_digest"])
         output_obs, output_text = _observe(record["output_url"], record["output_digest"])
+        fetched.append((input_text, output_text))
         semantic = "NOT_EVALUATED"
         quote = ""
         if input_obs["status"] == "AVAILABLE" and output_obs["status"] == "AVAILABLE":
@@ -176,7 +179,7 @@ INPUT_JSON: """ + _canonical(payload)
             except Exception:
                 raise gl.vm.UserError("[LLM_ERROR] invalid local assessment")
         rows.append(_row(step, index, True, input_obs, output_obs, semantic, quote))
-    return {"schema_version": SCHEMA, "snapshot_digest": snapshot["snapshot_digest"], "steps": rows}
+    return {"schema_version": SCHEMA, "snapshot_digest": snapshot["snapshot_digest"], "steps": rows}, fetched
 
 
 def _candidate(raw, snapshot: dict) -> dict:
@@ -248,13 +251,25 @@ class PipelineCourt(gl.Contract):
         snapshot["snapshot_digest"] = _hash(snapshot)
 
         def leader():
-            return _candidate(_assess(snapshot), snapshot)
+            return _candidate(_assess(snapshot)[0], snapshot)
 
         def validator(result):
             if not isinstance(result, gl.vm.Return):
                 return False
             try:
-                return _canonical(_candidate(result.calldata, snapshot)) == _canonical(leader())
+                proposed = _candidate(result.calldata, snapshot)
+                own, fetched = _assess(snapshot)
+                own = _candidate(own, snapshot)
+                for index, row in enumerate(proposed["steps"]):
+                    left = {key: value for key, value in row.items() if key != "quote"}
+                    right = {key: value for key, value in own["steps"][index].items() if key != "quote"}
+                    if _canonical(left) != _canonical(right):
+                        return False
+                    if row["evidence_status"] == "AVAILABLE":
+                        quote = row["quote"]
+                        if not quote or not any(quote in text for text in fetched[index]):
+                            return False
+                return True
             except Exception:
                 return False
 

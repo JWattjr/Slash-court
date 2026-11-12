@@ -2,7 +2,7 @@
 import {readFile,writeFile,mkdir} from "node:fs/promises";
 import {execFileSync} from "node:child_process";
 import {explorerContract,explorerTransaction} from "../frontend/lib/pipeline/explorer.mjs";
-const root=new URL("../",import.meta.url),file=new URL("../deploy/pipeline-2026-11-11.json",import.meta.url);
+const root=new URL("../",import.meta.url),file=new URL("../deploy/pipeline-2026-11-12.json",import.meta.url);
 const verified=execFileSync("node",["scripts/verify-pipeline.mjs"],{cwd:root,encoding:"utf8"});
 const result=JSON.parse(verified);if(result.status!=="PASS")throw new Error("Live verification did not pass");
 const m=JSON.parse(await readFile(file,"utf8"));m.status="LIVE_PASS";m.verifiedAt=new Date().toISOString();m.verification=result;m.limitations=["All incident fixtures are synthetic", "Claims are pull-based: unclaimed refunds are credits, not claimed native payouts", "StudioNet test GEN; no real TVL"];
@@ -32,7 +32,7 @@ const draft={project:"SlashCourt",milestone:"Pipeline Court — Internet Court j
   newContracts:contracts,originalContracts,judgmentPoints:["Charter: objective local duty, non-overlap, observable output", "Court: input-conditioned responsibility and verbatim fetched evidence"],
   evidence:[...contracts,...originalContracts,...compileEvidence,...m.cases.filter(c=>c.adjudicationHash).map(c=>({name:c.id,url:explorerTransaction(c.adjudicationHash)})),{name:"Native claim",url:explorerTransaction(m.nativeCredit.claimHash)},{name:"Native credit child",url:explorerTransaction(m.nativeCredit.childHash)}],
   howTo:"Open /pipeline, compare B-fault with A-fault and faithful propagation, inspect the all-faithful and earlier-unclear cases, review operator pricing and native credit, then run npm run verify:pipeline.",
-  proofManifest:"deploy/pipeline-2026-11-11.json",sourceRevision:m.sourceRevision,depositCapGEN:"0.1",depositsUsedWei:m.depositsUsedWei,portalSubmitted:false};
+  proofManifest:"deploy/pipeline-2026-11-12.json",sourceRevision:m.sourceRevision,depositCapGEN:"0.1",depositsUsedWei:m.depositsUsedWei,portalSubmitted:false};
 draft.requiredMilestones=m.requiredMilestones;
 draft.appealCapture={...m.appealCapture,publicScreenshotUrl:`https://github.com/JWattjr/Slash-court/blob/main/${m.appealCapture.screenshot}`};
 draft.evidence.push({name:"Live proof manifest",url:"https://slash-court.vercel.app/pipeline-proof.json"});

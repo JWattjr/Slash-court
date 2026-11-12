@@ -12,7 +12,7 @@ const client = createClient({chain: studionet, endpoint: "https://studio.genlaye
 const read = (address, functionName, args = []) => client.readContract({address, functionName, args, transactionHashVariant:"latest-final"});
 const plain = value => JSON.parse(JSON.stringify(value, (_, v) => typeof v === "bigint" ? v.toString() : v));
 const object = value => typeof value === "string" ? JSON.parse(value) : plain(value);
-const manifest = JSON.parse(await readFile(new URL("../deploy/pipeline-2026-11-11.json", import.meta.url), "utf8"));
+const manifest = JSON.parse(await readFile(new URL("../deploy/pipeline-2026-11-12.json", import.meta.url), "utf8"));
 const partial=process.argv.includes("--partial");
 const rpcTransaction = async hash => {
   const response=await fetch("https://studio.genlayer.com/api",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_getTransactionByHash",params:[hash]})});
@@ -40,6 +40,13 @@ if (process.argv.includes("--original-only")) {
   assert(["LIVE_PASS","LIVE_CASES_COMPLETE_VERIFICATION_PENDING",...(partial?["STOPPED_UNEXPECTED"]:[])].includes(manifest.status), "Milestone has no completed live case run; local checks cannot establish readiness");
   assert.match(manifest.sourceRevision, /^[0-9a-f]{40}$/);
   assert(BigInt(manifest.depositsUsedWei) <= BigInt(manifest.depositCapWei));
+  const previous=JSON.parse(await readFile(new URL("../"+manifest.previousAttempt.manifest,import.meta.url),"utf8"));
+  const prior=(previous.transactions||[]).reduce((n,t)=>n+BigInt(t.reservedValueWei||0),BigInt(previous.priorDepositsUsedWei||0));
+  assert.equal(prior,BigInt(manifest.priorDepositsUsedWei));
+  assert.equal(prior+manifest.transactions.reduce((n,t)=>n+BigInt(t.reservedValueWei||0),0n),BigInt(manifest.depositsUsedWei));
+  assert.equal(previous.timeoutRecovery?.verified,true);
+  for(const t of previous.transactions.filter(t=>t.label.startsWith("recovery-faithful:")))await verifyExplorer("transaction",t.hash);
+  for(const claim of Object.values(previous.timeoutRecovery.claims))await verifyExplorer("transaction",claim.childHash);
   for (const [name, contract] of Object.entries(manifest.contracts)) {
     await verifyExplorer("contract", contract.address);
     const source = await client.getContractCode(contract.address);

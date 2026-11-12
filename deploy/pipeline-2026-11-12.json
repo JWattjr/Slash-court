@@ -1,0 +1,30 @@
+{
+  "schema": "slashcourt-pipeline-release/1",
+  "status": "PREPARING",
+  "network": "StudioNet",
+  "chainId": 61999,
+  "runner": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
+  "contracts": {},
+  "transactions": [],
+  "cases": [],
+  "originalDeployment": {
+    "court": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
+    "vault": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
+    "regressionReadback": "PASS",
+    "explorerAddressRecords": "BOTH_CONTRACT"
+  },
+  "faithfulFixture": {
+    "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv",
+    "commit": "40942faac5e270d706c44bc712c21d7285ac4fae",
+    "sha256": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+    "bytes": 106,
+    "synthetic": true
+  },
+  "previousAttempt": {
+    "manifest": "deploy/pipeline-2026-11-11.json",
+    "description": "Previous attempt; historical only"
+  },
+  "priorDepositsUsedWei": "129",
+  "depositsUsedWei": "129",
+  "depositCapWei": "100000000000000000"
+}
