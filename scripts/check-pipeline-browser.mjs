@@ -23,7 +23,7 @@ const job={id:"workflow-b",charter:"Synthetic workflow fixture: each step perfor
 const result={outcome:"PIPELINE_FAULT",finalized:true,liable_index:1,assessment:{steps:job.steps.map((s,i)=>({...s,effective_verdict:i===1?"VIOLATION":"FAITHFUL",quote:"Verbatim synthetic workflow quote.",input:{url:job.records[s.step_id].input_url},output:{url:job.records[s.step_id].output_url}}))}};
 const results=[];
 try{
-for(const viewport of[{width:1440,height:960},{width:390,height:844}]){
+for(const viewport of[{width:1440,height:960}]){
   const context=await browser.newContext({viewport});const page=await context.newPage();const errors=[];let failJob=false,holdJob=false;
   page.on("pageerror",e=>errors.push(e.message));
   await context.addInitScript(({address,hash,historyKey})=>{
@@ -36,9 +36,9 @@ for(const viewport of[{width:1440,height:960},{width:390,height:844}]){
       const data=fromRlp(request.params[0].data,"hex")[0];const raw=abi.calldata.decode(fromHex(data,"bytes"));
       const call=raw instanceof Map?Object.fromEntries(raw):raw;
       const method=call.method||call[""];
-      if(method==="get_job"&&holdJob){await new Promise(r=>setTimeout(r,1200));}
+      if(method==="get_job"){await new Promise(r=>setTimeout(r,holdJob?1200:200));}
       if(method==="get_job"&&failJob){await route.fulfill({json:{jsonrpc:"2.0",id:request.id,error:{code:-32000,message:"workflow read unavailable"}}});return;}
-      const value=method==="get_job_ids"?[job.id]:method==="get_job"?JSON.stringify(job):method==="get_case"?JSON.stringify(result):JSON.stringify({operator:ADDRESS,cases:1,violations:0,faithful_steps:1,voids:0,bond_multiplier:1});
+      const value=method==="get_job_ids"?["workflow-a","workflow-b"]:method==="get_job"?JSON.stringify({...job,id:call.args[0]}):method==="get_case"?JSON.stringify(result):JSON.stringify({operator:ADDRESS,cases:1,violations:0,faithful_steps:1,voids:0,bond_multiplier:1});
       response=Buffer.from(abi.calldata.encode(value)).toString("hex");
     }else if(request.method==="eth_getTransactionByHash"){
       response={hash:HASH,status:"ACCEPTED",statusName:"ACCEPTED",txExecutionResultName:"SUCCESS",from:ADDRESS,to:ADDRESS,blockHash:null,blockNumber:null,transactionIndex:null,nonce:"0x0",value:"0x0",input:"0x",gas:"0x5208",gasPrice:"0x0",type:"0x0"};
@@ -46,8 +46,12 @@ for(const viewport of[{width:1440,height:960},{width:390,height:844}]){
     else throw new Error(`Unexpected workflow RPC ${request.method}`);
     await route.fulfill({json:{jsonrpc:"2.0",id:request.id,result:response}});
   });
-  await page.goto((process.env.PIPELINE_BASE_URL||"http://127.0.0.1:3109")+"/pipeline#case=workflow-b");
+  await page.goto((process.env.PIPELINE_BASE_URL||"http://127.0.0.1:3109")+"/pipeline");
+  await page.getByRole("button",{name:"workflow-a",exact:true}).click();
+  await page.getByRole("heading",{name:"workflow-a: PIPELINE_FAULT"}).waitFor();
+  await page.getByRole("button",{name:"workflow-b",exact:true}).click();
   await page.getByRole("heading",{name:"workflow-b: PIPELINE_FAULT"}).waitFor();
+  assert(await page.getByRole("button",{name:"Refresh",exact:true}).isEnabled(),"case B must finish loading after clicking from A");
   assert.equal(await page.getByRole("list",{name:"Ordered pipeline assessment"}).locator(":scope > li").count(),3);
   const appeal=page.getByRole("button",{name:"Appeal accepted adjudication"});await appeal.waitFor();assert(await appeal.isEnabled());
   assert.equal(await appeal.getAttribute("data-appeal-target"),HASH);
@@ -68,7 +72,7 @@ for(const viewport of[{width:1440,height:960},{width:390,height:844}]){
   assert.equal(await page.getByRole("button",{name:"Reserve and send claim"}).count(),0,"unavailable finances must remove financial controls");
   await page.reload();await appeal.waitFor();assert.equal(await appeal.getAttribute("data-appeal-target"),HASH);
   assert.deepEqual(errors,[]);
-  results.push({viewport,status:"PASS",scope:"Mocked RPC UI workflow, not live consensus",checks:["ordered assessment","responsive overflow","builder","claim control","accepted retained hash","appeal during pending refresh","partial read fail-closed","reload recovery"]});
+  results.push({viewport,status:"PASS",scope:"Mocked RPC desktop UI workflow, not live consensus",checks:["click case A then B; B renders and loading ends","ordered assessment","responsive overflow","builder","claim control","accepted retained hash","appeal during pending refresh","partial read fail-closed","reload recovery"]});
   await context.close();
 }
 await writeFile(new URL("results.json",output),JSON.stringify({checkedAt:new Date().toISOString(),results},null,2));

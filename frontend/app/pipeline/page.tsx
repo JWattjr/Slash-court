@@ -123,7 +123,7 @@ export default function PipelinePage() {
     } catch (e) {setError(e instanceof Error ? e.message : String(e)); setBusy(false); return false;}
   }
 
-  function select(next: string) {readGeneration.current++; setJob(null); setCaseData(null); setId(next); location.hash = `case=${encodeURIComponent(next)}`;}
+  function select(next: string) {location.hash = `case=${encodeURIComponent(next)}`;}
   const canWrite = Boolean(client && wallet.connected && wallet.onGenLayer && !busy && !loading);
   const ownStep = job?.steps.find(s => s.operator.toLowerCase() === wallet.address?.toLowerCase());
   const now = Date.now() / 1000;

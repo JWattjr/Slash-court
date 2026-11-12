@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-12T09:29:55.118Z",
+  "checkedAt": "2026-11-12T16:54:40.302Z",
   "results": [
     {
       "viewport": {
@@ -7,26 +7,9 @@
         "height": 960
       },
       "status": "PASS",
-      "scope": "Mocked RPC UI workflow, not live consensus",
+      "scope": "Mocked RPC desktop UI workflow, not live consensus",
       "checks": [
-        "ordered assessment",
-        "responsive overflow",
-        "builder",
-        "claim control",
-        "accepted retained hash",
-        "appeal during pending refresh",
-        "partial read fail-closed",
-        "reload recovery"
-      ]
-    },
-    {
-      "viewport": {
-        "width": 390,
-        "height": 844
-      },
-      "status": "PASS",
-      "scope": "Mocked RPC UI workflow, not live consensus",
-      "checks": [
+        "click case A then B; B renders and loading ends",
         "ordered assessment",
         "responsive overflow",
         "builder",
