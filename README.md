@@ -1,5 +1,28 @@
 # SlashCourt
 
+## Pipeline Court milestone candidate (2026-11-11)
+
+Pipeline Court is built on the Liability Cascade prototype. It adds three
+separate contracts and `/pipeline` for ordered multi-agent job disputes while
+preserving the original deployed Court and Vault. This addition is currently
+an **undeployed local candidate**, not submission-ready. Local checks passed
+(96 direct tests, 16 existing frontend tests, typecheck, build and contract lint);
+fresh reads also verified the original deployment. The browser check stopped
+on a local connection timeout, and no new native funds were deposited.
+
+See [handoff and release gates](docs/PIPELINE-HANDOFF.md),
+[architecture and custody audit](docs/PIPELINE-DESIGN.md),
+[tutorial](docs/TUTORIAL-PIPELINE.md), and
+[incomplete milestone draft](docs/submission/milestone-v2.json).
+`npm run verify:pipeline` is read-only and deliberately requires real live proof.
+`node scripts/verify-pipeline.mjs --original-only` checks the original contracts.
+
+Deploy frontend releases from a clean `git archive` of `frontend/` and supply
+`NEXT_PUBLIC_SLASHCOURT_SOURCE_REVISION` for the exact source commit. Use
+`git -c safe.directory=*` for this repository. CLI JSON arguments can be coerced
+into arrays/objects: do not use unverified CLI argument encoding for charter
+JSON. Preserve each returned hash before waiting; never resubmit after timeout.
+
 > Logs prove that the operator failed; SlashCourt determines who was responsible.
 
 SlashCourt is an application-layer settlement primitive for bonded automation

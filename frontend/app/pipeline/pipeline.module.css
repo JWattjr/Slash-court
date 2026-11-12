@@ -1,0 +1,34 @@
+.main { max-width: 1440px; margin: auto; }
+.main h1 { max-width: 18ch; font-size: clamp(40px, 5vw, 72px); line-height: 1.05; letter-spacing: -.03em; }
+.intro { max-width: 66ch; font-size: 20px; line-height: 1.5; }
+.main p { max-width: 72ch; line-height: 1.6; }
+.main a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
+.main section { padding: 36px 0; border-top: 1px solid var(--line); scroll-margin-top: 94px; }
+.main h2 { font-size: clamp(26px, 3vw, 38px); margin: 0 0 16px; letter-spacing: -.02em; }
+.nav, .controls, .heading { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin: 20px 0; }
+.heading { justify-content: space-between; }
+.notice { padding: 18px; background: var(--paper-warm); border: 1px solid var(--line); border-radius: 14px; }
+.pipeline { display: flex; list-style: none; padding: 0; margin: 28px 0; overflow-x: auto; }
+.pipeline > li { min-width: 230px; flex: 1; padding: 22px; background: var(--paper); border: 1px solid var(--line); }
+.pipeline > .fault { background: var(--paper-blue); }
+.stepHeading { display: flex; justify-content: space-between; align-items: center; }
+.stepHeading h3 { font-size: 30px; margin: 0; }
+.pipeline blockquote { margin: 18px 0; line-height: 1.5; }
+.pipeline dl { display: grid; grid-template-columns: 1fr 1fr; font-variant-numeric: tabular-nums; gap: 8px; }
+.pipeline dt { color: var(--soft); }
+.pipeline dd { margin: 0; overflow-wrap: anywhere; }
+.main code { overflow-wrap: anywhere; font-family: var(--mono); font-size: 12px; }
+.main details { margin: 22px 0; overflow-wrap: anywhere; }
+.main summary { cursor: pointer; padding: 10px 0; font-weight: 600; }
+.forms { display: grid; grid-template-columns: 1.3fr 1fr; gap: 36px; }
+.main label { display: grid; gap: 7px; margin: 16px 0; }
+.main input, .main textarea, .main select { width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--line-strong); border-radius: 10px; color: var(--ink); background: var(--paper); caret-color: var(--blue); }
+.main fieldset { margin: 20px 0; padding: 16px; border: 1px solid var(--line); }
+.main li { line-height: 1.65; overflow-wrap: anywhere; }
+@media (max-width: 650px) {
+  .forms { grid-template-columns: 1fr; gap: 16px; }
+  .pipeline { display: grid; gap: 0; overflow: visible; }
+  .pipeline > li { min-width: 0; }
+  .stepHeading svg { transform: rotate(90deg); }
+  .main { padding-top: 32px; }
+}

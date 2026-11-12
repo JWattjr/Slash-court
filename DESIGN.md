@@ -79,6 +79,18 @@ components:
 
 # Design System: SlashCourt
 
+## Pipeline cases extension
+
+The local `/pipeline` candidate inherits the same warm paper, cobalt actions,
+Bricolage typography and ruled evidence sheets. Ordered steps form a horizontal
+assessment on desktop and a semantic ordered list on mobile. The selected
+liable step uses the established pale blue field. Case facts, duties, quotes
+and settlement credits precede expandable operator/digest metadata. Builder,
+operator history and transaction tracking follow the public case view.
+Recorded proof has its own section and never substitutes for a live read.
+Responsive render verification is still pending; this records implementation
+intent rather than a completed browser review.
+
 ## Overview
 
 **Creative North Star: "The Public Decision Dossier"**

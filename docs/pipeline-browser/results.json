@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-11-12T09:09:19.333Z",
+  "results": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "status": "PASS",
+      "scope": "Mocked RPC UI workflow, not live consensus",
+      "checks": [
+        "ordered assessment",
+        "responsive overflow",
+        "builder",
+        "claim control",
+        "accepted retained hash",
+        "appeal during pending refresh",
+        "partial read fail-closed",
+        "reload recovery"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "PASS",
+      "scope": "Mocked RPC UI workflow, not live consensus",
+      "checks": [
+        "ordered assessment",
+        "responsive overflow",
+        "builder",
+        "claim control",
+        "accepted retained hash",
+        "appeal during pending refresh",
+        "partial read fail-closed",
+        "reload recovery"
+      ]
+    }
+  ]
+}

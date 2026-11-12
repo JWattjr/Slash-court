@@ -10,7 +10,10 @@
     "start": "npm --prefix frontend run start",
     "lint": "npm --prefix frontend run lint",
     "typecheck": "npm --prefix frontend run typecheck",
-    "test:frontend": "node --experimental-strip-types --test tests/frontend/transactions.test.ts tests/frontend/refresh.test.ts tests/frontend/historical.test.ts",
+    "verify:pipeline": "node scripts/verify-pipeline.mjs",
+    "test:frontend": "node --experimental-strip-types --test tests/frontend/transactions.test.ts tests/frontend/refresh.test.ts tests/frontend/historical.test.ts tests/frontend/pipeline-budget.test.mjs",
+    "test:pipeline:browser": "node scripts/check-pipeline-browser.mjs",
+    "seed:pipeline": "node scripts/pipeline-live.mjs",
     "predeploy": "node scripts/clean-deploy-artifacts.mjs",
     "deploy": "genlayer deploy"
   },

@@ -1,0 +1,18 @@
+{
+  "schema": "slashcourt-pipeline-release/1",
+  "status": "REVIEWED_DEPLOYMENT_PENDING",
+  "network": "StudioNet",
+  "chainId": 61999,
+  "runner": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
+  "contracts": {},
+  "sourceRevision": null,
+  "transactions": [],
+  "cases": [],
+  "depositsUsedWei": "0",
+  "depositCapWei": "100000000000000000",
+  "depositAuthorization": "Owner approved cumulative 0.1 StudioNet GEN on 2026-11-12",
+  "checks": {"directTests": 217, "frontendTests": 17, "typecheck": "PASS", "productionBuild": "PASS_WEBPACK", "newContractLint": "PASS", "browserWorkflows": "PASS_MOCKED_RPC_DESKTOP_MOBILE"},
+  "originalDeployment": {"court": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a", "vault": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7", "regressionReadback": "PASS", "explorerAddressRecords": "BOTH_CONTRACT"},
+  "browserGate": {"status": "PASS_MOCKED_WORKFLOWS", "url": "http://127.0.0.1:3109/pipeline", "desktopVerified": true, "mobileVerified": true, "results": "docs/pipeline-browser/results.json"},
+  "limitations": ["No new contracts deployed", "No native credit or distributed consensus proof", "Browser workflow mocks are not live evidence", "Local tests do not prove live behavior"]
+}

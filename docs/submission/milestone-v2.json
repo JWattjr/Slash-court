@@ -1,0 +1,20 @@
+{
+  "project": "SlashCourt",
+  "milestone": "Pipeline Court — Internet Court job disputes",
+  "status": "DRAFT_NOT_READY",
+  "summary": "Adds ordered multi-agent job disputes: validators check a frozen charter, then assess each step against its own duty and received input. Code selects the earliest proven violation, refunds other bonds, and records finalized operator history.",
+  "lineage": "Built on the Liability Cascade prototype; original SlashCourt Court and Vault remain unchanged.",
+  "newContracts": [
+    {"name": "PipelineCharter", "role": "Compile judgment, frozen duties, bonds, refunds and verified native claims", "address": null, "explorerUrl": null, "evidenceType": "GenLayer Explorer Contract"},
+    {"name": "PipelineCourt", "role": "Independent exact ordered step assessments with fetched verbatim quotes", "address": null, "explorerUrl": null, "evidenceType": "GenLayer Explorer Contract"},
+    {"name": "OperatorRecord", "role": "Finalized history and deterministic bond multipliers; no LLM", "address": null, "explorerUrl": null, "evidenceType": "GenLayer Explorer Contract"}
+  ],
+  "judgmentPoints": ["Charter checkability, duty overlap and observable output", "Local input-conditioned step responsibility"],
+  "proofTransactions": [],
+  "verification": "npm run verify:pipeline; inspect each contract address record and every finalized receipt",
+  "howToUrl": "https://github.com/JWattjr/Slash-court/blob/main/docs/TUTORIAL-PIPELINE.md",
+  "proofManifest": "deploy/pipeline-2026-11-11.json",
+  "portalFieldLimitsVerified": false,
+  "blockers": ["Custody/recovery review and remaining adversarial tests", "Desktop/mobile flow verification", "Owner approval before deposits", "Fresh contracts and bounded finalized live cases", "Verified native credit", "Source/Explorer verification, clean-archive Vercel deployment and reviewed push"],
+  "submissionInstruction": "Owner submits after every gate passes; never submit this incomplete draft"
+}
