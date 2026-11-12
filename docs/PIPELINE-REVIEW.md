@@ -49,7 +49,8 @@ operator history. Deadline refunds require no model or evidence availability.
   claims/retries, rejected-value nonce replay, callback recovery, and growth.
 - GenVM AST and SDK validation pass for all three contracts with the requested
   immutable runner; Python SDK 0.18.0 and JS SDK 1.1.8 retained.
-- Existing frontend tests plus the cumulative 0.1 GEN budget regression pass.
+- 18 frontend tests pass, including cumulative-cap and observed Explorer
+  response-shape regressions.
 - Production webpack build and TypeScript pass. Local Turbopack crashed in its
   CSS worker, so browser checks use the supported webpack production build.
 - Headless Playwright passes at 1440x960 and 390x844 against next start. Tests
@@ -60,3 +61,20 @@ operator history. Deadline refunds require no model or evidence availability.
 Screenshots and machine-readable results are in pipeline-browser/. Native
 credit, distributed consensus, deployed source identity, and Explorer records
 are separate live release gates; none is established by these local tests.
+
+## Live gate result
+
+The bounded all-faithful transaction failed protocol consensus. Three leaders
+produced otherwise identical assessments but chose different valid quote
+spans; another leader failed local assessment validation. Exact comparison of
+independently chosen quote text is a demonstrated convergence risk. Votes do
+not reveal every validator's internal reason, so quote variation is not claimed
+as the sole proven cause of each disagreement. No contract change or rerun was
+made after this failure. The seed now stops on unsuccessful consensus even if
+the leader executed successfully and protocol status later becomes FINALIZED.
+
+Partial verification independently passed source bytes, one-time bindings,
+five contract records, 39 transaction records, completed allocation arithmetic,
+finalized operator history, native credit, accepted capture timing and original
+deployment regression. See PIPELINE-LIVE.md. Remaining live cases, actual UI
+refund submission and clean-archive production verification are not claimed.

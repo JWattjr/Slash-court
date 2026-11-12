@@ -1,21 +1,38 @@
 # SlashCourt
 
-## Pipeline Court milestone candidate (2026-11-11)
+## Pipeline Court milestone (2026-11-12)
 
 Pipeline Court is built on the Liability Cascade prototype. It adds three
 separate contracts and `/pipeline` for ordered multi-agent job disputes while
-preserving the original deployed Court and Vault. This addition is currently
-an **undeployed local candidate**, not submission-ready. Local checks passed
-(96 direct tests, 16 existing frontend tests, typecheck, build and contract lint);
-fresh reads also verified the original deployment. The browser check stopped
-on a local connection timeout, and no new native funds were deposited.
+preserving the original deployed Court and Vault. The three new contracts are
+deployed on StudioNet; the bounded live demonstration is recorded separately
+from local tests. **Release blocked:** the all-faithful adjudication failed
+consensus; the unclear case was not run and production was not promoted.
+See [verified partial proof and blocker](docs/PIPELINE-LIVE.md).
+The release review passed 217 direct tests, 18 frontend tests,
+TypeScript, production webpack build and all three GenVM checks. Headless
+Playwright verified desktop/mobile workflows against `next start`; mocked RPC
+workflow checks are explicitly separate from real ACCEPTED-window and transfer
+proof. The owner authorized a cumulative 0.1 StudioNet GEN deposit cap, enforced
+before broadcast by the seed script.
 
 See [handoff and release gates](docs/PIPELINE-HANDOFF.md),
 [architecture and custody audit](docs/PIPELINE-DESIGN.md),
 [tutorial](docs/TUTORIAL-PIPELINE.md), and
-[incomplete milestone draft](docs/submission/milestone-v2.json).
+[milestone update draft](docs/submission/milestone-v2.json).
 `npm run verify:pipeline` is read-only and deliberately requires real live proof.
 `node scripts/verify-pipeline.mjs --original-only` checks the original contracts.
+
+Each deployed contract has its own GenLayer Explorer Contract evidence entry:
+
+- [PipelineCharter](https://explorer-studio.genlayer.com/address/0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0)
+- [PipelineCourt](https://explorer-studio.genlayer.com/address/0x98aa6DD4D02D0734C986FA05501CDA8ac120E258)
+- [OperatorRecord](https://explorer-studio.genlayer.com/address/0x714812d639c07f11A4A831a19461BC18BFa44154)
+
+Use the dated manifest `deploy/pipeline-2026-11-11.json` for actual finalized
+receipts, source hashes, deposit reservations and limitations. Its filename
+retains the preparation date; deployment and live proof are dated November 12.
+Unclaimed settlement refunds are pull credits, not completed native transfers.
 
 Deploy frontend releases from a clean `git archive` of `frontend/` and supply
 `NEXT_PUBLIC_SLASHCOURT_SOURCE_REVISION` for the exact source commit. Use

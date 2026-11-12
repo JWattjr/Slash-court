@@ -10,11 +10,17 @@ export function explorerTransaction(hash) {
 export async function verifyExplorer(kind, value, request = fetch) {
   const url = kind === "contract" ? explorerContract(value) : explorerTransaction(value);
   const api = kind === "contract" ? `${EXPLORER}/api/address/${value}` : `${EXPLORER}/api/transactions/${value}`;
-  const response = await request(api, { headers: { "User-Agent": "Mozilla/5.0 SlashCourt Pipeline verifier" } });
+  const options = { headers: { "User-Agent": "Mozilla/5.0 SlashCourt Pipeline verifier" } };
+  let response = await request(api, options);
+  if ([502,503,504].includes(response.status)) {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    response = await request(api, options);
+  }
   if (!response.ok) throw new Error(`Explorer returned HTTP ${response.status}: ${api}`);
   const record = await response.json();
-  const data = record.data || record;
+  const data = kind === "contract" ? record.data || record : record.transaction || record.data || record;
   if (kind === "contract" && data.type !== "CONTRACT") throw new Error(`Explorer record is not a contract: ${api}`);
+  if (kind === "contract" && String(data.address || "").toLowerCase() !== value.toLowerCase()) throw new Error(`Explorer contract identity mismatch: ${api}`);
   if (kind !== "contract" && String(data.hash || data.transaction_hash || "").toLowerCase() !== value.toLowerCase()) throw new Error(`Explorer transaction identity mismatch: ${api}`);
   return { url, api, verified: true };
 }

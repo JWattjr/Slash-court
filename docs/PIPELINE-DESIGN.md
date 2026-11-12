@@ -1,6 +1,7 @@
-# Pipeline Court v2 — implementation candidate
+# Pipeline Court v2 — architecture and custody
 
-Date: 2026-11-11. This is an undeployed milestone candidate, not live evidence.
+Updated 2026-11-12. Architecture is verified separately from live receipts in
+the dated deployment manifest and PIPELINE-LIVE.md.
 
 Pipeline Court is built on the Liability Cascade prototype, reviewed and deployed
 on 2026-10-20. The port preserves the complete ordered assessment comparison and
@@ -79,10 +80,13 @@ the value. Rejected-credit attempts remain monotonic to prevent receipt replay.
 | Invalid payable business request | claim using __rejected__ | Live rejected-credit claim |
 | Transfer pending/credit unknown | permissionless verify_claim | Protocol receipt availability is required; safe retry must never assume failure |
 
-This is not a completed custody security audit. Direct tests currently cover
-53 new cases, not the complete 193-test predecessor suite. Claim reservation,
-recovery, and all stored consensus leaf mutations need further coverage before
-release. No native funds have been deposited in these contracts.
+This is a focused release review, not an external custody audit. Tests cover
+174 new direct cases plus 43 original cases (217 total). The applicable
+predecessor adversarial matrix is ported, with additional charter and custody
+coverage; the raw predecessor test count is not claimed. Claim reservation,
+recovery, native receipt identities and all stored consensus leaf mutations
+have direct regression coverage. StudioNet native transfer proof remains a
+separate receipt-based gate, recorded in the release manifest.
 
 ## Operator records
 
@@ -94,6 +98,9 @@ recorded. Multipliers are frozen when the new charter compiles.
 
 ## Release gates
 
-Contract lint, existing frontend tests, typecheck, production build, and original
-deployment readback passed. Browser verification stopped on a local connection
-timeout. There are no new addresses or live receipts. See PIPELINE-HANDOFF.md.
+Contract lint, direct/frontend tests, TypeScript, production webpack build and
+original deployment readback passed. Desktop/mobile mocked workflow checks
+passed against `next start`. Three new contracts are deployed; actual receipts,
+source identity, native credit and ACCEPTED-window proof are recorded in the
+dated release manifest. Final public production checks are recorded separately
+from local mocks. See PIPELINE-HANDOFF.md and PIPELINE-LIVE.md.

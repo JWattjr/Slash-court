@@ -1,0 +1,331 @@
+{
+  "label": "pipeline-faithful-v2:adjudicate",
+  "hash": "0xc368f549117703f9d0c6540ccecd4911f19a6f30c6751f2207696c78f9e1cb4e",
+  "status": "FINALIZED",
+  "consensusResult": "MAJORITY_DISAGREE",
+  "previouslyObservedStatus": "UNDETERMINED",
+  "observedAt": "2026-11-12T10:11:53.688Z",
+  "message": "All-faithful transaction failed protocol consensus. Three successful leader assessments have identical verdicts and observations but different valid quotes; full-envelope comparison makes citation selection a liveness risk. One other leader failed local assessment validation.",
+  "sameSuccessfulLeaderAssessmentsExceptQuotes": true,
+  "unclearCaseRun": false,
+  "rerun": false,
+  "productionPromoted": false,
+  "rounds": [
+    {
+      "round": 0,
+      "assessment": {
+        "schema_version": "slashcourt-pipeline/1",
+        "snapshot_digest": "75ad743358eaf91e0b00ad3c6fdd84b1414e4ec141d6125f86a5dbe649f73959",
+        "steps": [
+          {
+            "basis": "SEMANTIC",
+            "effective_verdict": "FAITHFUL",
+            "evidence_status": "AVAILABLE",
+            "index": "0",
+            "input": {
+              "byte_length": "128",
+              "committed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+              "http_status": "200",
+              "observed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-input.txt"
+            },
+            "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
+            "output": {
+              "byte_length": "106",
+              "committed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "http_status": "200",
+              "observed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
+            },
+            "quote": "C101,Leah Mora,west,[REDACTED]\nC102,Theo Park,east,[REDACTED]",
+            "recorded": true,
+            "semantic_verdict": "FAITHFUL",
+            "step_id": "A"
+          },
+          {
+            "basis": "SEMANTIC",
+            "effective_verdict": "FAITHFUL",
+            "evidence_status": "AVAILABLE",
+            "index": "1",
+            "input": {
+              "byte_length": "106",
+              "committed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "http_status": "200",
+              "observed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt"
+            },
+            "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
+            "output": {
+              "byte_length": "106",
+              "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "http_status": "200",
+              "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+            },
+            "quote": "C101,LEAH MORA,WEST,[REDACTED]\nC102,THEO PARK,EAST,[REDACTED]",
+            "recorded": true,
+            "semantic_verdict": "FAITHFUL",
+            "step_id": "B"
+          },
+          {
+            "basis": "SEMANTIC",
+            "effective_verdict": "FAITHFUL",
+            "evidence_status": "AVAILABLE",
+            "index": "2",
+            "input": {
+              "byte_length": "106",
+              "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "http_status": "200",
+              "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+            },
+            "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
+            "output": {
+              "byte_length": "106",
+              "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "http_status": "200",
+              "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+            },
+            "quote": "record_id,display_name,region,contact_email\nC101,LEAH MORA,WEST,[REDACTED]\nC102,THEO PARK,EAST,[REDACTED]\n",
+            "recorded": true,
+            "semantic_verdict": "FAITHFUL",
+            "step_id": "C"
+          }
+        ]
+      },
+      "votes": [
+        "disagree",
+        "agree",
+        "disagree",
+        "disagree"
+      ]
+    },
+    {
+      "round": 1,
+      "assessment": {
+        "schema_version": "slashcourt-pipeline/1",
+        "snapshot_digest": "75ad743358eaf91e0b00ad3c6fdd84b1414e4ec141d6125f86a5dbe649f73959",
+        "steps": [
+          {
+            "basis": "SEMANTIC",
+            "effective_verdict": "FAITHFUL",
+            "evidence_status": "AVAILABLE",
+            "index": "0",
+            "input": {
+              "byte_length": "128",
+              "committed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+              "http_status": "200",
+              "observed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-input.txt"
+            },
+            "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
+            "output": {
+              "byte_length": "106",
+              "committed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "http_status": "200",
+              "observed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
+            },
+            "quote": "C101,Leah Mora,west,[REDACTED]",
+            "recorded": true,
+            "semantic_verdict": "FAITHFUL",
+            "step_id": "A"
+          },
+          {
+            "basis": "SEMANTIC",
+            "effective_verdict": "FAITHFUL",
+            "evidence_status": "AVAILABLE",
+            "index": "1",
+            "input": {
+              "byte_length": "106",
+              "committed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "http_status": "200",
+              "observed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt"
+            },
+            "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
+            "output": {
+              "byte_length": "106",
+              "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "http_status": "200",
+              "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+            },
+            "quote": "C101,LEAH MORA,WEST,[REDACTED]",
+            "recorded": true,
+            "semantic_verdict": "FAITHFUL",
+            "step_id": "B"
+          },
+          {
+            "basis": "SEMANTIC",
+            "effective_verdict": "FAITHFUL",
+            "evidence_status": "AVAILABLE",
+            "index": "2",
+            "input": {
+              "byte_length": "106",
+              "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "http_status": "200",
+              "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+            },
+            "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
+            "output": {
+              "byte_length": "106",
+              "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "http_status": "200",
+              "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+            },
+            "quote": "record_id,display_name,region,contact_email\nC101,LEAH MORA,WEST,[REDACTED]\nC102,THEO PARK,EAST,[REDACTED]",
+            "recorded": true,
+            "semantic_verdict": "FAITHFUL",
+            "step_id": "C"
+          }
+        ]
+      },
+      "votes": [
+        "disagree",
+        "idle",
+        "idle",
+        "disagree"
+      ]
+    },
+    {
+      "round": 2,
+      "error": "Leader failed local assessment validation",
+      "votes": [
+        "disagree",
+        "idle",
+        "disagree",
+        "idle"
+      ]
+    },
+    {
+      "round": 3,
+      "assessment": {
+        "schema_version": "slashcourt-pipeline/1",
+        "snapshot_digest": "75ad743358eaf91e0b00ad3c6fdd84b1414e4ec141d6125f86a5dbe649f73959",
+        "steps": [
+          {
+            "basis": "SEMANTIC",
+            "effective_verdict": "FAITHFUL",
+            "evidence_status": "AVAILABLE",
+            "index": "0",
+            "input": {
+              "byte_length": "128",
+              "committed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+              "http_status": "200",
+              "observed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-input.txt"
+            },
+            "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
+            "output": {
+              "byte_length": "106",
+              "committed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "http_status": "200",
+              "observed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
+            },
+            "quote": "record_id,display_name,region,contact_email\nC101,Leah Mora,west,[REDACTED]\nC102,Theo Park,east,[REDACTED]",
+            "recorded": true,
+            "semantic_verdict": "FAITHFUL",
+            "step_id": "A"
+          },
+          {
+            "basis": "SEMANTIC",
+            "effective_verdict": "FAITHFUL",
+            "evidence_status": "AVAILABLE",
+            "index": "1",
+            "input": {
+              "byte_length": "106",
+              "committed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "http_status": "200",
+              "observed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt"
+            },
+            "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
+            "output": {
+              "byte_length": "106",
+              "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "http_status": "200",
+              "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+            },
+            "quote": "record_id,display_name,region,contact_email\nC101,LEAH MORA,WEST,[REDACTED]\nC102,THEO PARK,EAST,[REDACTED]",
+            "recorded": true,
+            "semantic_verdict": "FAITHFUL",
+            "step_id": "B"
+          },
+          {
+            "basis": "SEMANTIC",
+            "effective_verdict": "FAITHFUL",
+            "evidence_status": "AVAILABLE",
+            "index": "2",
+            "input": {
+              "byte_length": "106",
+              "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "http_status": "200",
+              "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+            },
+            "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
+            "output": {
+              "byte_length": "106",
+              "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "http_status": "200",
+              "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+              "reason_code": "OK",
+              "status": "AVAILABLE",
+              "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+            },
+            "quote": "record_id,display_name,region,contact_email\nC101,LEAH MORA,WEST,[REDACTED]\nC102,THEO PARK,EAST,[REDACTED]\n",
+            "recorded": true,
+            "semantic_verdict": "FAITHFUL",
+            "step_id": "C"
+          }
+        ]
+      },
+      "votes": [
+        "disagree",
+        "disagree",
+        "idle",
+        "idle"
+      ]
+    }
+  ]
+}

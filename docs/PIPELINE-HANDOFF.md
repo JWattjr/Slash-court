@@ -1,4 +1,47 @@
-# Pipeline Court milestone handoff — 2026-11-11
+# Pipeline Court continuation — 2026-11-12
+
+Status: **BLOCKED; NOT READY FOR SUBMISSION.**
+
+Continuation steps 1–6 completed in order: custody/finality/growth review and
+adversarial matrix, workflow tests, headless desktop/mobile checks, approved
+enforced 0.1 GEN cap, reviewed source commit, and new bound deployment.
+Step 7 stopped at the first failed live case. No rerun, further case, appeal,
+or production promotion was sent. Steps 8–10 have verified partial evidence:
+real ACCEPTED capture, native credit, deployed identity and all Explorer links.
+Step 11 production release remains blocked.
+
+- Contract source revision: baebfbe56bafed7b1d2d5ca068bffa723a1dd330.
+- New addresses, receipts and accounting: [PIPELINE-LIVE.md](PIPELINE-LIVE.md).
+- 217 direct tests, 18 frontend tests, TypeScript, pre-deploy GenVM AST/SDK
+  checks and webpack production build passed. Headless workflows passed at
+  1440x960 and 390x844; mock checks remain separate from real proof.
+- B-fault and A-fault judgments/settlements finalized successfully; subjective
+  rejection and higher-next-bond pricing verified; 13-wei native credit paid.
+- All-faithful judgment ended MAJORITY_DISAGREE, initially UNDETERMINED and
+  subsequently FINALIZED without applying the decision. Three successful
+  leaders differed only in valid quote selection. Do not treat a successful
+  leader receipt as successful protocol consensus.
+- Earlier-unclear case and native-refund UI walkthrough were not run. The
+  faithful escrow has a passed deadline and permissionless timeout exit;
+  no timeout-settlement transaction was sent after the failed gate.
+- Used/reserved 129 wei of the approved 100000000000000000 wei cap.
+- Read-only partial verification passed five contract and 39 transaction
+  records; original Court/Vault regression passed. Full readiness verifier
+  intentionally refuses this manifest.
+- Root .vercel remains preserved and untracked. Production remains unchanged.
+
+Next release requires citation convergence without weakening independent
+fetched-evidence validation, a regression covering different valid quote spans,
+and consensus-aware transaction success. Review the saved failure analysis,
+recover the timed-out escrow, then obtain authorization for a revised Court
+deployment and a new bounded live run. Never alter/redeploy the original pair.
+The blocked branch is review material, not an owner-ready Portal update.
+
+## Historical handoff — 2026-11-11
+
+Everything below records the earlier candidate and its original continuation
+instructions. The current owner's 0.1 GEN authorization and headless-browser
+override supersede its old budget and sandbox timeout gate.
 
 Status: LOCAL CANDIDATE; NOT READY FOR PORTAL.
 

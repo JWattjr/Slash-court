@@ -16,7 +16,9 @@ export async function prepareCapture(account, addresses, jobId){
     if(method==="eth_chainId")return"0xf22f";
     if(method==="eth_sendTransaction"){
       if(BigInt(params[0].value||0)!==0n)throw new Error("Capture wallet disallows deposits");
-      return wallet.sendTransaction({...params[0],account,chain:studionet});
+      const tx=params[0];
+      return wallet.sendTransaction({account,chain:studionet,to:tx.to,data:tx.data,value:0n,
+        ...(tx.gas?{gas:BigInt(tx.gas)}:{}),gasPrice:0n});
     }
     const response=await fetch(rpcURL,{method:"POST",headers:{"Content-Type":"application/json","User-Agent":"Mozilla/5.0 SlashCourt test wallet"},body:JSON.stringify({jsonrpc:"2.0",id:1,method,params})});
     const data=await response.json();if(data.error)throw new Error(data.error.message);return data.result;
@@ -26,6 +28,21 @@ export async function prepareCapture(account, addresses, jobId){
   await page.goto(`${origin}/pipeline#case=${encodeURIComponent(jobId)}`);
   await page.getByRole("heading",{name:new RegExp(jobId)}).waitFor({timeout:60000});
   return {
+    async submitClaim(recipient){
+      await page.getByText("Pull claim and native-credit verification",{exact:true}).click();
+      await page.getByLabel("Recipient address",{exact:true}).fill(recipient);
+      await page.getByRole("button",{name:"Reserve and send claim"}).click();
+      const key=`slashcourt:pipeline:61999:${[addresses.charter,addresses.court,addresses.record].join(":")}`;
+      await page.waitForFunction(key=>JSON.parse(localStorage.getItem(key)||"[]").some(t=>t.kind==="operator"),key,{timeout:60000});
+      const transaction=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).findLast(t=>t.kind==="operator"),key);
+      await page.reload();
+      await page.getByRole("heading",{name:new RegExp(jobId)}).waitFor();
+      const retained=await page.evaluate(({key,hash})=>JSON.parse(localStorage.getItem(key)||"[]").some(t=>t.hash===hash),{key,hash:transaction.hash});
+      if(!retained)throw new Error("Wallet-submitted claim hash did not survive reload");
+      await writeFile(new URL(`${jobId}-wallet-journey.json`,dir),JSON.stringify({jobId,method:"claim",recipient,hash:transaction.hash,
+        actualUiSubmission:true,reloadRecovered:true,provider:"Existing test account via EIP-1193 signing bridge; no mocked chain response",observedAt:new Date().toISOString()},null,2));
+      return transaction.hash;
+    },
     async retain(hash){
       await page.evaluate(({hash,addresses})=>{
         const key=`slashcourt:pipeline:61999:${[addresses.charter,addresses.court,addresses.record].join(":")}`;

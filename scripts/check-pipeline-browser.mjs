@@ -2,12 +2,18 @@
 import {chromium} from "../../bullseye/node_modules/playwright/index.mjs";
 import {abi} from "genlayer-js";
 import {fromRlp,fromHex} from "viem";
-import {mkdir,writeFile} from "node:fs/promises";
+import {mkdir,writeFile,readFile} from "node:fs/promises";
 import assert from "node:assert/strict";
 import {fileURLToPath} from "node:url";
 const output=new URL("../docs/pipeline-browser/",import.meta.url);await mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_EXECUTABLE||"C:/Users/User/AppData/Local/ms-playwright/chromium_headless_shell-1243/chrome-headless-shell-win64/chrome-headless-shell.exe"});
 const ADDRESS="0x"+"1".repeat(40),HASH="0x"+"a".repeat(64);
+const deployment=JSON.parse(await readFile(new URL("../frontend/lib/pipeline/deployment.json",import.meta.url),"utf8"));
+const historyKey="slashcourt:pipeline:61999:"+[
+  process.env.NEXT_PUBLIC_PIPELINE_CHARTER||deployment.charter||"0x"+"1".repeat(40),
+  process.env.NEXT_PUBLIC_PIPELINE_COURT||deployment.court||"0x"+"2".repeat(40),
+  process.env.NEXT_PUBLIC_OPERATOR_RECORD||deployment.record||"0x"+"3".repeat(40)
+].join(":");
 const now=Math.floor(Date.now()/1000);
 const job={id:"workflow-b",charter:"Synthetic workflow fixture: each step performs its frozen local duty.",digest:"f".repeat(64),
   steps:["A","B","C"].map((step_id,i)=>({step_id,operator:"0x"+String(i+1).repeat(40),duty:["Redact emails","Uppercase names, preserve contacts as received","Export received CSV unchanged"][i],bond_units:10})),
@@ -20,11 +26,10 @@ try{
 for(const viewport of[{width:1440,height:960},{width:390,height:844}]){
   const context=await browser.newContext({viewport});const page=await context.newPage();const errors=[];let failJob=false,holdJob=false;
   page.on("pageerror",e=>errors.push(e.message));
-  await context.addInitScript(({address,hash})=>{
+  await context.addInitScript(({address,hash,historyKey})=>{
     window.ethereum={isMetaMask:true,request:async({method})=>method==="eth_accounts"||method==="eth_requestAccounts"?[address]:method==="eth_chainId"?"0xf22f":null,on(){},removeListener(){}};
-    const key="slashcourt:pipeline:61999:"+[1,2,3].map(i=>"0x"+String(i).repeat(40)).join(":");
-    localStorage.setItem(key,JSON.stringify([{hash,kind:"adjudication",status:"ACCEPTED",execution:"SUCCESS",success:true,appealable:true,appealEligibility:"eligible",updatedAt:Date.now()}]));
-  },{address:ADDRESS,hash:HASH});
+    localStorage.setItem(historyKey,JSON.stringify([{hash,kind:"adjudication",status:"ACCEPTED",execution:"SUCCESS",success:true,appealable:true,appealEligibility:"eligible",updatedAt:Date.now()}]));
+  },{address:ADDRESS,hash:HASH,historyKey});
   await page.route("**/api",async route=>{
     const request=route.request().postDataJSON();let response;
     if(request.method==="gen_call"){

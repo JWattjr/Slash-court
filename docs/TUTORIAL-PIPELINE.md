@@ -1,7 +1,8 @@
-# Pipeline Court tutorial — implementation candidate
+# Pipeline Court tutorial
 
-This tutorial describes the new code, not a released deployment. Until the
-live manifest contains verified addresses and receipts, use it for local review.
+This tutorial describes the implemented three-contract flow. Actual deployment
+identity, finalized receipts and native credits are recorded in the dated live
+manifest; local tests and synthetic incident fixtures are not production proof.
 The original single-operator SlashCourt deployment stays separate. Pipeline
 Court is built on the Liability Cascade prototype and preserves its ordered
 local judgments and earliest-violation allocation. The new milestone adds
