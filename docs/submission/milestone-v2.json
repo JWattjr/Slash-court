@@ -1,352 +1,195 @@
 {
   "project": "SlashCourt",
   "milestone": "Pipeline Court — Internet Court job disputes",
-  "status": "BLOCKED_DO_NOT_SUBMIT",
-  "resubmitReady": false,
-  "summary": "Pipeline Court adds frozen charters, local-step responsibility judgments, native escrow and finalized operator records, built on the Liability Cascade prototype. A new StudioNet deployment proves subjective rejection, accepted bonds, B-fault and A-fault attribution, increased next-bond pricing, a 13-wei native claim, and a genuine ACCEPTED appeal control. The all-faithful adjudication failed consensus; the unclear case and production release are not complete. Incident fixtures are synthetic. This milestone is not ready for submission.",
+  "status": "LIVE_VERIFIED_PRODUCTION_PENDING",
+  "summary": "Pipeline Court extends SlashCourt to ordered multi-agent job disputes. Validators compile a frozen charter and independently judge each step against its own received input. Exact ordered assessment and fetched quotes bind the evidence. Code slashes only the earliest proven violator, refunds other bonds, and applies deadline refunds when earlier uncertainty blocks attribution. Three new StudioNet contracts add native pull claims and finalized fault-history bond pricing. Built on Liability Cascade; the original SlashCourt contracts remain unchanged. All incident logs are labelled synthetic.",
   "newContracts": [
     {
       "name": "OperatorRecord",
-      "role": "Finalized history and deterministic bond multipliers; no LLM",
-      "address": "0x714812d639c07f11A4A831a19461BC18BFa44154",
+      "address": "0x20Dd0686FA5d377a5D26E37eD7D5a711DBb528bb",
+      "explorerUrl": "https://explorer-studio.genlayer.com/address/0x20Dd0686FA5d377a5D26E37eD7D5a711DBb528bb",
       "evidenceType": "GenLayer Explorer Contract",
-      "explorerUrl": "https://explorer-studio.genlayer.com/address/0x714812d639c07f11A4A831a19461BC18BFa44154",
-      "sourceSha256": "3de7d81f2b0dd5fbae8a1b49e221f67bb7cc4cfe189a76fe3f026c97b51f1c94"
+      "sourceRevision": "0d6ef16bcadd77d9a16a12dddb797676e09fab87",
+      "sourceSha256": "3de7d81f2b0dd5fbae8a1b49e221f67bb7cc4cfe189a76fe3f026c97b51f1c94",
+      "role": "Finalized history and bond multipliers; no LLM"
     },
     {
       "name": "PipelineCharter",
-      "role": "Compile judgment, frozen local duties, native escrow and pull claims",
-      "address": "0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0",
+      "address": "0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430",
+      "explorerUrl": "https://explorer-studio.genlayer.com/address/0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430",
       "evidenceType": "GenLayer Explorer Contract",
-      "explorerUrl": "https://explorer-studio.genlayer.com/address/0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0",
-      "sourceSha256": "f744df572e6e4e0d7b6a154e9498a5bfa8c7fdac82ce0cd3e067ce86bfa18418"
+      "sourceRevision": "0d6ef16bcadd77d9a16a12dddb797676e09fab87",
+      "sourceSha256": "f744df572e6e4e0d7b6a154e9498a5bfa8c7fdac82ce0cd3e067ce86bfa18418",
+      "role": "Charter compilation and native escrow"
     },
     {
       "name": "PipelineCourt",
-      "role": "Independent local-step assessment and fetched evidence",
-      "address": "0x98aa6DD4D02D0734C986FA05501CDA8ac120E258",
+      "address": "0x282e3a9E52Ec05fDaE32DF787D88Ac3d5Ce70C41",
+      "explorerUrl": "https://explorer-studio.genlayer.com/address/0x282e3a9E52Ec05fDaE32DF787D88Ac3d5Ce70C41",
       "evidenceType": "GenLayer Explorer Contract",
-      "explorerUrl": "https://explorer-studio.genlayer.com/address/0x98aa6DD4D02D0734C986FA05501CDA8ac120E258",
-      "sourceSha256": "543023fe7abed5c0b5b102dfe0091fdf776ff424a4f5144a92df55eef19cef2e"
+      "sourceRevision": "0d6ef16bcadd77d9a16a12dddb797676e09fab87",
+      "sourceSha256": "b3c90002ad9142aef733e68064062ce442cca541107a63e8b4ae8e8e48a237e4",
+      "role": "Independent local-step evidence judgment"
     }
   ],
-  "sourceRevision": "baebfbe56bafed7b1d2d5ca068bffa723a1dd330",
+  "originalContracts": [
+    {
+      "name": "SlashCourt (unchanged)",
+      "address": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
+      "explorerUrl": "https://explorer-studio.genlayer.com/address/0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
+      "evidenceType": "GenLayer Explorer Contract"
+    },
+    {
+      "name": "OperatorBondVault (unchanged)",
+      "address": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
+      "explorerUrl": "https://explorer-studio.genlayer.com/address/0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
+      "evidenceType": "GenLayer Explorer Contract"
+    }
+  ],
   "judgmentPoints": [
-    "Objective, distinct, observable local duties",
-    "Each step against its own received input; fetched verbatim evidence"
-  ],
-  "requiredMilestones": [
-    {
-      "requirement": "Subjective charter rejected",
-      "status": "PASS",
-      "reference": "pipeline-subjective-v2"
-    },
-    {
-      "requirement": "Accepted charter and own-wallet finalized bonds",
-      "status": "PASS",
-      "reference": "pipeline-b-fault-v2"
-    },
-    {
-      "requirement": "B liable; A/C pull refunds allocated",
-      "status": "PASS",
-      "reference": "pipeline-b-fault-v2"
-    },
-    {
-      "requirement": "A liable; B/C faithful propagation",
-      "status": "PASS",
-      "reference": "pipeline-a-fault-v2"
-    },
-    {
-      "requirement": "All-faithful finalized adjudication and filing allocation",
-      "status": "FAILED_CONSENSUS",
-      "reference": "pipeline-faithful-v2"
-    },
-    {
-      "requirement": "Earlier uncertainty and deadline refunds",
-      "status": "NOT_RUN",
-      "reference": "pipeline-unclear-v2"
-    },
-    {
-      "requirement": "Finalized record and higher next bond",
-      "status": "PASS",
-      "reference": "pipeline-history-price-v2"
-    },
-    {
-      "requirement": "Native pull claim with positive verified credit",
-      "status": "PASS",
-      "reference": "0x32de291edc9b1c388b55f628bb63b36cbdb918465832db2ea6f9876df31c995b"
-    }
+    "Charter: objective local duty, non-overlap, observable output",
+    "Court: input-conditioned responsibility and verbatim fetched evidence"
   ],
   "evidence": [
     {
       "name": "OperatorRecord",
-      "role": "Finalized history and deterministic bond multipliers; no LLM",
-      "address": "0x714812d639c07f11A4A831a19461BC18BFa44154",
+      "address": "0x20Dd0686FA5d377a5D26E37eD7D5a711DBb528bb",
+      "explorerUrl": "https://explorer-studio.genlayer.com/address/0x20Dd0686FA5d377a5D26E37eD7D5a711DBb528bb",
       "evidenceType": "GenLayer Explorer Contract",
-      "explorerUrl": "https://explorer-studio.genlayer.com/address/0x714812d639c07f11A4A831a19461BC18BFa44154",
-      "sourceSha256": "3de7d81f2b0dd5fbae8a1b49e221f67bb7cc4cfe189a76fe3f026c97b51f1c94"
+      "sourceRevision": "0d6ef16bcadd77d9a16a12dddb797676e09fab87",
+      "sourceSha256": "3de7d81f2b0dd5fbae8a1b49e221f67bb7cc4cfe189a76fe3f026c97b51f1c94",
+      "role": "Finalized history and bond multipliers; no LLM"
     },
     {
       "name": "PipelineCharter",
-      "role": "Compile judgment, frozen local duties, native escrow and pull claims",
-      "address": "0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0",
+      "address": "0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430",
+      "explorerUrl": "https://explorer-studio.genlayer.com/address/0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430",
       "evidenceType": "GenLayer Explorer Contract",
-      "explorerUrl": "https://explorer-studio.genlayer.com/address/0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0",
-      "sourceSha256": "f744df572e6e4e0d7b6a154e9498a5bfa8c7fdac82ce0cd3e067ce86bfa18418"
+      "sourceRevision": "0d6ef16bcadd77d9a16a12dddb797676e09fab87",
+      "sourceSha256": "f744df572e6e4e0d7b6a154e9498a5bfa8c7fdac82ce0cd3e067ce86bfa18418",
+      "role": "Charter compilation and native escrow"
     },
     {
       "name": "PipelineCourt",
-      "role": "Independent local-step assessment and fetched evidence",
-      "address": "0x98aa6DD4D02D0734C986FA05501CDA8ac120E258",
+      "address": "0x282e3a9E52Ec05fDaE32DF787D88Ac3d5Ce70C41",
+      "explorerUrl": "https://explorer-studio.genlayer.com/address/0x282e3a9E52Ec05fDaE32DF787D88Ac3d5Ce70C41",
       "evidenceType": "GenLayer Explorer Contract",
-      "explorerUrl": "https://explorer-studio.genlayer.com/address/0x98aa6DD4D02D0734C986FA05501CDA8ac120E258",
-      "sourceSha256": "543023fe7abed5c0b5b102dfe0091fdf776ff424a4f5144a92df55eef19cef2e"
+      "sourceRevision": "0d6ef16bcadd77d9a16a12dddb797676e09fab87",
+      "sourceSha256": "b3c90002ad9142aef733e68064062ce442cca541107a63e8b4ae8e8e48a237e4",
+      "role": "Independent local-step evidence judgment"
     },
     {
-      "name": "deploy-record",
-      "url": "https://explorer-studio.genlayer.com/tx/0xd57c44ed93efaaaed78f783f8d22463695e8dad16438bb6b42ac21ba0e306c48",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "SlashCourt (unchanged)",
+      "address": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
+      "explorerUrl": "https://explorer-studio.genlayer.com/address/0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
+      "evidenceType": "GenLayer Explorer Contract"
     },
     {
-      "name": "deploy-charter",
-      "url": "https://explorer-studio.genlayer.com/tx/0xabcb52413e6980089a0c2c45b5e431711faac0757b79e23fc5a614bf319da87a",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "OperatorBondVault (unchanged)",
+      "address": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
+      "explorerUrl": "https://explorer-studio.genlayer.com/address/0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
+      "evidenceType": "GenLayer Explorer Contract"
     },
     {
-      "name": "deploy-court",
-      "url": "https://explorer-studio.genlayer.com/tx/0x576d121f2c68fd7042ebac05b012a855024588fcc302036133a8e8c536c6f8b5",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "pipeline-subjective-v2 compilation",
+      "url": "https://explorer-studio.genlayer.com/tx/0x20fd0fd6d810c93acd97f03fc97d9387b3b33c3080f607e918b28731f6ccf1e6"
     },
     {
-      "name": "bind-charter",
-      "url": "https://explorer-studio.genlayer.com/tx/0x148d6a0bc6177bb14722e53df9e36f995e369bfcd438e60253959df67047206e",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "pipeline-b-fault-v2 compilation",
+      "url": "https://explorer-studio.genlayer.com/tx/0x6cf250dfce38d10216c944af6ccea44dfd56ad76c398c453971d2d75b0f1fc68"
     },
     {
-      "name": "bind-record",
-      "url": "https://explorer-studio.genlayer.com/tx/0xef0a699cd92333cc3440c542754c69700c83fb0f73e5a1b79eff1c12824a2e15",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "pipeline-a-fault-v2 compilation",
+      "url": "https://explorer-studio.genlayer.com/tx/0xee68c2df2e2709d3cfe0ee9885c8bece57145a1c76e0e174f85e3dd9f38adb28"
     },
     {
-      "name": "pipeline-subjective-v2:compile",
-      "url": "https://explorer-studio.genlayer.com/tx/0xea10a8669caa1545710af18c818325818c5c6d1216b7e308ded1428d1bf4c3d3",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "pipeline-faithful-v2 compilation",
+      "url": "https://explorer-studio.genlayer.com/tx/0xb0fbf07fcc53df026bd9f9c4d4a60a5d8ab3d94a1a4a5ed3401226c4916bf3d0"
     },
     {
-      "name": "pipeline-b-fault-v2:compile",
-      "url": "https://explorer-studio.genlayer.com/tx/0x1bd279ebeb811d2cce5bcf9a4d47efe7b66bfd0f7730d6d86c4ad924b7b4710a",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "pipeline-unclear-v2 compilation",
+      "url": "https://explorer-studio.genlayer.com/tx/0x537e154474661ee4b3c62c2df4f18a3aa7b57ede9dc6eb3548186f72515edafe"
     },
     {
-      "name": "pipeline-b-fault-v2:deposit-A",
-      "url": "https://explorer-studio.genlayer.com/tx/0x93be991dcb7264de4f97f098c966b40189aba17b8e8e7a0302864b553419ae39",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "pipeline-history-price-v2 compilation",
+      "url": "https://explorer-studio.genlayer.com/tx/0xc843ecb866cd95dcdeebe96a1289e049cf47a19aa2dd4be10757f488f540dfe1"
     },
     {
-      "name": "pipeline-b-fault-v2:deposit-B",
-      "url": "https://explorer-studio.genlayer.com/tx/0x09eeedbab9920a44e6f4f09fa1a8deb6af8a9c697c71be708a946dd1c7bfc4fd",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "pipeline-b-fault-v2",
+      "url": "https://explorer-studio.genlayer.com/tx/0xbf48f171990b956d6d64c286bbd814ff73adf67132880edc88077c9998412d02"
     },
     {
-      "name": "pipeline-b-fault-v2:deposit-C",
-      "url": "https://explorer-studio.genlayer.com/tx/0xdf15de7055d919651d6dda05c732dafd80b18bd721b7e901d5c22a5e820d0b85",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "pipeline-a-fault-v2",
+      "url": "https://explorer-studio.genlayer.com/tx/0x58d8d86f0be8deb5d42aee30d0eeab72514b08efe3acdd3e89f48ab4405ec454"
     },
     {
-      "name": "pipeline-b-fault-v2:record-A",
-      "url": "https://explorer-studio.genlayer.com/tx/0x597ff2a91eb0d24b99eec9e7dc86b7c4a5ca6fcf5f7578dde68370acf7bc80e7",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "pipeline-faithful-v2",
+      "url": "https://explorer-studio.genlayer.com/tx/0x8190d11555bcd8d96bccdf01b78ec1696cb226632c5e60b3e7a52d66bd6ff349"
     },
     {
-      "name": "pipeline-b-fault-v2:record-B",
-      "url": "https://explorer-studio.genlayer.com/tx/0x5e178682176eb9b67c119eace99ffaf9ece6c7d88982e8f41a84fd624dfe3f25",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
+      "name": "pipeline-unclear-v2",
+      "url": "https://explorer-studio.genlayer.com/tx/0x39aa06840d2932015e0b0c4937b4d63e65ca9234f8377723420289962aee7289"
     },
     {
-      "name": "pipeline-b-fault-v2:record-C",
-      "url": "https://explorer-studio.genlayer.com/tx/0x345c8ff24c20b9415f2de9d9934fb63cdd37d56322ec6d28a1f7efb379d9dd38",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-b-fault-v2:file",
-      "url": "https://explorer-studio.genlayer.com/tx/0xec585cf120762fb9f5505bde8a623461dc5a98ba560bcfc3e9148af5c88fd97d",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-b-fault-v2:adjudicate",
-      "url": "https://explorer-studio.genlayer.com/tx/0x8e60eaca45fbc1f2ba55700186e2277c61c3bd6eaac2532cdb18de46565fcf4e",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-b-fault-v2:settle",
-      "url": "https://explorer-studio.genlayer.com/tx/0x881c3692fd85ef898fdb58431e8fde7c88fcf7ca507e57bfcaaa6b939ca1a828",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-history-price-v2:compile",
-      "url": "https://explorer-studio.genlayer.com/tx/0xc67f2b06d80a963ec10203e5c04c8c7d84da4485d9416a4a3890239363a285f5",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-b-fault-v2:native-claim",
-      "url": "https://explorer-studio.genlayer.com/tx/0x32de291edc9b1c388b55f628bb63b36cbdb918465832db2ea6f9876df31c995b",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-b-fault-v2:verify-claim",
-      "url": "https://explorer-studio.genlayer.com/tx/0x90516b0fd2cb7e209e8ee535c6952e039132174fdb2d37a5235a253ba758911c",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-a-fault-v2:compile",
-      "url": "https://explorer-studio.genlayer.com/tx/0x1c81025b047530370036d0d2867994c728d472b58a44f6a61298eda82093fc09",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-a-fault-v2:deposit-A",
-      "url": "https://explorer-studio.genlayer.com/tx/0xe2f990128b72197fa285b34a08b3cc6b3540cc2352202ad67a6e1e2b88bd8161",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-a-fault-v2:deposit-B",
-      "url": "https://explorer-studio.genlayer.com/tx/0xa2695e16a3c414d0cc1c95845cefbcf3577432b00807734e6665fd73b3e0e1c3",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-a-fault-v2:deposit-C",
-      "url": "https://explorer-studio.genlayer.com/tx/0x092fa1ec0d4f6305b8147cd7b2615c641143d4c74d3aacae68a08c6b665a86a3",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-a-fault-v2:record-A",
-      "url": "https://explorer-studio.genlayer.com/tx/0x1013bf7f9c4abc11d8d2d0a04e6f8bd0eaa34411a41e33424fc16b45e4efda25",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-a-fault-v2:record-B",
-      "url": "https://explorer-studio.genlayer.com/tx/0xfeb2a3485c110c80aa1cf20502cad48180c6c933a7099e0376aa55d98311b0cf",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-a-fault-v2:record-C",
-      "url": "https://explorer-studio.genlayer.com/tx/0xc4fbcd89677a26f47f5d5cab4f384644aa1ce4042f253618ce7606f855d54e08",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-a-fault-v2:file",
-      "url": "https://explorer-studio.genlayer.com/tx/0xc3897d500a8cc41a7b49afdf4fc8300d00cac4ff795e08923ff3210ff9835540",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-a-fault-v2:adjudicate",
-      "url": "https://explorer-studio.genlayer.com/tx/0x85089349981f1ebdd2d7da8ef9c853330940290b5f0a915a186e64f99a8f3614",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-a-fault-v2:settle",
-      "url": "https://explorer-studio.genlayer.com/tx/0x8176755511f7454d90303245835fb498ae160ae4a00a3654c6ca8e380e5dbfcf",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-faithful-v2:compile",
-      "url": "https://explorer-studio.genlayer.com/tx/0xc6e58767102ac1593395295f585cd600712ce9cbb5fea918fb6d616b7fed4670",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-faithful-v2:deposit-A",
-      "url": "https://explorer-studio.genlayer.com/tx/0x37cf8abb782df3a14224e7d010360ddf02b46c8f30caa3a812cfbf29c505e8f8",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-faithful-v2:deposit-B",
-      "url": "https://explorer-studio.genlayer.com/tx/0xed396e5519460cf7c09cd8babed3e2222fb963769266f8d11ccaa4c6ef677f16",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-faithful-v2:deposit-C",
-      "url": "https://explorer-studio.genlayer.com/tx/0x8dd51c310a4d171e358d0d37563065ecc34804341e94046c05c5866d28d50291",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-faithful-v2:record-A",
-      "url": "https://explorer-studio.genlayer.com/tx/0x0612a4bf7be93e104ce18d2715c918a735a8047743fad984ddbfe0f223ad76e9",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-faithful-v2:record-B",
-      "url": "https://explorer-studio.genlayer.com/tx/0xf604879038621651548580158c622c2c12ed505ee7aaa8b8a91c385685d8d24c",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-faithful-v2:record-C",
-      "url": "https://explorer-studio.genlayer.com/tx/0x5835bd9a8560442190170c40e0667a091d515ed2467fe90b46e7de18ce22b712",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-faithful-v2:file",
-      "url": "https://explorer-studio.genlayer.com/tx/0xe3ee8cdcb265a766662176f60b92cb582b89538f3cb005309c561c3b9afc2793",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE"
-    },
-    {
-      "name": "pipeline-faithful-v2:adjudicate",
-      "url": "https://explorer-studio.genlayer.com/tx/0xc368f549117703f9d0c6540ccecd4911f19a6f30c6751f2207696c78f9e1cb4e",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_DISAGREE"
+      "name": "Native claim",
+      "url": "https://explorer-studio.genlayer.com/tx/0x6eb2fd46560881d79903c880f7af0fc255daa80fa928d8841c2ccc66c31cd284"
     },
     {
       "name": "Native credit child",
-      "url": "https://explorer-studio.genlayer.com/tx/0x2e9008503e38bec0ce9dbcec3e66851ff4da52f37a3a309e7f8a2756f222bcb6"
+      "url": "https://explorer-studio.genlayer.com/tx/0x23d67ea5cd398f53367d6c607fbf778d7d56309600580ed5ea200e938d8d0e99"
     },
     {
-      "name": "Real ACCEPTED capture",
-      "url": "https://github.com/JWattjr/Slash-court/blob/pipeline-v2-live-proof-blocked-20261112/docs/pipeline-live/pipeline-b-fault-v2-accepted.png"
+      "name": "Live proof manifest",
+      "url": "https://slash-court.vercel.app/pipeline-proof.json"
     }
   ],
-  "proofManifest": "deploy/pipeline-2026-11-11.json",
-  "howTo": "Review docs/PIPELINE-LIVE.md and run node scripts/verify-pipeline.mjs --partial. Full npm run verify:pipeline intentionally fails while blocked.",
-  "depositsUsedWei": "129",
+  "howTo": "Open /pipeline, compare B-fault with A-fault and faithful propagation, inspect the all-faithful and earlier-unclear cases, review operator pricing and native credit, then run npm run verify:pipeline.",
+  "proofManifest": "deploy/pipeline-2026-11-12.json",
+  "sourceRevision": "0d6ef16bcadd77d9a16a12dddb797676e09fab87",
   "depositCapGEN": "0.1",
-  "production": {
-    "updated": false,
-    "url": "https://slash-court.vercel.app",
-    "reason": "Live all-faithful consensus failure; release gate stopped"
-  },
-  "portalSubmitted": false
+  "depositsUsedWei": "311",
+  "portalSubmitted": false,
+  "requiredMilestones": [
+    {
+      "requirement": "Subjective charter rejected",
+      "caseId": "pipeline-subjective-v2"
+    },
+    {
+      "requirement": "Accepted charter and all own-wallet finalized bonds",
+      "caseId": "pipeline-b-fault-v2"
+    },
+    {
+      "requirement": "Only B slashed; A/C refunded",
+      "caseId": "pipeline-b-fault-v2"
+    },
+    {
+      "requirement": "Only A slashed; B/C faithful propagation",
+      "caseId": "pipeline-a-fault-v2"
+    },
+    {
+      "requirement": "All faithful; filing bond to operators",
+      "caseId": "pipeline-faithful-v2"
+    },
+    {
+      "requirement": "Earlier uncertainty; deadline refunds",
+      "caseId": "pipeline-unclear-v2"
+    },
+    {
+      "requirement": "Finalized record and increased next bond",
+      "caseId": "pipeline-history-price-v2"
+    },
+    {
+      "requirement": "Pull claim with verified native credit",
+      "transactionHash": "0x6eb2fd46560881d79903c880f7af0fc255daa80fa928d8841c2ccc66c31cd284"
+    }
+  ],
+  "appealCapture": {
+    "hash": "0xbf48f171990b956d6d64c286bbd814ff73adf67132880edc88077c9998412d02",
+    "observedAt": "2026-11-12T10:56:36.398Z",
+    "enabled": true,
+    "appealSubmitted": false,
+    "provider": "Actual existing StudioNet test account through EIP-1193 bridge; not the MetaMask extension",
+    "screenshot": "docs/pipeline-live/pipeline-b-fault-v2-accepted.png",
+    "publicScreenshotUrl": "https://github.com/JWattjr/Slash-court/blob/main/docs/pipeline-live/pipeline-b-fault-v2-accepted.png"
+  }
 }

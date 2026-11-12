@@ -1,61 +1,43 @@
-# Pipeline Court live evidence — blocked release
+# Pipeline Court live evidence
 
-Resubmit-ready: **NO**. Verified 2026-11-12T10:16:08.858Z. StudioNet 61999. Every incident log is synthetic.
+Verified 2026-11-12T15:29:45.711Z. StudioNet 61999. All incident logs are synthetic.
 
-Contract source revision: baebfbe56bafed7b1d2d5ca068bffa723a1dd330. Original Court/Vault unchanged. No production update or Portal submission.
+Source revision: 0d6ef16bcadd77d9a16a12dddb797676e09fab87.
 
-## Contract evidence
+The a36e0c8 deployment is the **previous attempt**; see [historical evidence](PIPELINE-PREVIOUS-ATTEMPT.md). Its 53 wei was recovered through [timeout settlement](https://explorer-studio.genlayer.com/tx/0x243492427cc3b27514f62c7959b18063fbade003655fdb8e79815635a069964e) and four individually verified native credits recorded in the historical manifest.
 
-- [OperatorRecord: 0x714812d639c07f11A4A831a19461BC18BFa44154](https://explorer-studio.genlayer.com/address/0x714812d639c07f11A4A831a19461BC18BFa44154) — separate GenLayer Explorer Contract evidence.
-- [PipelineCharter: 0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0](https://explorer-studio.genlayer.com/address/0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0) — separate GenLayer Explorer Contract evidence.
-- [PipelineCourt: 0x98aa6DD4D02D0734C986FA05501CDA8ac120E258](https://explorer-studio.genlayer.com/address/0x98aa6DD4D02D0734C986FA05501CDA8ac120E258) — separate GenLayer Explorer Contract evidence.
+- [OperatorRecord: 0x20Dd0686FA5d377a5D26E37eD7D5a711DBb528bb](https://explorer-studio.genlayer.com/address/0x20Dd0686FA5d377a5D26E37eD7D5a711DBb528bb) — separate GenLayer Explorer Contract evidence.
+- [PipelineCharter: 0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430](https://explorer-studio.genlayer.com/address/0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430) — separate GenLayer Explorer Contract evidence.
+- [PipelineCourt: 0x282e3a9E52Ec05fDaE32DF787D88Ac3d5Ce70C41](https://explorer-studio.genlayer.com/address/0x282e3a9E52Ec05fDaE32DF787D88Ac3d5Ce70C41) — separate GenLayer Explorer Contract evidence.
 
-## Required milestones
+## Finalized cases
 
-| Requirement | Actual result | Reference |
-| --- | --- | --- |
-| Subjective charter rejected | PASS | pipeline-subjective-v2 |
-| Accepted charter and own-wallet finalized bonds | PASS | pipeline-b-fault-v2 |
-| B liable; A/C pull refunds allocated | PASS | pipeline-b-fault-v2 |
-| A liable; B/C faithful propagation | PASS | pipeline-a-fault-v2 |
-| All-faithful finalized adjudication and filing allocation | FAILED_CONSENSUS | pipeline-faithful-v2 |
-| Earlier uncertainty and deadline refunds | NOT_RUN | pipeline-unclear-v2 |
-| Finalized record and higher next bond | PASS | pipeline-history-price-v2 |
-| Native pull claim with positive verified credit | PASS | 0x32de291edc9b1c388b55f628bb63b36cbdb918465832db2ea6f9876df31c995b |
+- pipeline-subjective-v2: REJECTED. [Compilation](https://explorer-studio.genlayer.com/tx/0x20fd0fd6d810c93acd97f03fc97d9387b3b33c3080f607e918b28731f6ccf1e6). 
+- pipeline-b-fault-v2: PIPELINE_FAULT. [Compilation](https://explorer-studio.genlayer.com/tx/0x6cf250dfce38d10216c944af6ccea44dfd56ad76c398c453971d2d75b0f1fc68). [Adjudication](https://explorer-studio.genlayer.com/tx/0xbf48f171990b956d6d64c286bbd814ff73adf67132880edc88077c9998412d02). [Settlement](https://explorer-studio.genlayer.com/tx/0xede90d9fc12a4e962862d30cdbace8b5c94078e9913f50e0f6853249bcfad5c2). 
+- pipeline-a-fault-v2: PIPELINE_FAULT. [Compilation](https://explorer-studio.genlayer.com/tx/0xee68c2df2e2709d3cfe0ee9885c8bece57145a1c76e0e174f85e3dd9f38adb28). [Adjudication](https://explorer-studio.genlayer.com/tx/0x58d8d86f0be8deb5d42aee30d0eeab72514b08efe3acdd3e89f48ab4405ec454). [Settlement](https://explorer-studio.genlayer.com/tx/0xb28b3c88cecef6eb81f496bc1a4af04aa95a4a328547ffce6e741c198c288ddf). 
+- pipeline-faithful-v2: NO_PIPELINE_FAULT. [Compilation](https://explorer-studio.genlayer.com/tx/0xb0fbf07fcc53df026bd9f9c4d4a60a5d8ab3d94a1a4a5ed3401226c4916bf3d0). [Adjudication](https://explorer-studio.genlayer.com/tx/0x8190d11555bcd8d96bccdf01b78ec1696cb226632c5e60b3e7a52d66bd6ff349). [Settlement](https://explorer-studio.genlayer.com/tx/0xd184f07c5ef5fd42a4d0aaf3780f334b1bc7fb926ccf475b9c756e8178acb5fb). 
+- pipeline-unclear-v2: VOID_EARLIER_UNCERTAINTY. [Compilation](https://explorer-studio.genlayer.com/tx/0x537e154474661ee4b3c62c2df4f18a3aa7b57ede9dc6eb3548186f72515edafe). [Adjudication](https://explorer-studio.genlayer.com/tx/0x39aa06840d2932015e0b0c4937b4d63e65ca9234f8377723420289962aee7289). [Settlement](https://explorer-studio.genlayer.com/tx/0x5050d4ddf2d7be6a90bc63217e8377bdfb61326503e3802d1fb3219513728f0f). 
+- pipeline-history-price-v2: Higher bond verified. [Compilation](https://explorer-studio.genlayer.com/tx/0xc843ecb866cd95dcdeebe96a1289e049cf47a19aa2dd4be10757f488f540dfe1). 
 
-## Finalized receipts
+All above parent transactions are protocol FINALIZED with successful execution. The accepted charter's own-wallet bond deposit receipts are retained individually in the manifest. The eight required milestones share these six charters; they are not described as eight separate adjudications.
 
-- pipeline-subjective-v2: [compilation](https://explorer-studio.genlayer.com/tx/0xea10a8669caa1545710af18c818325818c5c6d1216b7e308ded1428d1bf4c3d3) FINALIZED/MAJORITY_AGREE. 
-- pipeline-b-fault-v2: [compilation](https://explorer-studio.genlayer.com/tx/0x1bd279ebeb811d2cce5bcf9a4d47efe7b66bfd0f7730d6d86c4ad924b7b4710a) FINALIZED/MAJORITY_AGREE. [Adjudication](https://explorer-studio.genlayer.com/tx/0x8e60eaca45fbc1f2ba55700186e2277c61c3bd6eaac2532cdb18de46565fcf4e) and [settlement](https://explorer-studio.genlayer.com/tx/0x881c3692fd85ef898fdb58431e8fde7c88fcf7ca507e57bfcaaa6b939ca1a828) FINALIZED/MAJORITY_AGREE; PIPELINE_FAULT. 
-- pipeline-history-price-v2: [compilation](https://explorer-studio.genlayer.com/tx/0xc67f2b06d80a963ec10203e5c04c8c7d84da4485d9416a4a3890239363a285f5) FINALIZED/MAJORITY_AGREE. 
-- pipeline-a-fault-v2: [compilation](https://explorer-studio.genlayer.com/tx/0x1c81025b047530370036d0d2867994c728d472b58a44f6a61298eda82093fc09) FINALIZED/MAJORITY_AGREE. [Adjudication](https://explorer-studio.genlayer.com/tx/0x85089349981f1ebdd2d7da8ef9c853330940290b5f0a915a186e64f99a8f3614) and [settlement](https://explorer-studio.genlayer.com/tx/0x8176755511f7454d90303245835fb498ae160ae4a00a3654c6ca8e380e5dbfcf) FINALIZED/MAJORITY_AGREE; PIPELINE_FAULT. 
-- pipeline-faithful-v2: [compilation](https://explorer-studio.genlayer.com/tx/0xc6e58767102ac1593395295f585cd600712ce9cbb5fea918fb6d616b7fed4670) FINALIZED/MAJORITY_AGREE. [Adjudication](https://explorer-studio.genlayer.com/tx/0xc368f549117703f9d0c6540ccecd4911f19a6f30c6751f2207696c78f9e1cb4e) failed consensus: FINALIZED/MAJORITY_DISAGREE, previously observed UNDETERMINED. 
+## Deterministic accounting (wei)
 
-## Accounting (wei)
+| Case | A credit | B credit | C credit | Claimant credit | Liable step |
+| --- | ---: | ---: | ---: | ---: | --- |
+| pipeline-b-fault-v2 | 10 | 0 | 10 | 13 | B |
+| pipeline-a-fault-v2 | 0 | 20 | 10 | 13 | A |
+| pipeline-faithful-v2 | 21 | 21 | 11 | 0 | None |
+| pipeline-unclear-v2 | 20 | 20 | 10 | 3 | None |
 
-| Case | A credit | B credit | C credit | Claimant credit |
-| --- | ---: | ---: | ---: | ---: |
-| pipeline-b-fault-v2 | 10 | 0 | 10 | 13 |
-| pipeline-a-fault-v2 | 0 | 20 | 10 | 13 |
+## Native credit
 
-Credits are pull entitlements; A/C and B/C refunds are not claimed native payouts. The failed all-faithful job remains DISPUTED with empty credits and no penalty. Its frozen deadline has passed; permissionless settle can open timeout refund credits, but no further write was sent after the failed gate.
+[Claim](https://explorer-studio.genlayer.com/tx/0x6eb2fd46560881d79903c880f7af0fc255daa80fa928d8841c2ccc66c31cd284), [native child](https://explorer-studio.genlayer.com/tx/0x23d67ea5cd398f53367d6c607fbf778d7d56309600580ed5ea200e938d8d0e99), [verification](https://explorer-studio.genlayer.com/tx/0xdfab29cbab70a0266e71999d0d2e10e117c1f01b6a91b6bc88213971777efcc0). Positive value_credited verified; amount 13 wei. Unclaimed operator refunds remain pull credits.
 
-## Native claim
+## Appeal window
 
-[Claim](https://explorer-studio.genlayer.com/tx/0x32de291edc9b1c388b55f628bb63b36cbdb918465832db2ea6f9876df31c995b), [child](https://explorer-studio.genlayer.com/tx/0x2e9008503e38bec0ce9dbcec3e66851ff4da52f37a3a309e7f8a2756f222bcb6), [verification](https://explorer-studio.genlayer.com/tx/0x90516b0fd2cb7e209e8ee535c6952e039132174fdb2d37a5235a253ba758911c): 13 wei, FINALIZED positive value_credited, accounting paid. Native-refund UI journey was not run.
+Exact hash 0xbf48f171990b956d6d64c286bbd814ff73adf67132880edc88077c9998412d02; enabled control captured during ACCEPTED at 2026-11-12T10:56:36.398Z. No appeal sent. Actual existing StudioNet test account through EIP-1193 bridge; not the MetaMask extension. Screenshot: [capture](../docs/pipeline-live/pipeline-b-fault-v2-accepted.png).
 
-## ACCEPTED appeal window
+## Budget and verification
 
-[Actual screenshot](pipeline-live/pipeline-b-fault-v2-accepted.png) retained exact hash 0x8e60eaca45fbc1f2ba55700186e2277c61c3bd6eaac2532cdb18de46565fcf4e with enabled appeal control at 2026-11-12T09:32:25.697Z. Independent protocol timestamps place capture inside ACCEPTED, before finality. No appeal was submitted. Account supplied through an EIP-1193 test signer bridge, not the MetaMask extension.
-
-## Failure and next release
-
-[Saved analysis](pipeline-live/faithful-failure-analysis.json) shows three successful leaders had identical assessments except for valid quote selection. Exact comparison of independently selected prose creates a consensus liveness risk; validator disagreement's complete internal cause cannot be proven from votes alone. A further leader failed local assessment validation. No prompt variant or second adjudication was sent.
-
-Before another release: fix citation convergence while preserving exact ordered responsibility/evidence metadata and independent fetched-quote validation; add an adversarial test where validators choose different valid spans for the same verdict. Distinguish successful leader execution from consensus acceptance in transaction tracking. Recover the timed-out faithful escrow, then use a reviewed revised Court deployment and an explicitly authorized bounded live run. Never redeploy the original Court/Vault.
-
-## Budget and checks
-
-129 wei used/reserved against 100000000000000000 wei (0.1 GEN). No new deposit after the failure. 5 contract Explorer records and 39 transaction records verified through the real Explorer API; source bytes, bindings, completed accounting, fresh native child, operator records, appeal timing and original deployment regression passed. See [partial verifier](pipeline-live/partial-verification.json). The full release verifier deliberately refuses readiness.
-
-Local checks: 217 direct tests; 18 frontend tests; TypeScript; three GenVM AST/SDK checks; webpack production build; desktop1440x960/mobile390x844 headless mocked workflows. Real production deployment/browser verification was not run because the live gate failed.
+Deposits reserved/used: 311 wei against the 100000000000000000 wei (0.1 GEN) cap. Every write intent counts toward the cap even if a later transaction fails. Read-only npm run verify:pipeline checks source identity, bindings, finality, accounting, native credit and Explorer identity. Original Court/Vault regression passes.

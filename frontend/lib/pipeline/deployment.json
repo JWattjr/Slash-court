@@ -1,9 +1,9 @@
 {
-  "status": "LIVE_PARTIAL_BLOCKED",
+  "status": "LIVE_PASS",
   "chainId": 61999,
-  "record": "0x714812d639c07f11A4A831a19461BC18BFa44154",
-  "charter": "0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0",
-  "court": "0x98aa6DD4D02D0734C986FA05501CDA8ac120E258",
-  "sourceRevision": "baebfbe56bafed7b1d2d5ca068bffa723a1dd330",
+  "record": "0x20Dd0686FA5d377a5D26E37eD7D5a711DBb528bb",
+  "charter": "0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430",
+  "court": "0x282e3a9E52Ec05fDaE32DF787D88Ac3d5Ce70C41",
+  "sourceRevision": "0d6ef16bcadd77d9a16a12dddb797676e09fab87",
   "proofPath": "/pipeline-proof.json"
 }

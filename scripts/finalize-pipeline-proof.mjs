@@ -40,6 +40,8 @@ if(m.nativeRefundCredit)for(const [name,key]of[["Native refund claim","claimHash
 if(draft.summary.length>1000)throw new Error("Summary exceeds 1000 characters");
 await writeFile(new URL("../docs/submission/milestone-v2.json",import.meta.url),JSON.stringify(draft,null,2)+"\n");
 let doc=`# Pipeline Court live evidence\n\nVerified ${m.verifiedAt}. StudioNet 61999. All incident logs are synthetic.\n\nSource revision: ${m.sourceRevision}.\n\n`;
+const previous=JSON.parse(await readFile(new URL("../deploy/pipeline-2026-11-11.json",import.meta.url),"utf8"));
+doc+=`The a36e0c8 deployment is the **previous attempt**; see [historical evidence](PIPELINE-PREVIOUS-ATTEMPT.md). Its 53 wei was recovered through [timeout settlement](${explorerTransaction(previous.timeoutRecovery.settlementHash)}) and four individually verified native credits recorded in the historical manifest.\n\n`;
 for(const c of contracts)doc+=`- [${c.name}: ${c.address}](${c.explorerUrl}) — separate GenLayer Explorer Contract evidence.\n`;
 doc+="\n## Finalized cases\n\n";
 for(const c of m.cases){doc+=`- ${c.id}: ${c.rejected?"REJECTED":c.kind==="pricing"?"Higher bond verified":c.outcome}. [Compilation](${explorerTransaction(m.transactions.find(t=>t.label===`${c.id}:compile`).hash)}). `;if(c.adjudicationHash)doc+=`[Adjudication](${explorerTransaction(c.adjudicationHash)}). `;if(c.settlementHash)doc+=`[Settlement](${explorerTransaction(c.settlementHash)}). `;doc+="\n";}

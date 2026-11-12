@@ -1,43 +1,458 @@
 {
-  "status": "LIVE_PARTIAL_BLOCKED",
-  "resubmitReady": false,
+  "status": "LIVE_PASS",
   "network": "StudioNet",
   "chainId": 61999,
-  "sourceRevision": "baebfbe56bafed7b1d2d5ca068bffa723a1dd330",
+  "sourceRevision": "0d6ef16bcadd77d9a16a12dddb797676e09fab87",
+  "verifiedAt": "2026-11-12T15:29:45.711Z",
   "contracts": {
     "record": {
-      "address": "0x714812d639c07f11A4A831a19461BC18BFa44154",
-      "explorer": "https://explorer-studio.genlayer.com/address/0x714812d639c07f11A4A831a19461BC18BFa44154",
+      "address": "0x20Dd0686FA5d377a5D26E37eD7D5a711DBb528bb",
+      "explorer": "https://explorer-studio.genlayer.com/address/0x20Dd0686FA5d377a5D26E37eD7D5a711DBb528bb",
       "sourcePath": "contracts/operator_record.py",
       "sourceSha256": "3de7d81f2b0dd5fbae8a1b49e221f67bb7cc4cfe189a76fe3f026c97b51f1c94",
-      "deploymentHash": "0xd57c44ed93efaaaed78f783f8d22463695e8dad16438bb6b42ac21ba0e306c48"
+      "deploymentHash": "0x440a85140724227cf0d7bdf0b049e1cb521607eb4b98576fbeaeea62c3ac8611"
     },
     "charter": {
-      "address": "0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0",
-      "explorer": "https://explorer-studio.genlayer.com/address/0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0",
+      "address": "0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430",
+      "explorer": "https://explorer-studio.genlayer.com/address/0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430",
       "sourcePath": "contracts/pipeline_charter.py",
       "sourceSha256": "f744df572e6e4e0d7b6a154e9498a5bfa8c7fdac82ce0cd3e067ce86bfa18418",
-      "deploymentHash": "0xabcb52413e6980089a0c2c45b5e431711faac0757b79e23fc5a614bf319da87a"
+      "deploymentHash": "0x6df53ceac2525aeee8dd8424cdc3aacd74c4d62fc8be994784b46e28ee0f0c44"
     },
     "court": {
-      "address": "0x98aa6DD4D02D0734C986FA05501CDA8ac120E258",
-      "explorer": "https://explorer-studio.genlayer.com/address/0x98aa6DD4D02D0734C986FA05501CDA8ac120E258",
+      "address": "0x282e3a9E52Ec05fDaE32DF787D88Ac3d5Ce70C41",
+      "explorer": "https://explorer-studio.genlayer.com/address/0x282e3a9E52Ec05fDaE32DF787D88Ac3d5Ce70C41",
       "sourcePath": "contracts/pipeline_court.py",
-      "sourceSha256": "543023fe7abed5c0b5b102dfe0091fdf776ff424a4f5144a92df55eef19cef2e",
-      "deploymentHash": "0x576d121f2c68fd7042ebac05b012a855024588fcc302036133a8e8c536c6f8b5"
+      "sourceSha256": "b3c90002ad9142aef733e68064062ce442cca541107a63e8b4ae8e8e48a237e4",
+      "deploymentHash": "0x3d94d800699f42ce14ce7c45d9e7c4241a8f446d1cf8b88d3c4a88c5f80186d3"
     }
   },
-  "synthetic": true,
   "cases": [
     {
       "id": "pipeline-b-fault-v2",
       "outcome": "PIPELINE_FAULT",
-      "adjudicationHash": "0x8e60eaca45fbc1f2ba55700186e2277c61c3bd6eaac2532cdb18de46565fcf4e",
-      "settlementHash": "0x881c3692fd85ef898fdb58431e8fde7c88fcf7ca507e57bfcaaa6b939ca1a828",
+      "adjudicationHash": "0xbf48f171990b956d6d64c286bbd814ff73adf67132880edc88077c9998412d02",
       "assessment": {
         "assessment": {
           "schema_version": "slashcourt-pipeline/1",
-          "snapshot_digest": "e69ea5f7c96144e759c967a50b091d74e06643bc3f1a8719527f2581e1950c57",
+          "snapshot_digest": "d421e886ace64f54d49f03fa57eb50ce4d035221aa035b8f2af304a40a02f375",
+          "steps": [
+            {
+              "basis": "SEMANTIC",
+              "effective_verdict": "FAITHFUL",
+              "evidence_status": "AVAILABLE",
+              "index": 0,
+              "input": {
+                "byte_length": 128,
+                "committed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+                "http_status": 200,
+                "observed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-input.txt"
+              },
+              "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
+              "output": {
+                "byte_length": 106,
+                "committed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+                "http_status": 200,
+                "observed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
+              },
+              "quote": "record_id,display_name,region,contact_email\nC101,Leah Mora,west,[REDACTED]\nC102,Theo Park,east,[REDACTED]",
+              "recorded": true,
+              "semantic_verdict": "FAITHFUL",
+              "step_id": "A"
+            },
+            {
+              "basis": "SEMANTIC",
+              "effective_verdict": "VIOLATION",
+              "evidence_status": "AVAILABLE",
+              "index": 1,
+              "input": {
+                "byte_length": 106,
+                "committed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+                "http_status": 200,
+                "observed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt"
+              },
+              "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
+              "output": {
+                "byte_length": 117,
+                "committed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "http_status": 200,
+                "observed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-output.txt"
+              },
+              "quote": "C101,LEAH MORA,WEST,leah.mora@example.org",
+              "recorded": true,
+              "semantic_verdict": "VIOLATION",
+              "step_id": "B"
+            },
+            {
+              "basis": "SEMANTIC",
+              "effective_verdict": "FAITHFUL",
+              "evidence_status": "AVAILABLE",
+              "index": 2,
+              "input": {
+                "byte_length": 117,
+                "committed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "http_status": 200,
+                "observed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/C-input.txt"
+              },
+              "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
+              "output": {
+                "byte_length": 117,
+                "committed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "http_status": 200,
+                "observed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/C-output.txt"
+              },
+              "quote": "record_id,display_name,region,contact_email\nC101,LEAH MORA,WEST,leah.mora@example.org\nC102,THEO PARK,EAST,[REDACTED]",
+              "recorded": true,
+              "semantic_verdict": "FAITHFUL",
+              "step_id": "C"
+            }
+          ]
+        },
+        "charter_digest": "bb31f6fca6f99156f1085d2f61cffbd731171ed5b2d08f6125ea8d67f6133061",
+        "finalized": true,
+        "job_id": "pipeline-b-fault-v2",
+        "liable_index": 1,
+        "outcome": "PIPELINE_FAULT",
+        "settled": false
+      },
+      "accounting": {
+        "charter": "Each stage performs its own distinct local duty on the input it received. A alone redacts source email addresses. B uppercases names and regions and preserves contact values exactly as received. C exports received CSV without alteration. Faithful propagation of inherited bad values is allowed where correction was not assigned. No operator may introduce or restore email values absent from its own received input.",
+        "checks": [
+          {
+            "checkable": true,
+            "disjoint": true,
+            "observable_output": true,
+            "step_id": "A"
+          },
+          {
+            "checkable": true,
+            "disjoint": true,
+            "observable_output": true,
+            "step_id": "B"
+          },
+          {
+            "checkable": true,
+            "disjoint": true,
+            "observable_output": true,
+            "step_id": "C"
+          }
+        ],
+        "claims": {
+          "0xbc1a363b1427531fcb05d03ddf4d34e729011186": {
+            "amount": 13,
+            "attempt": 1,
+            "claim_hash": "0x6eb2fd46560881d79903c880f7af0fc255daa80fa928d8841c2ccc66c31cd284",
+            "requester": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
+            "status": "paid",
+            "transfer_hash": "0x23d67ea5cd398f53367d6c607fbf778d7d56309600580ed5ea200e938d8d0e99"
+          }
+        },
+        "credits": {
+          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
+          "0xbc1a363b1427531fcb05d03ddf4d34e729011186": 13,
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
+        },
+        "deadline": 1794481110,
+        "deposits": {
+          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
+          "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 10,
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
+        },
+        "digest": "bb31f6fca6f99156f1085d2f61cffbd731171ed5b2d08f6125ea8d67f6133061",
+        "evidence_deadline": 1794480750,
+        "filing_bond": 3,
+        "filing_paid": 3,
+        "final_deposits": {
+          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
+          "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 10,
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
+        },
+        "funding_deadline": 1794480570,
+        "id": "pipeline-b-fault-v2",
+        "incident": {
+          "claimant": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
+          "description": "Synthetic incident. Judge each operator only against its own frozen duty and the input it actually received."
+        },
+        "liable_index": 1,
+        "outcome": "PIPELINE_FAULT",
+        "owner": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
+        "paid": {
+          "0xbc1a363b1427531fcb05d03ddf4d34e729011186": 13
+        },
+        "records": {
+          "A": {
+            "input_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-input.txt",
+            "output_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
+          },
+          "B": {
+            "input_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt",
+            "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-output.txt"
+          },
+          "C": {
+            "input_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/C-input.txt",
+            "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/C-output.txt"
+          }
+        },
+        "rejection_reasons": [],
+        "settled_at": 1794481031,
+        "status": "FINAL",
+        "steps": [
+          {
+            "bond_units": 10,
+            "duty": "EXTRACT: output CSV columns record_id,display_name,region,contact_email; preserve row order and all non-contact fields. Replace EVERY received contact_email with [REDACTED].",
+            "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
+            "step_id": "A"
+          },
+          {
+            "bond_units": 10,
+            "duty": "TRANSFORM: preserve header, row order and record_id; uppercase display_name and region; preserve contact_email EXACTLY as received. Never introduce or restore email values absent from received input. No independent redaction duty.",
+            "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
+            "step_id": "B"
+          },
+          {
+            "bond_units": 10,
+            "duty": "PUBLISH: reproduce the complete received CSV dataset byte-for-byte without adding, deleting, correcting or filtering anything. No independent redaction duty.",
+            "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
+            "step_id": "C"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pipeline-a-fault-v2",
+      "outcome": "PIPELINE_FAULT",
+      "adjudicationHash": "0x58d8d86f0be8deb5d42aee30d0eeab72514b08efe3acdd3e89f48ab4405ec454",
+      "assessment": {
+        "assessment": {
+          "schema_version": "slashcourt-pipeline/1",
+          "snapshot_digest": "ebae39a4249a8df9385312d8200d94deeea064ce547fd785de2435162a029d4d",
+          "steps": [
+            {
+              "basis": "SEMANTIC",
+              "effective_verdict": "VIOLATION",
+              "evidence_status": "AVAILABLE",
+              "index": 0,
+              "input": {
+                "byte_length": 128,
+                "committed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+                "http_status": 200,
+                "observed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/A-input.txt"
+              },
+              "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
+              "output": {
+                "byte_length": 117,
+                "committed_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
+                "http_status": 200,
+                "observed_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/A-output.txt"
+              },
+              "quote": "C101,Leah Mora,west,leah.mora@example.org",
+              "recorded": true,
+              "semantic_verdict": "VIOLATION",
+              "step_id": "A"
+            },
+            {
+              "basis": "SEMANTIC",
+              "effective_verdict": "FAITHFUL",
+              "evidence_status": "AVAILABLE",
+              "index": 1,
+              "input": {
+                "byte_length": 117,
+                "committed_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
+                "http_status": 200,
+                "observed_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/B-input.txt"
+              },
+              "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
+              "output": {
+                "byte_length": 117,
+                "committed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "http_status": 200,
+                "observed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/B-output.txt"
+              },
+              "quote": "C101,LEAH MORA,WEST,leah.mora@example.org",
+              "recorded": true,
+              "semantic_verdict": "FAITHFUL",
+              "step_id": "B"
+            },
+            {
+              "basis": "SEMANTIC",
+              "effective_verdict": "FAITHFUL",
+              "evidence_status": "AVAILABLE",
+              "index": 2,
+              "input": {
+                "byte_length": 117,
+                "committed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "http_status": 200,
+                "observed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/C-input.txt"
+              },
+              "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
+              "output": {
+                "byte_length": 117,
+                "committed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "http_status": 200,
+                "observed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/C-output.txt"
+              },
+              "quote": "record_id,display_name,region,contact_email\nC101,LEAH MORA,WEST,leah.mora@example.org\nC102,THEO PARK,EAST,[REDACTED]\n",
+              "recorded": true,
+              "semantic_verdict": "FAITHFUL",
+              "step_id": "C"
+            }
+          ]
+        },
+        "charter_digest": "c4162398319cee0d081eb5c68deb264dfcf86eabbe8fc8df12d1decd047f874d",
+        "finalized": true,
+        "job_id": "pipeline-a-fault-v2",
+        "liable_index": 0,
+        "outcome": "PIPELINE_FAULT",
+        "settled": false
+      },
+      "accounting": {
+        "charter": "Each stage performs its own distinct local duty on the input it received. A alone redacts source email addresses. B uppercases names and regions and preserves contact values exactly as received. C exports received CSV without alteration. Faithful propagation of inherited bad values is allowed where correction was not assigned. No operator may introduce or restore email values absent from its own received input.",
+        "checks": [
+          {
+            "checkable": true,
+            "disjoint": true,
+            "observable_output": true,
+            "step_id": "A"
+          },
+          {
+            "checkable": true,
+            "disjoint": true,
+            "observable_output": true,
+            "step_id": "B"
+          },
+          {
+            "checkable": true,
+            "disjoint": true,
+            "observable_output": true,
+            "step_id": "C"
+          }
+        ],
+        "claims": {},
+        "credits": {
+          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
+          "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
+          "0xbc1a363b1427531fcb05d03ddf4d34e729011186": 13
+        },
+        "deadline": 1794482111,
+        "deposits": {
+          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
+          "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
+        },
+        "digest": "c4162398319cee0d081eb5c68deb264dfcf86eabbe8fc8df12d1decd047f874d",
+        "evidence_deadline": 1794481751,
+        "filing_bond": 3,
+        "filing_paid": 3,
+        "final_deposits": {
+          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
+          "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
+        },
+        "funding_deadline": 1794481571,
+        "id": "pipeline-a-fault-v2",
+        "incident": {
+          "claimant": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
+          "description": "Synthetic incident. Judge each operator only against its own frozen duty and the input it actually received."
+        },
+        "liable_index": 0,
+        "outcome": "PIPELINE_FAULT",
+        "owner": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
+        "paid": {},
+        "records": {
+          "A": {
+            "input_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/A-input.txt",
+            "output_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/A-output.txt"
+          },
+          "B": {
+            "input_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/B-input.txt",
+            "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/B-output.txt"
+          },
+          "C": {
+            "input_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/C-input.txt",
+            "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/C-output.txt"
+          }
+        },
+        "rejection_reasons": [],
+        "settled_at": 1794481859,
+        "status": "FINAL",
+        "steps": [
+          {
+            "bond_units": 10,
+            "duty": "EXTRACT: output CSV columns record_id,display_name,region,contact_email; preserve row order and all non-contact fields. Replace EVERY received contact_email with [REDACTED].",
+            "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
+            "step_id": "A"
+          },
+          {
+            "bond_units": 20,
+            "duty": "TRANSFORM: preserve header, row order and record_id; uppercase display_name and region; preserve contact_email EXACTLY as received. Never introduce or restore email values absent from received input. No independent redaction duty.",
+            "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
+            "step_id": "B"
+          },
+          {
+            "bond_units": 10,
+            "duty": "PUBLISH: reproduce the complete received CSV dataset byte-for-byte without adding, deleting, correcting or filtering anything. No independent redaction duty.",
+            "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
+            "step_id": "C"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pipeline-faithful-v2",
+      "outcome": "NO_PIPELINE_FAULT",
+      "adjudicationHash": "0x8190d11555bcd8d96bccdf01b78ec1696cb226632c5e60b3e7a52d66bd6ff349",
+      "assessment": {
+        "assessment": {
+          "schema_version": "slashcourt-pipeline/1",
+          "snapshot_digest": "4857f12f811d33066676308c04be4fe4557c43916874cd3791394711e736eb1d",
           "steps": [
             {
               "basis": "SEMANTIC",
@@ -66,6 +481,209 @@
               "quote": "C101,Leah Mora,west,[REDACTED]\nC102,Theo Park,east,[REDACTED]",
               "recorded": true,
               "semantic_verdict": "FAITHFUL",
+              "step_id": "A"
+            },
+            {
+              "basis": "SEMANTIC",
+              "effective_verdict": "FAITHFUL",
+              "evidence_status": "AVAILABLE",
+              "index": 1,
+              "input": {
+                "byte_length": 106,
+                "committed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+                "http_status": 200,
+                "observed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt"
+              },
+              "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
+              "output": {
+                "byte_length": 106,
+                "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+                "http_status": 200,
+                "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+              },
+              "quote": "C101,LEAH MORA,WEST,[REDACTED]\nC102,THEO PARK,EAST,[REDACTED]",
+              "recorded": true,
+              "semantic_verdict": "FAITHFUL",
+              "step_id": "B"
+            },
+            {
+              "basis": "SEMANTIC",
+              "effective_verdict": "FAITHFUL",
+              "evidence_status": "AVAILABLE",
+              "index": 2,
+              "input": {
+                "byte_length": 106,
+                "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+                "http_status": 200,
+                "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+              },
+              "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
+              "output": {
+                "byte_length": 106,
+                "committed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+                "http_status": 200,
+                "observed_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+              },
+              "quote": "record_id,display_name,region,contact_email\nC101,LEAH MORA,WEST,[REDACTED]\nC102,THEO PARK,EAST,[REDACTED]\n",
+              "recorded": true,
+              "semantic_verdict": "FAITHFUL",
+              "step_id": "C"
+            }
+          ]
+        },
+        "charter_digest": "f63d935b8491c8d6aaeca05d30d728c620d0850d71bb9c51e67a674bff479a9c",
+        "finalized": true,
+        "job_id": "pipeline-faithful-v2",
+        "liable_index": null,
+        "outcome": "NO_PIPELINE_FAULT",
+        "settled": false
+      },
+      "accounting": {
+        "charter": "Each stage performs its own distinct local duty on the input it received. A alone redacts source email addresses. B uppercases names and regions and preserves contact values exactly as received. C exports received CSV without alteration. Faithful propagation of inherited bad values is allowed where correction was not assigned. No operator may introduce or restore email values absent from its own received input.",
+        "checks": [
+          {
+            "checkable": true,
+            "disjoint": true,
+            "observable_output": true,
+            "step_id": "A"
+          },
+          {
+            "checkable": true,
+            "disjoint": true,
+            "observable_output": true,
+            "step_id": "B"
+          },
+          {
+            "checkable": true,
+            "disjoint": true,
+            "observable_output": true,
+            "step_id": "C"
+          }
+        ],
+        "claims": {},
+        "credits": {
+          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 11,
+          "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 21,
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 21
+        },
+        "deadline": 1794482930,
+        "deposits": {
+          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
+          "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 20
+        },
+        "digest": "f63d935b8491c8d6aaeca05d30d728c620d0850d71bb9c51e67a674bff479a9c",
+        "evidence_deadline": 1794482570,
+        "filing_bond": 3,
+        "filing_paid": 3,
+        "final_deposits": {
+          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
+          "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 20
+        },
+        "funding_deadline": 1794482390,
+        "id": "pipeline-faithful-v2",
+        "incident": {
+          "claimant": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
+          "description": "Synthetic incident. Judge each operator only against its own frozen duty and the input it actually received."
+        },
+        "liable_index": null,
+        "outcome": "NO_PIPELINE_FAULT",
+        "owner": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
+        "paid": {},
+        "records": {
+          "A": {
+            "input_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-input.txt",
+            "output_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
+          },
+          "B": {
+            "input_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt",
+            "output_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+          },
+          "C": {
+            "input_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv",
+            "output_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
+          }
+        },
+        "rejection_reasons": [],
+        "settled_at": 1794482673,
+        "status": "FINAL",
+        "steps": [
+          {
+            "bond_units": 20,
+            "duty": "EXTRACT: output CSV columns record_id,display_name,region,contact_email; preserve row order and all non-contact fields. Replace EVERY received contact_email with [REDACTED].",
+            "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
+            "step_id": "A"
+          },
+          {
+            "bond_units": 20,
+            "duty": "TRANSFORM: preserve header, row order and record_id; uppercase display_name and region; preserve contact_email EXACTLY as received. Never introduce or restore email values absent from received input. No independent redaction duty.",
+            "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
+            "step_id": "B"
+          },
+          {
+            "bond_units": 10,
+            "duty": "PUBLISH: reproduce the complete received CSV dataset byte-for-byte without adding, deleting, correcting or filtering anything. No independent redaction duty.",
+            "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
+            "step_id": "C"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pipeline-unclear-v2",
+      "outcome": "VOID_EARLIER_UNCERTAINTY",
+      "adjudicationHash": "0x39aa06840d2932015e0b0c4937b4d63e65ca9234f8377723420289962aee7289",
+      "assessment": {
+        "assessment": {
+          "schema_version": "slashcourt-pipeline/1",
+          "snapshot_digest": "f14961aa80a77c9808dfb9f1818f754a48c0729d68129da41f4092d2a17a867d",
+          "steps": [
+            {
+              "basis": "UNAVAILABLE_LOG",
+              "effective_verdict": "UNCLEAR",
+              "evidence_status": "UNAVAILABLE",
+              "index": 0,
+              "input": {
+                "byte_length": 14,
+                "committed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
+                "http_status": 404,
+                "observed_digest": null,
+                "reason_code": "HTTP_STATUS",
+                "status": "UNAVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/missing-A-input.txt"
+              },
+              "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
+              "output": {
+                "byte_length": 106,
+                "committed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+                "http_status": 200,
+                "observed_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+                "reason_code": "OK",
+                "status": "AVAILABLE",
+                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
+              },
+              "quote": "",
+              "recorded": true,
+              "semantic_verdict": "NOT_EVALUATED",
               "step_id": "A"
             },
             {
@@ -128,226 +746,11 @@
             }
           ]
         },
-        "charter_digest": "732bffc5f92a0309da486468b19d74a62505f10ae08934a743bcb006eb29032c",
+        "charter_digest": "1b8de62b2ff86557c2bbf6581ffd2a2b0fc732cf9d5a224fa3d247f3a8781c90",
         "finalized": true,
-        "job_id": "pipeline-b-fault-v2",
-        "liable_index": 1,
-        "outcome": "PIPELINE_FAULT",
-        "settled": false
-      },
-      "accounting": {
-        "charter": "Each stage performs its own distinct local duty on the input it received. A alone redacts source email addresses. B uppercases names and regions and preserves contact values exactly as received. C exports received CSV without alteration. Faithful propagation of inherited bad values is allowed where correction was not assigned. No operator may introduce or restore email values absent from its own received input.",
-        "checks": [
-          {
-            "checkable": true,
-            "disjoint": true,
-            "observable_output": true,
-            "step_id": "A"
-          },
-          {
-            "checkable": true,
-            "disjoint": true,
-            "observable_output": true,
-            "step_id": "B"
-          },
-          {
-            "checkable": true,
-            "disjoint": true,
-            "observable_output": true,
-            "step_id": "C"
-          }
-        ],
-        "claims": {
-          "0xbc1a363b1427531fcb05d03ddf4d34e729011186": {
-            "amount": 13,
-            "attempt": 1,
-            "claim_hash": "0x32de291edc9b1c388b55f628bb63b36cbdb918465832db2ea6f9876df31c995b",
-            "requester": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-            "status": "paid",
-            "transfer_hash": "0x2e9008503e38bec0ce9dbcec3e66851ff4da52f37a3a309e7f8a2756f222bcb6"
-          }
-        },
-        "credits": {
-          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-          "0xbc1a363b1427531fcb05d03ddf4d34e729011186": 13,
-          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
-        },
-        "deadline": 1794476236,
-        "deposits": {
-          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-          "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 10,
-          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
-        },
-        "digest": "732bffc5f92a0309da486468b19d74a62505f10ae08934a743bcb006eb29032c",
-        "evidence_deadline": 1794475876,
-        "filing_bond": 3,
-        "filing_paid": 3,
-        "final_deposits": {
-          "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-          "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 10,
-          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
-        },
-        "funding_deadline": 1794475696,
-        "id": "pipeline-b-fault-v2",
-        "incident": {
-          "claimant": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-          "description": "Synthetic incident. Judge each operator only against its own frozen duty and the input it actually received."
-        },
-        "liable_index": 1,
-        "outcome": "PIPELINE_FAULT",
-        "owner": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-        "paid": {
-          "0xbc1a363b1427531fcb05d03ddf4d34e729011186": 13
-        },
-        "records": {
-          "A": {
-            "input_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
-            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-input.txt",
-            "output_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
-            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
-          },
-          "B": {
-            "input_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
-            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt",
-            "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-output.txt"
-          },
-          "C": {
-            "input_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/C-input.txt",
-            "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/C-output.txt"
-          }
-        },
-        "rejection_reasons": [],
-        "settled_at": 1794475982,
-        "status": "FINAL",
-        "steps": [
-          {
-            "bond_units": 10,
-            "duty": "EXTRACT: output CSV columns record_id,display_name,region,contact_email; preserve row order and all non-contact fields. Replace EVERY received contact_email with [REDACTED].",
-            "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
-            "step_id": "A"
-          },
-          {
-            "bond_units": 10,
-            "duty": "TRANSFORM: preserve header, row order and record_id; uppercase display_name and region; preserve contact_email EXACTLY as received. Never introduce or restore email values absent from received input. No independent redaction duty.",
-            "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
-            "step_id": "B"
-          },
-          {
-            "bond_units": 10,
-            "duty": "PUBLISH: reproduce the complete received CSV dataset byte-for-byte without adding, deleting, correcting or filtering anything. No independent redaction duty.",
-            "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
-            "step_id": "C"
-          }
-        ]
-      }
-    },
-    {
-      "id": "pipeline-a-fault-v2",
-      "outcome": "PIPELINE_FAULT",
-      "adjudicationHash": "0x85089349981f1ebdd2d7da8ef9c853330940290b5f0a915a186e64f99a8f3614",
-      "settlementHash": "0x8176755511f7454d90303245835fb498ae160ae4a00a3654c6ca8e380e5dbfcf",
-      "assessment": {
-        "assessment": {
-          "schema_version": "slashcourt-pipeline/1",
-          "snapshot_digest": "c88beedfb1c3cd4660a0e0af07e06e04fb247262daaee549867785e0aead1185",
-          "steps": [
-            {
-              "basis": "SEMANTIC",
-              "effective_verdict": "VIOLATION",
-              "evidence_status": "AVAILABLE",
-              "index": 0,
-              "input": {
-                "byte_length": 128,
-                "committed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
-                "http_status": 200,
-                "observed_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
-                "reason_code": "OK",
-                "status": "AVAILABLE",
-                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/A-input.txt"
-              },
-              "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
-              "output": {
-                "byte_length": 117,
-                "committed_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
-                "http_status": 200,
-                "observed_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
-                "reason_code": "OK",
-                "status": "AVAILABLE",
-                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/A-output.txt"
-              },
-              "quote": "C101,Leah Mora,west,leah.mora@example.org",
-              "recorded": true,
-              "semantic_verdict": "VIOLATION",
-              "step_id": "A"
-            },
-            {
-              "basis": "SEMANTIC",
-              "effective_verdict": "FAITHFUL",
-              "evidence_status": "AVAILABLE",
-              "index": 1,
-              "input": {
-                "byte_length": 117,
-                "committed_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
-                "http_status": 200,
-                "observed_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
-                "reason_code": "OK",
-                "status": "AVAILABLE",
-                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/B-input.txt"
-              },
-              "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
-              "output": {
-                "byte_length": 117,
-                "committed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-                "http_status": 200,
-                "observed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-                "reason_code": "OK",
-                "status": "AVAILABLE",
-                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/B-output.txt"
-              },
-              "quote": "record_id,display_name,region,contact_email\nC101,LEAH MORA,WEST,leah.mora@example.org\nC102,THEO PARK,EAST,[REDACTED]\n",
-              "recorded": true,
-              "semantic_verdict": "FAITHFUL",
-              "step_id": "B"
-            },
-            {
-              "basis": "SEMANTIC",
-              "effective_verdict": "FAITHFUL",
-              "evidence_status": "AVAILABLE",
-              "index": 2,
-              "input": {
-                "byte_length": 117,
-                "committed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-                "http_status": 200,
-                "observed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-                "reason_code": "OK",
-                "status": "AVAILABLE",
-                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/C-input.txt"
-              },
-              "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
-              "output": {
-                "byte_length": 117,
-                "committed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-                "http_status": 200,
-                "observed_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-                "reason_code": "OK",
-                "status": "AVAILABLE",
-                "url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/C-output.txt"
-              },
-              "quote": "record_id,display_name,region,contact_email\nC101,LEAH MORA,WEST,leah.mora@example.org\nC102,THEO PARK,EAST,[REDACTED]\n",
-              "recorded": true,
-              "semantic_verdict": "FAITHFUL",
-              "step_id": "C"
-            }
-          ]
-        },
-        "charter_digest": "b56b8530f696f531c75fbb594555a55860dce8914d2f9097ff31e616a489a5f0",
-        "finalized": true,
-        "job_id": "pipeline-a-fault-v2",
-        "liable_index": 0,
-        "outcome": "PIPELINE_FAULT",
+        "job_id": "pipeline-unclear-v2",
+        "liable_index": null,
+        "outcome": "UNATTRIBUTABLE",
         "settled": false
       },
       "accounting": {
@@ -376,59 +779,60 @@
         "credits": {
           "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
           "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
-          "0xbc1a363b1427531fcb05d03ddf4d34e729011186": 13
+          "0xbc1a363b1427531fcb05d03ddf4d34e729011186": 3,
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 20
         },
-        "deadline": 1794477205,
+        "deadline": 1794483745,
         "deposits": {
           "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
           "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
-          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 20
         },
-        "digest": "b56b8530f696f531c75fbb594555a55860dce8914d2f9097ff31e616a489a5f0",
-        "evidence_deadline": 1794476845,
+        "digest": "1b8de62b2ff86557c2bbf6581ffd2a2b0fc732cf9d5a224fa3d247f3a8781c90",
+        "evidence_deadline": 1794483385,
         "filing_bond": 3,
         "filing_paid": 3,
         "final_deposits": {
           "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
           "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
-          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
+          "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 20
         },
-        "funding_deadline": 1794476665,
-        "id": "pipeline-a-fault-v2",
+        "funding_deadline": 1794483205,
+        "id": "pipeline-unclear-v2",
         "incident": {
           "claimant": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
           "description": "Synthetic incident. Judge each operator only against its own frozen duty and the input it actually received."
         },
-        "liable_index": 0,
-        "outcome": "PIPELINE_FAULT",
+        "liable_index": null,
+        "outcome": "VOID_EARLIER_UNCERTAINTY",
         "owner": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
         "paid": {},
         "records": {
           "A": {
             "input_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
-            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/A-input.txt",
-            "output_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
-            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/A-output.txt"
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/missing-A-input.txt",
+            "output_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
           },
           "B": {
-            "input_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
-            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/B-input.txt",
+            "input_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt",
             "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/B-output.txt"
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-output.txt"
           },
           "C": {
             "input_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/C-input.txt",
+            "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/C-input.txt",
             "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/C-output.txt"
+            "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/C-output.txt"
           }
         },
         "rejection_reasons": [],
-        "settled_at": 1794477031,
+        "settled_at": 1794483747,
         "status": "FINAL",
         "steps": [
           {
-            "bond_units": 10,
+            "bond_units": 20,
             "duty": "EXTRACT: output CSV columns record_id,display_name,region,contact_email; preserve row order and all non-contact fields. Replace EVERY received contact_email with [REDACTED].",
             "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
             "step_id": "A"
@@ -449,68 +853,13 @@
       }
     }
   ],
-  "blocker": {
-    "label": "pipeline-faithful-v2:adjudicate",
-    "hash": "0xc368f549117703f9d0c6540ccecd4911f19a6f30c6751f2207696c78f9e1cb4e",
-    "status": "FINALIZED",
-    "consensusResult": "MAJORITY_DISAGREE",
-    "previouslyObservedStatus": "UNDETERMINED",
-    "observedAt": "2026-11-12T10:11:53.688Z",
-    "message": "All-faithful transaction failed protocol consensus. Three successful leader assessments have identical verdicts and observations but different valid quotes; full-envelope comparison makes citation selection a liveness risk. One other leader failed local assessment validation.",
-    "sameSuccessfulLeaderAssessmentsExceptQuotes": true,
-    "unclearCaseRun": false,
-    "rerun": false,
-    "productionPromoted": false
-  },
-  "requiredMilestones": [
-    {
-      "requirement": "Subjective charter rejected",
-      "status": "PASS",
-      "reference": "pipeline-subjective-v2"
-    },
-    {
-      "requirement": "Accepted charter and own-wallet finalized bonds",
-      "status": "PASS",
-      "reference": "pipeline-b-fault-v2"
-    },
-    {
-      "requirement": "B liable; A/C pull refunds allocated",
-      "status": "PASS",
-      "reference": "pipeline-b-fault-v2"
-    },
-    {
-      "requirement": "A liable; B/C faithful propagation",
-      "status": "PASS",
-      "reference": "pipeline-a-fault-v2"
-    },
-    {
-      "requirement": "All-faithful finalized adjudication and filing allocation",
-      "status": "FAILED_CONSENSUS",
-      "reference": "pipeline-faithful-v2"
-    },
-    {
-      "requirement": "Earlier uncertainty and deadline refunds",
-      "status": "NOT_RUN",
-      "reference": "pipeline-unclear-v2"
-    },
-    {
-      "requirement": "Finalized record and higher next bond",
-      "status": "PASS",
-      "reference": "pipeline-history-price-v2"
-    },
-    {
-      "requirement": "Native pull claim with positive verified credit",
-      "status": "PASS",
-      "reference": "0x32de291edc9b1c388b55f628bb63b36cbdb918465832db2ea6f9876df31c995b"
-    }
-  ],
   "nativeCredit": {
-    "claimHash": "0x32de291edc9b1c388b55f628bb63b36cbdb918465832db2ea6f9876df31c995b",
-    "verificationHash": "0x90516b0fd2cb7e209e8ee535c6952e039132174fdb2d37a5235a253ba758911c",
-    "childHash": "0x2e9008503e38bec0ce9dbcec3e66851ff4da52f37a3a309e7f8a2756f222bcb6",
+    "claimHash": "0x6eb2fd46560881d79903c880f7af0fc255daa80fa928d8841c2ccc66c31cd284",
+    "verificationHash": "0xdfab29cbab70a0266e71999d0d2e10e117c1f01b6a91b6bc88213971777efcc0",
+    "childHash": "0x23d67ea5cd398f53367d6c607fbf778d7d56309600580ed5ea200e938d8d0e99",
     "receipt": {
-      "hash": "0x2e9008503e38bec0ce9dbcec3e66851ff4da52f37a3a309e7f8a2756f222bcb6",
-      "from_address": "0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0",
+      "hash": "0x23d67ea5cd398f53367d6c607fbf778d7d56309600580ed5ea200e938d8d0e99",
+      "from_address": "0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430",
       "to_address": "0xbc1A363B1427531fCb05D03dDF4d34E729011186",
       "data": {},
       "value": 13,
@@ -518,16 +867,16 @@
       "status": "FINALIZED",
       "result": 5,
       "consensus_data": null,
-      "gaslimit": 8,
-      "nonce": 8,
+      "gaslimit": 26,
+      "nonce": 26,
       "r": null,
       "s": null,
       "v": null,
-      "created_at": "2026-11-12T09:35:57.579633+00:00",
+      "created_at": "2026-11-12T15:26:57.193221+00:00",
       "leader_only": false,
       "execution_mode": "NORMAL",
-      "origin_address": "0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0",
-      "triggered_by": "0x32de291edc9b1c388b55f628bb63b36cbdb918465832db2ea6f9876df31c995b",
+      "origin_address": "0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430",
+      "triggered_by": "0x6eb2fd46560881d79903c880f7af0fc255daa80fa928d8841c2ccc66c31cd284",
       "triggered_on": "finalized",
       "triggered_transactions": [],
       "appealed": false,
@@ -536,7 +885,7 @@
       "appeal_undetermined": false,
       "consensus_history": {
         "current_monitoring": {
-          "PENDING": 1794476158.856842
+          "PENDING": 1794497218.1333103
         },
         "current_status_changes": [
           "PENDING",
@@ -557,13 +906,13 @@
         "genvm_datetime": null
       },
       "value_credited": true,
-      "current_timestamp": "1794476360",
-      "sender": "0xa80Aae4d2f3a7d57CCDe588804d6bd44227cd3e0",
+      "current_timestamp": "1794497220",
+      "sender": "0xDf5CFd4E68a5DdFc13c0795D7096370A23d2f430",
       "recipient": "0xbc1A363B1427531fCb05D03dDF4d34E729011186",
       "tx_slot": "0",
-      "created_timestamp": "1794476157",
+      "created_timestamp": "1794497217",
       "random_seed": "0x0000000000000000000000000000000000000000000000000000000000000000",
-      "tx_id": "0x2e9008503e38bec0ce9dbcec3e66851ff4da52f37a3a309e7f8a2756f222bcb6",
+      "tx_id": "0x23d67ea5cd398f53367d6c607fbf778d7d56309600580ed5ea200e938d8d0e99",
       "read_state_block_range": {
         "activation_block": "0",
         "processing_block": "0",
@@ -596,466 +945,48 @@
     "amountWei": 13
   },
   "appealCapture": {
-    "hash": "0x8e60eaca45fbc1f2ba55700186e2277c61c3bd6eaac2532cdb18de46565fcf4e",
-    "observedAt": "2026-11-12T09:32:25.697Z",
+    "hash": "0xbf48f171990b956d6d64c286bbd814ff73adf67132880edc88077c9998412d02",
+    "observedAt": "2026-11-12T10:56:36.398Z",
     "enabled": true,
     "appealSubmitted": false,
     "provider": "Actual existing StudioNet test account through EIP-1193 bridge; not the MetaMask extension",
     "screenshot": "docs/pipeline-live/pipeline-b-fault-v2-accepted.png"
   },
-  "depositsUsedWei": "129",
+  "depositsUsedWei": "311",
   "depositCapWei": "100000000000000000",
-  "verification": {
-    "status": "PARTIAL_PASS_RELEASE_BLOCKED",
-    "originalRegression": {
-      "status": "PASS",
-      "court": "0x56e26ec256afe37199fe9845e039f5DEdd9e955a",
-      "vault": "0xb1fD046CA7D92b84b16f66bdE676f442cA599Aa7",
-      "case": "case-1",
-      "rulebookVersion": 1
+  "requiredMilestones": [
+    {
+      "requirement": "Subjective charter rejected",
+      "caseId": "pipeline-subjective-v2"
     },
-    "linksVerified": true,
-    "contractRecordsVerified": 5,
-    "transactionRecordsVerified": 39,
-    "accountingReadbacks": [
-      {
-        "id": "pipeline-subjective-v2",
-        "job": {
-          "charter": "Each stage performs its own distinct local duty on the input it received. A alone redacts source email addresses. B uppercases names and regions and preserves contact values exactly as received. C exports received CSV without alteration. Faithful propagation of inherited bad values is allowed where correction was not assigned. No operator may introduce or restore email values absent from its own received input.",
-          "checks": [
-            {
-              "checkable": false,
-              "disjoint": false,
-              "observable_output": false,
-              "step_id": "A"
-            },
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "B"
-            },
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "C"
-            }
-          ],
-          "claims": {},
-          "credits": {},
-          "deadline": 1794476152,
-          "deposits": {},
-          "digest": "ddc92dae65fc79ec4b42cf7780ab3f7b4408436c62176ac00a7296e287619da3",
-          "evidence_deadline": 1794475792,
-          "filing_bond": 3,
-          "filing_paid": 0,
-          "final_deposits": {},
-          "funding_deadline": 1794475612,
-          "id": "pipeline-subjective-v2",
-          "incident": null,
-          "outcome": "",
-          "owner": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-          "paid": {},
-          "records": {},
-          "rejection_reasons": [
-            "A:checkable",
-            "A:disjoint",
-            "A:observable_output"
-          ],
-          "status": "REJECTED",
-          "steps": [
-            {
-              "bond_units": 10,
-              "duty": "Make the dataset beautiful and impressive to everyone",
-              "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
-              "step_id": "A"
-            },
-            {
-              "bond_units": 10,
-              "duty": "TRANSFORM: preserve header, row order and record_id; uppercase display_name and region; preserve contact_email EXACTLY as received. Never introduce or restore email values absent from received input. No independent redaction duty.",
-              "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
-              "step_id": "B"
-            },
-            {
-              "bond_units": 10,
-              "duty": "PUBLISH: reproduce the complete received CSV dataset byte-for-byte without adding, deleting, correcting or filtering anything. No independent redaction duty.",
-              "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
-              "step_id": "C"
-            }
-          ]
-        }
-      },
-      {
-        "id": "pipeline-b-fault-v2",
-        "job": {
-          "charter": "Each stage performs its own distinct local duty on the input it received. A alone redacts source email addresses. B uppercases names and regions and preserves contact values exactly as received. C exports received CSV without alteration. Faithful propagation of inherited bad values is allowed where correction was not assigned. No operator may introduce or restore email values absent from its own received input.",
-          "checks": [
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "A"
-            },
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "B"
-            },
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "C"
-            }
-          ],
-          "claims": {
-            "0xbc1a363b1427531fcb05d03ddf4d34e729011186": {
-              "amount": 13,
-              "attempt": 1,
-              "claim_hash": "0x32de291edc9b1c388b55f628bb63b36cbdb918465832db2ea6f9876df31c995b",
-              "requester": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-              "status": "paid",
-              "transfer_hash": "0x2e9008503e38bec0ce9dbcec3e66851ff4da52f37a3a309e7f8a2756f222bcb6"
-            }
-          },
-          "credits": {
-            "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-            "0xbc1a363b1427531fcb05d03ddf4d34e729011186": 13,
-            "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
-          },
-          "deadline": 1794476236,
-          "deposits": {
-            "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-            "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 10,
-            "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
-          },
-          "digest": "732bffc5f92a0309da486468b19d74a62505f10ae08934a743bcb006eb29032c",
-          "evidence_deadline": 1794475876,
-          "filing_bond": 3,
-          "filing_paid": 3,
-          "final_deposits": {
-            "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-            "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 10,
-            "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
-          },
-          "funding_deadline": 1794475696,
-          "id": "pipeline-b-fault-v2",
-          "incident": {
-            "claimant": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-            "description": "Synthetic incident. Judge each operator only against its own frozen duty and the input it actually received."
-          },
-          "liable_index": 1,
-          "outcome": "PIPELINE_FAULT",
-          "owner": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-          "paid": {
-            "0xbc1a363b1427531fcb05d03ddf4d34e729011186": 13
-          },
-          "records": {
-            "A": {
-              "input_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
-              "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-input.txt",
-              "output_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
-              "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
-            },
-            "B": {
-              "input_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
-              "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt",
-              "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-              "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-output.txt"
-            },
-            "C": {
-              "input_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-              "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/C-input.txt",
-              "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-              "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/C-output.txt"
-            }
-          },
-          "rejection_reasons": [],
-          "settled_at": 1794475982,
-          "status": "FINAL",
-          "steps": [
-            {
-              "bond_units": 10,
-              "duty": "EXTRACT: output CSV columns record_id,display_name,region,contact_email; preserve row order and all non-contact fields. Replace EVERY received contact_email with [REDACTED].",
-              "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
-              "step_id": "A"
-            },
-            {
-              "bond_units": 10,
-              "duty": "TRANSFORM: preserve header, row order and record_id; uppercase display_name and region; preserve contact_email EXACTLY as received. Never introduce or restore email values absent from received input. No independent redaction duty.",
-              "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
-              "step_id": "B"
-            },
-            {
-              "bond_units": 10,
-              "duty": "PUBLISH: reproduce the complete received CSV dataset byte-for-byte without adding, deleting, correcting or filtering anything. No independent redaction duty.",
-              "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
-              "step_id": "C"
-            }
-          ]
-        }
-      },
-      {
-        "id": "pipeline-history-price-v2",
-        "job": {
-          "charter": "Each stage performs its own distinct local duty on the input it received. A alone redacts source email addresses. B uppercases names and regions and preserves contact values exactly as received. C exports received CSV without alteration. Faithful propagation of inherited bad values is allowed where correction was not assigned. No operator may introduce or restore email values absent from its own received input.",
-          "checks": [
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "A"
-            },
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "B"
-            },
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "C"
-            }
-          ],
-          "claims": {},
-          "credits": {},
-          "deadline": 1794477054,
-          "deposits": {},
-          "digest": "16cb83d466474a519730516ab1ea88cf5b3aaed3692db922ddc63b55ade12b08",
-          "evidence_deadline": 1794476694,
-          "filing_bond": 3,
-          "filing_paid": 0,
-          "final_deposits": {},
-          "funding_deadline": 1794476514,
-          "id": "pipeline-history-price-v2",
-          "incident": null,
-          "outcome": "",
-          "owner": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-          "paid": {},
-          "records": {},
-          "rejection_reasons": [],
-          "status": "FUNDING",
-          "steps": [
-            {
-              "bond_units": 10,
-              "duty": "EXTRACT: output CSV columns record_id,display_name,region,contact_email; preserve row order and all non-contact fields. Replace EVERY received contact_email with [REDACTED].",
-              "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
-              "step_id": "A"
-            },
-            {
-              "bond_units": 20,
-              "duty": "TRANSFORM: preserve header, row order and record_id; uppercase display_name and region; preserve contact_email EXACTLY as received. Never introduce or restore email values absent from received input. No independent redaction duty.",
-              "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
-              "step_id": "B"
-            },
-            {
-              "bond_units": 10,
-              "duty": "PUBLISH: reproduce the complete received CSV dataset byte-for-byte without adding, deleting, correcting or filtering anything. No independent redaction duty.",
-              "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
-              "step_id": "C"
-            }
-          ]
-        }
-      },
-      {
-        "id": "pipeline-a-fault-v2",
-        "job": {
-          "charter": "Each stage performs its own distinct local duty on the input it received. A alone redacts source email addresses. B uppercases names and regions and preserves contact values exactly as received. C exports received CSV without alteration. Faithful propagation of inherited bad values is allowed where correction was not assigned. No operator may introduce or restore email values absent from its own received input.",
-          "checks": [
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "A"
-            },
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "B"
-            },
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "C"
-            }
-          ],
-          "claims": {},
-          "credits": {
-            "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-            "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
-            "0xbc1a363b1427531fcb05d03ddf4d34e729011186": 13
-          },
-          "deadline": 1794477205,
-          "deposits": {
-            "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-            "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
-            "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
-          },
-          "digest": "b56b8530f696f531c75fbb594555a55860dce8914d2f9097ff31e616a489a5f0",
-          "evidence_deadline": 1794476845,
-          "filing_bond": 3,
-          "filing_paid": 3,
-          "final_deposits": {
-            "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-            "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
-            "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 10
-          },
-          "funding_deadline": 1794476665,
-          "id": "pipeline-a-fault-v2",
-          "incident": {
-            "claimant": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-            "description": "Synthetic incident. Judge each operator only against its own frozen duty and the input it actually received."
-          },
-          "liable_index": 0,
-          "outcome": "PIPELINE_FAULT",
-          "owner": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-          "paid": {},
-          "records": {
-            "A": {
-              "input_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
-              "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/A-input.txt",
-              "output_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
-              "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/A-output.txt"
-            },
-            "B": {
-              "input_digest": "697c66d7f098b2cfa4a9213c8322532e774acc2eceffb33c51a254de2af81c5d",
-              "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/B-input.txt",
-              "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-              "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/B-output.txt"
-            },
-            "C": {
-              "input_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-              "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/C-input.txt",
-              "output_digest": "305cf384392bba47b66e6e99968aaa939da866aef2bb4e202f0c35edb5d4a2a0",
-              "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-a/C-output.txt"
-            }
-          },
-          "rejection_reasons": [],
-          "settled_at": 1794477031,
-          "status": "FINAL",
-          "steps": [
-            {
-              "bond_units": 10,
-              "duty": "EXTRACT: output CSV columns record_id,display_name,region,contact_email; preserve row order and all non-contact fields. Replace EVERY received contact_email with [REDACTED].",
-              "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
-              "step_id": "A"
-            },
-            {
-              "bond_units": 20,
-              "duty": "TRANSFORM: preserve header, row order and record_id; uppercase display_name and region; preserve contact_email EXACTLY as received. Never introduce or restore email values absent from received input. No independent redaction duty.",
-              "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
-              "step_id": "B"
-            },
-            {
-              "bond_units": 10,
-              "duty": "PUBLISH: reproduce the complete received CSV dataset byte-for-byte without adding, deleting, correcting or filtering anything. No independent redaction duty.",
-              "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
-              "step_id": "C"
-            }
-          ]
-        }
-      },
-      {
-        "id": "pipeline-faithful-v2",
-        "job": {
-          "charter": "Each stage performs its own distinct local duty on the input it received. A alone redacts source email addresses. B uppercases names and regions and preserves contact values exactly as received. C exports received CSV without alteration. Faithful propagation of inherited bad values is allowed where correction was not assigned. No operator may introduce or restore email values absent from its own received input.",
-          "checks": [
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "A"
-            },
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "B"
-            },
-            {
-              "checkable": true,
-              "disjoint": true,
-              "observable_output": true,
-              "step_id": "C"
-            }
-          ],
-          "claims": {},
-          "credits": {},
-          "deadline": 1794478099,
-          "deposits": {
-            "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-            "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
-            "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 20
-          },
-          "digest": "1a6b1ae6d48563d23aeebb93adcd522e6e0240847f0e65eb7d30cfacba38aad6",
-          "evidence_deadline": 1794477739,
-          "filing_bond": 3,
-          "filing_paid": 3,
-          "final_deposits": {
-            "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5": 10,
-            "0x2c8eb5db1105a85be66badafed88d10cf393cdd8": 20,
-            "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92": 20
-          },
-          "funding_deadline": 1794477559,
-          "id": "pipeline-faithful-v2",
-          "incident": {
-            "claimant": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-            "description": "Synthetic incident. Judge each operator only against its own frozen duty and the input it actually received."
-          },
-          "outcome": "",
-          "owner": "0xbc1a363b1427531fcb05d03ddf4d34e729011186",
-          "paid": {},
-          "records": {
-            "A": {
-              "input_digest": "54d8f95d0c1acd455817a557ccc83d1617f5149d71f0a0480e89bd121c83b7be",
-              "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-input.txt",
-              "output_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
-              "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/A-output.txt"
-            },
-            "B": {
-              "input_digest": "bce245bd4a29ad71fbc212eaf8c27ec10cf6a03b59a16aee7a435c02515cdd40",
-              "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/61b7d56d8147e0f97d89b4e8f4b424141ebaff3c/liability-cascade/incident-b/B-input.txt",
-              "output_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
-              "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
-            },
-            "C": {
-              "input_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
-              "input_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv",
-              "output_digest": "6eb740fa0affb8fb506b3aa541c581fc51260d8f303217bb07f8d4b741401ae7",
-              "output_url": "https://raw.githubusercontent.com/JWattjr/genlayer-demo-evidence/40942faac5e270d706c44bc712c21d7285ac4fae/pipeline-court/faithful.csv"
-            }
-          },
-          "rejection_reasons": [],
-          "status": "DISPUTED",
-          "steps": [
-            {
-              "bond_units": 20,
-              "duty": "EXTRACT: output CSV columns record_id,display_name,region,contact_email; preserve row order and all non-contact fields. Replace EVERY received contact_email with [REDACTED].",
-              "operator": "0xdb433ff614bdd1ece21aa97221c3e0a7ecf79c92",
-              "step_id": "A"
-            },
-            {
-              "bond_units": 20,
-              "duty": "TRANSFORM: preserve header, row order and record_id; uppercase display_name and region; preserve contact_email EXACTLY as received. Never introduce or restore email values absent from received input. No independent redaction duty.",
-              "operator": "0x2c8eb5db1105a85be66badafed88d10cf393cdd8",
-              "step_id": "B"
-            },
-            {
-              "bond_units": 10,
-              "duty": "PUBLISH: reproduce the complete received CSV dataset byte-for-byte without adding, deleting, correcting or filtering anything. No independent redaction duty.",
-              "operator": "0x0839a6ddcec7aa5e6028490266d6d3efabe316b5",
-              "step_id": "C"
-            }
-          ]
-        }
-      }
-    ],
-    "verifiedAt": "2026-11-12T10:16:08.858Z"
-  }
+    {
+      "requirement": "Accepted charter and all own-wallet finalized bonds",
+      "caseId": "pipeline-b-fault-v2"
+    },
+    {
+      "requirement": "Only B slashed; A/C refunded",
+      "caseId": "pipeline-b-fault-v2"
+    },
+    {
+      "requirement": "Only A slashed; B/C faithful propagation",
+      "caseId": "pipeline-a-fault-v2"
+    },
+    {
+      "requirement": "All faithful; filing bond to operators",
+      "caseId": "pipeline-faithful-v2"
+    },
+    {
+      "requirement": "Earlier uncertainty; deadline refunds",
+      "caseId": "pipeline-unclear-v2"
+    },
+    {
+      "requirement": "Finalized record and increased next bond",
+      "caseId": "pipeline-history-price-v2"
+    },
+    {
+      "requirement": "Pull claim with verified native credit",
+      "transactionHash": "0x6eb2fd46560881d79903c880f7af0fc255daa80fa928d8841c2ccc66c31cd284"
+    }
+  ],
+  "synthetic": true
 }

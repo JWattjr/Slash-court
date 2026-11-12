@@ -6,10 +6,8 @@ Pipeline Court is built on the Liability Cascade prototype. It adds three
 separate contracts and `/pipeline` for ordered multi-agent job disputes while
 preserving the original deployed Court and Vault. The three new contracts are
 deployed on StudioNet; the bounded live demonstration is recorded separately
-from local tests. **Release blocked:** the all-faithful adjudication failed
-consensus; the unclear case was not run and production was not promoted.
-See [verified partial proof and blocker](docs/PIPELINE-LIVE.md).
-The release review passed 217 direct tests, 18 frontend tests,
+from local tests. **Live proof verified:** all eight milestones passed on the fresh StudioNet deployment. Production verification remains pending. See [live evidence](docs/PIPELINE-LIVE.md).
+The release review passed 221 direct tests, 19 frontend tests,
 TypeScript, production webpack build and all three GenVM checks. Headless
 Playwright verified desktop/mobile workflows against `next start`; mocked RPC
 workflow checks are explicitly separate from real ACCEPTED-window and transfer

@@ -1,3 +1,7 @@
+# Current continuation — 2026-11-12
+
+All eight milestones passed on the new deployment; source revision 0d6ef16bcadd77d9a16a12dddb797676e09fab87. The 53 wei from the previous attempt was recovered. The current proof and receipts are in [PIPELINE-LIVE.md](PIPELINE-LIVE.md). Production verification is pending. The following prior handoff is historical.
+
 # Pipeline Court continuation — 2026-11-12
 
 Status: **BLOCKED; NOT READY FOR SUBMISSION.**
