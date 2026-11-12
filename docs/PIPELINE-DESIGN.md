@@ -99,7 +99,7 @@ recorded. Multipliers are frozen when the new charter compiles.
 ## Release gates
 
 Contract lint, direct/frontend tests, TypeScript, production webpack build and
-original deployment readback passed. Desktop/mobile mocked workflow checks
+original deployment readback passed. Desktop mocked workflow checks
 passed against `next start`. Three new contracts are deployed; actual receipts,
 source identity, native credit and ACCEPTED-window proof are recorded in the
 dated release manifest. Final public production checks are recorded separately

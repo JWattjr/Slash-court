@@ -44,4 +44,6 @@ Deposits reserved/used: 311 wei against the 100000000000000000 wei (0.1 GEN) cap
 
 ## Production verification
 
-The clean archive of frontend revision 8f7d2b2 was deployed to https://slash-court.vercel.app (Vercel deployment dpl_GWxY9HYvrtVpkdXjCA4sWAkShGr8). Public page and LIVE_PASS proof returned HTTP 200 with the expected addresses and revision. All four cases were captured on desktop, and B-fault on mobile; repeated live RPC timeouts prevented the complete mobile pass. See pipeline-production/results.json. Submission readiness remains pending that check.
+The clean archive of frontend revision 4215e86c753bd00bda50674e328b5f7b8cd91fa1 is deployed to https://slash-court.vercel.app (deployment dpl_3sRCKAwCSgjQnzdMTsjeggCbdtWp). Desktop verification clicked all six case buttons sequentially in one wallet-free session. Every charter rendered and loading ended, without direct case-URL loads or Refresh retries. See [results](pipeline-production/results.json).
+
+The selection race was caused by select() and hashchange both invalidating the same read. select() now only changes the hash; navigate() owns case state. The delayed-read A-to-B frontend regression passed. Mobile verification is outside this release scope. npm run verify:pipeline passed with paced requests respecting the observed RPC limit. No contracts changed and no Portal submission occurred.

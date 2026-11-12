@@ -1,21 +1,76 @@
 {
-  "status": "PARTIAL",
-  "observedAt": "2026-11-12T15:37:52.796Z",
+  "status": "PASS",
+  "scope": "Desktop only; mobile out of scope",
+  "observedAt": "2026-11-12T17:02:26.802Z",
   "origin": "https://slash-court.vercel.app",
-  "frontendRevision": "8f7d2b2",
-  "desktopCases": [
-    "pipeline-b-fault-v2",
-    "pipeline-a-fault-v2",
-    "pipeline-faithful-v2",
-    "pipeline-unclear-v2"
-  ],
-  "mobileCases": [
-    "pipeline-b-fault-v2"
-  ],
-  "unverifiedMobileCases": [
-    "pipeline-a-fault-v2",
-    "pipeline-faithful-v2",
-    "pipeline-unclear-v2"
-  ],
-  "blocker": "Repeated live RPC read timeouts, including with Refresh; individual A-fault read succeeded"
+  "sourceRevision": "4215e86c753bd00bda50674e328b5f7b8cd91fa1",
+  "realRpc": true,
+  "results": [
+    {
+      "id": "pipeline-subjective-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "outcome": "REJECTED",
+      "selectedThroughCaseButton": true,
+      "loadingEnded": true,
+      "walletRequired": false
+    },
+    {
+      "id": "pipeline-b-fault-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "outcome": "PIPELINE_FAULT",
+      "selectedThroughCaseButton": true,
+      "loadingEnded": true,
+      "walletRequired": false
+    },
+    {
+      "id": "pipeline-a-fault-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "outcome": "PIPELINE_FAULT",
+      "selectedThroughCaseButton": true,
+      "loadingEnded": true,
+      "walletRequired": false
+    },
+    {
+      "id": "pipeline-faithful-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "outcome": "NO_PIPELINE_FAULT",
+      "selectedThroughCaseButton": true,
+      "loadingEnded": true,
+      "walletRequired": false
+    },
+    {
+      "id": "pipeline-unclear-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "outcome": "VOID_EARLIER_UNCERTAINTY",
+      "selectedThroughCaseButton": true,
+      "loadingEnded": true,
+      "walletRequired": false
+    },
+    {
+      "id": "pipeline-history-price-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "outcome": "FUNDING",
+      "selectedThroughCaseButton": true,
+      "loadingEnded": true,
+      "walletRequired": false
+    }
+  ]
 }

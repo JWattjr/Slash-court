@@ -7,7 +7,15 @@ import {studionet} from "genlayer-js/chains";
 import {verifyExplorer} from "../frontend/lib/pipeline/explorer.mjs";
 
 const fetchOriginal = globalThis.fetch;
-globalThis.fetch = (url, options = {}) => fetchOriginal(url, {...options, headers: {...Object.fromEntries(new Headers(options.headers)), "User-Agent": "Mozilla/5.0 SlashCourt Pipeline verification"}});
+let nextRpcAt = Date.now() + 30000;
+globalThis.fetch = async (url, options = {}) => {
+  if (String(url).startsWith("https://studio.genlayer.com/api")) {
+    const pause = Math.max(0, nextRpcAt - Date.now());
+    nextRpcAt = Math.max(Date.now(), nextRpcAt) + 2500;
+    await new Promise(resolve => setTimeout(resolve, pause));
+  }
+  return fetchOriginal(url, {...options, headers: {...Object.fromEntries(new Headers(options.headers)), "User-Agent": "Mozilla/5.0 SlashCourt Pipeline verification"}});
+};
 const client = createClient({chain: studionet, endpoint: "https://studio.genlayer.com/api"});
 const read = (address, functionName, args = []) => client.readContract({address, functionName, args, transactionHashVariant:"latest-final"});
 const plain = value => JSON.parse(JSON.stringify(value, (_, v) => typeof v === "bigint" ? v.toString() : v));

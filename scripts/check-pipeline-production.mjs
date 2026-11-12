@@ -20,6 +20,8 @@ try{
   ["pipeline-faithful-v2","NO_PIPELINE_FAULT"],
   ["pipeline-unclear-v2","VOID_EARLIER_UNCERTAINTY"],
   ["pipeline-history-price-v2","FUNDING"]]){
+  // Each view uses up to six reads; respect StudioNet's 30/minute bucket.
+  await page.waitForTimeout(13000);
   await page.getByRole("button",{name:id,exact:true}).click({timeout:60000});
   const heading=page.getByRole("heading",{name:`${id}: ${outcome}`,exact:true});
   await heading.waitFor({timeout:60000});

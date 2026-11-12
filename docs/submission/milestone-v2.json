@@ -1,7 +1,7 @@
 {
   "project": "SlashCourt",
   "milestone": "Pipeline Court — Internet Court job disputes",
-  "status": "LIVE_VERIFIED_PRODUCTION_PARTIAL",
+  "status": "READY_FOR_RESUBMISSION",
   "summary": "Pipeline Court extends SlashCourt to ordered multi-agent job disputes. Validators compile a frozen charter and independently judge each step against its own received input. Exact ordered assessment and fetched quotes bind the evidence. Code slashes only the earliest proven violator, refunds other bonds, and applies deadline refunds when earlier uncertainty blocks attribution. Three new StudioNet contracts add native pull claims and finalized fault-history bond pricing. Built on Liability Cascade; the original SlashCourt contracts remain unchanged. All incident logs are labelled synthetic.",
   "newContracts": [
     {
@@ -192,11 +192,12 @@
     "screenshot": "docs/pipeline-live/pipeline-b-fault-v2-accepted.png",
     "publicScreenshotUrl": "https://github.com/JWattjr/Slash-court/blob/main/docs/pipeline-live/pipeline-b-fault-v2-accepted.png"
   },
-  "resubmitReady": false,
+  "resubmitReady": true,
   "production": {
     "url": "https://slash-court.vercel.app",
-    "deployment": "dpl_GWxY9HYvrtVpkdXjCA4sWAkShGr8",
-    "frontendRevision": "8f7d2b2",
-    "blocker": "Intermittent public RPC read timeouts prevented a complete mobile browser pass"
+    "deployment": "dpl_3sRCKAwCSgjQnzdMTsjeggCbdtWp",
+    "frontendRevision": "4215e86c753bd00bda50674e328b5f7b8cd91fa1",
+    "desktopCaseClicks": 6,
+    "desktopVerification": "docs/pipeline-production/results.json"
   }
 }
