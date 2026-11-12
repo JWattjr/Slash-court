@@ -1,0 +1,21 @@
+{
+  "status": "PARTIAL",
+  "observedAt": "2026-11-12T15:37:52.796Z",
+  "origin": "https://slash-court.vercel.app",
+  "frontendRevision": "8f7d2b2",
+  "desktopCases": [
+    "pipeline-b-fault-v2",
+    "pipeline-a-fault-v2",
+    "pipeline-faithful-v2",
+    "pipeline-unclear-v2"
+  ],
+  "mobileCases": [
+    "pipeline-b-fault-v2"
+  ],
+  "unverifiedMobileCases": [
+    "pipeline-a-fault-v2",
+    "pipeline-faithful-v2",
+    "pipeline-unclear-v2"
+  ],
+  "blocker": "Repeated live RPC read timeouts, including with Refresh; individual A-fault read succeeded"
+}

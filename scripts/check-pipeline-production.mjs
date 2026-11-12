@@ -18,7 +18,12 @@ try{
    ["pipeline-faithful-v2","NO_PIPELINE_FAULT",["FAITHFUL","FAITHFUL","FAITHFUL"]],
    ["pipeline-unclear-v2",null,["UNCLEAR","VIOLATION","FAITHFUL"]]]){
    await page.goto(`${origin}/pipeline#case=${id}`);
-   const heading=page.getByRole("heading",{name:new RegExp(`^${id}:`)});await heading.waitFor({timeout:60000});
+   const heading=page.getByRole("heading",{name:new RegExp(`^${id}:`)});
+   let loaded=false;
+   for(let attempt=0;attempt<3&&!loaded;attempt++){
+    try{await heading.waitFor({timeout:20000});loaded=true;}
+    catch(error){if(attempt===2)throw error;const refresh=page.getByRole("button",{name:"Refresh",exact:true});await refresh.waitFor({state:"visible"});if(await refresh.isEnabled())await refresh.click();}
+   }
    const actual=await heading.textContent();if(outcome)assert.equal(actual,`${id}: ${outcome}`);else assert(actual.includes("VOID"));
    const rows=page.getByRole("list",{name:"Ordered pipeline assessment"}).locator(":scope > li");
    await rows.nth(2).getByText(verdicts[2],{exact:true}).waitFor({timeout:30000});

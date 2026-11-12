@@ -41,3 +41,7 @@ Exact hash 0xbf48f171990b956d6d64c286bbd814ff73adf67132880edc88077c9998412d02; e
 ## Budget and verification
 
 Deposits reserved/used: 311 wei against the 100000000000000000 wei (0.1 GEN) cap. Every write intent counts toward the cap even if a later transaction fails. Read-only npm run verify:pipeline checks source identity, bindings, finality, accounting, native credit and Explorer identity. Original Court/Vault regression passes.
+
+## Production verification
+
+The clean archive of frontend revision 8f7d2b2 was deployed to https://slash-court.vercel.app (Vercel deployment dpl_GWxY9HYvrtVpkdXjCA4sWAkShGr8). Public page and LIVE_PASS proof returned HTTP 200 with the expected addresses and revision. All four cases were captured on desktop, and B-fault on mobile; repeated live RPC timeouts prevented the complete mobile pass. See pipeline-production/results.json. Submission readiness remains pending that check.
